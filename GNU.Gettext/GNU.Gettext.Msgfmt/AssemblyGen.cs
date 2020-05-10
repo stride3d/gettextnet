@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -200,7 +200,7 @@ namespace GNU.Gettext.Msgfmt
 			p.StartInfo.RedirectStandardOutput = true;
 			p.StartInfo.FileName = Options.CompilerName;
 			p.StartInfo.Arguments = String.Format(
-				"-target:library -out:\"{0}/{1}\" -lib:\"{2}\" -reference:GNU.Gettext.dll -optimize+ \"{3}\"",
+				"-target:library -out:\"{0}/{1}\" -lib:\"{2}\" -reference:GNU.Gettext.dll -reference:netstandard.dll -optimize+ \"{3}\"",
 				AssemblyOutDir,
 				GettextResourceManager.GetSatelliteAssemblyName(Options.BaseName),
 				Path.GetFullPath(Options.LibDir),

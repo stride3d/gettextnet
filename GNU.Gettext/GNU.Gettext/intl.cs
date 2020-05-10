@@ -55,6 +55,7 @@ using System.Reflection; /* Assembly, ConstructorInfo */
 using System.Collections; /* Hashtable, ICollection, IEnumerator, IDictionaryEnumerator */
 using System.IO; /* Path, FileNotFoundException, Stream */
 using System.Text; /* StringBuilder */
+using System.Collections.Generic;
 
 namespace GNU.Gettext
 {
@@ -750,7 +751,14 @@ namespace GNU.Gettext
         {
             get
             {
-                return Table.Keys;
+                var keys = new List<object>();
+                var enumerator = GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    // Perform logic on the item
+                    keys.Add(enumerator.Current);
+                }
+                return keys;
             }
         }
 
