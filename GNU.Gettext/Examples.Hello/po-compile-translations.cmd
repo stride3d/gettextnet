@@ -1,8 +1,5 @@
 @echo off
 
-set CSHARP_BIN_DIR=C:\Windows\Microsoft.NET\Framework\v3.5
-set PATH=%CSHARP_BIN_DIR%;%PATH%
-
 %~d0
 cd "%~dp0"
 

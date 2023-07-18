@@ -82,7 +82,7 @@ namespace GNU.Gettext.WinForms
 		#region Public interface
 		public static void Localize(Control control, GettextResourceManager catalog)
 		{
-			Localizer.Localize(control, catalog, null);
+            Localize(control, catalog, null);
 		}
 		
 		public static void Localize(Control control, GettextResourceManager catalog, ObjectPropertiesStore originalTextStore)
@@ -113,13 +113,13 @@ namespace GNU.Gettext.WinForms
 		private const string ListenerName = "LocalizerTraceListener";
 		public void TraceToFile(string fileName)
 		{
-			Debug.Listeners.Add(new TextWriterTraceListener(fileName, ListenerName));
+			Trace.Listeners.Add(new TextWriterTraceListener(fileName, ListenerName));
 		}
 		
 		public void StopTrace()
 		{
 			Debug.Flush();
-			Debug.Listeners.Remove(ListenerName);
+			Trace.Listeners.Remove(ListenerName);
 		}
 #endif
 		#endregion

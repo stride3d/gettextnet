@@ -4,8 +4,8 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Resources;
 using System.Collections;
+using Curiosity.Resources;
 
 namespace GNU.Gettext.Xgettext
 {
@@ -316,7 +316,7 @@ namespace GNU.Gettext.Xgettext
                     Debug.WriteLine(string.Format("Extracting from resource file: {0} (Input file: {1})",
                                                   resxFileName, inputFile));
             }
-            ResXResourceReader rsxr = new ResXResourceReader(resxFileName);
+            ResXResourceReader rsxr = new(resxFileName);
             // stephane matamontero: the following line was needed when I was debugging
             // Xgettext where I passed commandline parameters: 
             // It tried to search the "Resources.resx" of the project where we wanted to extract

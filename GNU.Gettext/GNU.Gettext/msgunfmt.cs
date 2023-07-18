@@ -77,26 +77,30 @@ namespace GNU.Gettext {
         catalog.GetType().GetMethod("GetMsgidPluralTable", Type.EmptyTypes);
       // Search for the header entry.
       {
-        Object header_entry = catalog.GetObject("");
+        var header_entry = catalog.GetObject("");
         // If there is no header entry, fake one.
         // FIXME: This is not needed; right after po_lex_charset_init set
         // the PO charset to UTF-8.
-        if (header_entry == null)
-          header_entry = "Content-Type: text/plain; charset=UTF-8\n";
+        header_entry ??= "Content-Type: text/plain; charset=UTF-8\n";
         DumpMessage("", null, header_entry);
       }
       // Now the other messages.
       {
         Hashtable plural = null;
         if (pluralMethod != null)
-          plural = pluralMethod.Invoke(catalog, new Object[0]) as Hashtable;
-        foreach (String key in catalog.Keys)
-          if (!"".Equals(key)) {
-            Object value = catalog.GetObject(key);
-            String key_plural =
-              (plural != null && value is String[] ? plural[key] as String : null);
+          plural = pluralMethod.Invoke(catalog, Array.Empty<object>()) as Hashtable;
+
+        foreach (DictionaryEntry dict in catalog)
+        { 
+          string key = dict.Key.ToString();
+          if (!string.IsNullOrEmpty(key))
+          {
+            object value = catalog.GetObject(key);
+            string key_plural =
+              (plural != null && value is string[]? plural[key] as string : null);
             DumpMessage(key, key_plural, value);
           }
+        }
       }
     }
     // Essentially taken from class GettextResourceManager.

@@ -1,5 +1,5 @@
 #!bin/sh
-sh ./build-all.sh
+dotnet build gettextnet/GNU.Gettext.sln
 
 svn_repo_url=https://svn.code.sf.net/p/gettextnet/code
 version=1.1

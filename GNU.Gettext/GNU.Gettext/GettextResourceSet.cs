@@ -48,10 +48,10 @@
  * program can be used.
  */
 
-using System; /* String, InvalidOperationException, Console */
-using System.Resources; /* ResourceManager, ResourceSet, IResourceReader */
-using System.Collections; /* Hashtable, ICollection, IEnumerator, IDictionaryEnumerator */
-using System.IO; /* Path, FileNotFoundException, Stream */
+using System;
+using System.Resources;
+using System.Collections;
+using System.IO;
 
 namespace GNU.Gettext
 {
@@ -134,9 +134,9 @@ namespace GNU.Gettext
         ///          none is found</returns>
         // The default implementation essentially does (String)Table[msgid].
         // Here we also catch the plural form case.
-        public override string GetString(String msgid)
+        public override string GetString(string msgid)
         {
-            Object value = GetObject(msgid);
+            object value = GetObject(msgid);
             if (value == null || value is string)
                 return (string)value;
             else if (value is string[])
@@ -157,9 +157,9 @@ namespace GNU.Gettext
         ///          none is found</returns>
         // The default implementation essentially does (String)Table[msgid].
         // Here we also catch the plural form case.
-        public override String GetString(string msgid, bool ignoreCase)
+        public override string GetString(string msgid, bool ignoreCase)
         {
-            Object value = GetObject(msgid, ignoreCase);
+            object value = GetObject(msgid, ignoreCase);
             if (value == null || value is string)
                 return (string)value;
             else if (value is string[])
@@ -213,22 +213,10 @@ namespace GNU.Gettext
         }
 
         /// <summary>
-        /// Returns the keys of this resource set, i.e. the strings for which
-        /// <c>GetObject()</c> can return a non-null value.
-        /// </summary>
-        public virtual ICollection Keys
-        {
-            get
-            {
-                return Table.Keys;
-            }
-        }
-
-        /// <summary>
         /// A trivial instance of <c>IResourceReader</c> that does nothing.
         /// </summary>
         // Needed by the no-arguments constructor.
-        private static IResourceReader DummyResourceReader = new DummyResourceReader();
+        private static readonly IResourceReader DummyResourceReader = new DummyResourceReader();
 
     }
 
