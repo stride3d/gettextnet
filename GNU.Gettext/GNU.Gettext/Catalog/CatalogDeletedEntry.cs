@@ -39,8 +39,8 @@ namespace GNU.Gettext
 	public class CatalogDeletedEntry
 	{
 		List<string> deletedLines;
-		List<string> references;
-		List<string> autocomments;
+        readonly List<string> references;
+        readonly List<string> autocomments;
 		string flags;
 		string comment;
 		
@@ -88,7 +88,7 @@ namespace GNU.Gettext
 		// Convenience function: does this entry has a comment?
 		public bool HasComment
 		{
-			get { return ! String.IsNullOrEmpty (comment); }
+			get { return ! string.IsNullOrEmpty (comment); }
 		}
 		
 		// Adds new reference to the entry (used by SourceDigger).
@@ -121,8 +121,8 @@ namespace GNU.Gettext
 		// "#, fuzzy, c-format" or others (not understood by poEdit).
 		public string Flags {
 			get {
-				if (String.IsNullOrEmpty (flags))
-					return String.Empty;
+				if (string.IsNullOrEmpty (flags))
+					return string.Empty;
 				if (flags.StartsWith ("#,"))
 					return flags;
 				else

@@ -32,7 +32,6 @@ namespace GNU.Gettext.Test
 			Assert.IsNotNull(pfc, "Parse failed");
 			Assert.AreEqual(3, pfc.NPlurals, "Plurals count");
 			
-			//pfc.DumpNodes("./EvalNodes.txt");
 			
 			Assert.AreEqual(0, pfc.Evaluate(1/*, true*/), "Case 1");
 			Assert.AreEqual(1, pfc.Evaluate(3), "Case 2");

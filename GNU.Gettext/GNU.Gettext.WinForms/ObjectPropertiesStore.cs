@@ -29,7 +29,7 @@ namespace GNU.Gettext.WinForms
 				if (pi != null && pi.CanRead)
 					value = pi.GetValue(obj, null);
 				else
-					throw new Exception(String.Format("Property '{0}' not exists or write-only. Object: {1}", propertyName, obj.ToString()));
+					throw new Exception(string.Format("Property '{0}' not exists or write-only. Object: {1}", propertyName, obj.ToString()));
 			}
 			PropertiesValuesStore propStore;
 			store.TryGetValue(obj.GetHashCode(), out propStore);

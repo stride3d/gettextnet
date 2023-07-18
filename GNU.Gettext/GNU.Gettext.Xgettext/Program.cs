@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Text;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
@@ -9,39 +8,9 @@ using GNU.Getopt;
 
 namespace GNU.Gettext.Xgettext
 {
-	
-	public class Options
+    internal static class Program
 	{
-		public Options()
-		{
-			this.InputFiles = new List<string>();
-			this.InputDirs = new List<string>();
-			this.InputEncoding = new UTF8Encoding();
-			this.SearchPatterns = new List<string>();
-			this.OutFile = "messages.pot";
-			this.DetectEncoding = false;
-		}
-
-        public string OutFile { get; set; }
-		public bool Overwrite { get; set; }
-		public bool Recursive { get; set; }
-		public bool Verbose { get; set; }
-		public bool ShowUsage { get; set; }
-		public Encoding InputEncoding { get; set; }
-		public bool DetectEncoding { get; set; }
-		public List<string> InputFiles { get; private set; }
-		public List<string> InputDirs { get; private set; }
-		public List<string> SearchPatterns { get; private set; }
-		
-		public void SetEncoding(string encodingName)
-		{
-			InputEncoding = Encoding.GetEncoding(encodingName);
-		}
-	}
-	
-	class MainClass
-	{
-		public const String SOpts = "-:hjf:D:o:v";
+		public const string SOpts = "-:hjf:D:o:v";
 		public static LongOpt[] LOpts
 		{
 			get

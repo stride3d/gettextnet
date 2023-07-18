@@ -18,12 +18,12 @@ namespace GNU.Gettext.WinForms
 		public GettextResourceManager Catalog { get; set; }
 		public ObjectPropertiesStore OriginalTextStore { get; set; }
 		
-		private ToolTipControls toolTips = new ToolTipControls();
+		private readonly ToolTipControls toolTips = new ToolTipControls();
 		public ToolTipControls ToolTips
 		{
 			get { return toolTips; }
 		}
-		private Control root;
+		private readonly Control root;
 		
 		#region Constructors
 		public Localizer(Control rootControl, string resourceBaseName)
@@ -73,12 +73,9 @@ namespace GNU.Gettext.WinForms
 				return;
 			foreach(Component component in container.Components)
 			{
-				if (component is ToolTip)
-				{
-					if (!toolTips.Contains(component as ToolTip))
-						toolTips.Add(component as ToolTip);
-				}
-			}
+                if (component is ToolTip && !toolTips.Contains(component as ToolTip))
+                    toolTips.Add(component as ToolTip);
+            }
 		}
 		#endregion
 		
@@ -139,11 +136,11 @@ namespace GNU.Gettext.WinForms
 			switch (mode)
 			{
 			case IterateMode.Localize:
-				Debug.WriteLine(String.Format("Localizing '{0}'", adapter.ToString()));
+				Debug.WriteLine(string.Format("Localizing '{0}'", adapter.ToString()));
 				adapter.Localize(Catalog);
 				break;
 			case IterateMode.Revert:
-				Debug.WriteLine(String.Format("Reverting '{0}'", adapter.ToString()));
+				Debug.WriteLine(string.Format("Reverting '{0}'", adapter.ToString()));
 				adapter.Revert();
 				break;
 			}
@@ -167,10 +164,9 @@ namespace GNU.Gettext.WinForms
 			{
 				IterateControls(child, onIterateControl);
 			}
-			
-			if (onIterateControl != null)
-				onIterateControl(control);
-		}
+
+            onIterateControl?.Invoke(control);
+        }
 		
 		
 		private void IterateControls(Control control, IterateMode mode)

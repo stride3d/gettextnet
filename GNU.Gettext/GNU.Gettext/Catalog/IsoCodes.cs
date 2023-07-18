@@ -36,8 +36,8 @@ namespace GNU.Gettext
 	{
 		internal class IsoCode
 		{
-			string iso;
-			string name;
+            readonly string iso;
+            readonly string name;
 			
 			public string Iso {
 				get { return iso; }
@@ -54,11 +54,11 @@ namespace GNU.Gettext
 			}
 		}
 		
-		static IDictionary<string, IsoCode> isoLanguagesByCode;
-		static IDictionary<string, IsoCode> isoLanguagesByLang;
+		static readonly IDictionary<string, IsoCode> isoLanguagesByCode;
+		static readonly IDictionary<string, IsoCode> isoLanguagesByLang;
 		
-		static IDictionary<string, IsoCode> isoCountriesByCode;
-		static IDictionary<string, IsoCode> isoCountriesByCountry;
+		static readonly IDictionary<string, IsoCode> isoCountriesByCode;
+		static readonly IDictionary<string, IsoCode> isoCountriesByCountry;
 		
 		static IsoCodes ()
 		{

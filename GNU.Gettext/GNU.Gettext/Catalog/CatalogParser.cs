@@ -34,16 +34,16 @@ using System.IO;
 
 namespace GNU.Gettext
 {
-	//FIXME: StreamReader has been implemeneted but not a real parser
-	public abstract class CatalogParser
+    //FIXME: StreamReader has been implemeneted but not a real parser
+    public abstract class CatalogParser
 	{
 		internal static readonly string[] LineSplitStrings = { "\r\n", "\r", "\n" };
+
+        readonly string newLine;
+        readonly string fileName;
+        readonly Encoding encoding;
 		
-		string newLine;
-		string fileName;
-		Encoding encoding;
-		
-		public CatalogParser (string fileName, Encoding encoding)
+		protected CatalogParser (string fileName, Encoding encoding)
 		{
 			
 			newLine = GetNewLine (fileName,encoding);
@@ -99,7 +99,7 @@ namespace GNU.Gettext
 		// or if input is null
 		static bool ReadParam (string input, string pattern, out string output)
 		{
-			output = String.Empty;
+			output = string.Empty;
 			
 			if (input == null)
 				return false;
@@ -125,7 +125,7 @@ namespace GNU.Gettext
 		{
 			StringBuilder result = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 			
-			while (!String.IsNullOrEmpty(line = sr.ReadLine ())) {
+			while (!string.IsNullOrEmpty(line = sr.ReadLine ())) {
 				if (line[0] == '\t') 
 					line = line.Substring (1);
 				
@@ -142,12 +142,12 @@ namespace GNU.Gettext
 		public bool Parse ()
 		{
 			
-			string line, dummy;
-			string mflags = String.Empty;
-			string mstr = String.Empty;
-			string msgctxt = String.Empty;
-			string msgidPlural = String.Empty;
-			string mcomment = String.Empty;
+			string line;
+            string mflags = string.Empty;
+			string mstr = string.Empty;
+			string msgctxt = string.Empty;
+			string msgidPlural = string.Empty;
+			string mcomment = string.Empty;
 			List<string> mrefs = new List<string> ();
 			List<string> mautocomments = new List<string> ();
 			List<string> mtranslations = new List<string> ();
@@ -172,14 +172,14 @@ namespace GNU.Gettext
 					
 					// flags:
 					// Can't we have more than one flag, now only the last is kept ...
-					if (CatalogParser.ReadParam (line, "#, ", out dummy))
+					if (CatalogParser.ReadParam (line, "#, ", out string dummy))
 					{
 						mflags = dummy; //"#, " +
 						line = sr.ReadLine ();
 					}
 					
 					// auto comments:
-					if (CatalogParser.ReadParam (line, "#. ", out dummy) || CatalogParser.ReadParam (line, "#.", out dummy)) // second one to account for empty auto comments
+					if (ReadParam(line, "#. ", out dummy) || ReadParam (line, "#.", out dummy)) // second one to account for empty auto comments
 					{
 						mautocomments.Add (dummy);
 						line = sr.ReadLine ();
@@ -192,7 +192,7 @@ namespace GNU.Gettext
 						// Each reference is in the form "path_name:line_number"
 						// (path_name may contain spaces)
 						dummy = dummy.Trim ();
-						while (dummy != String.Empty) {
+						while (dummy != string.Empty) {
 							int i = 0;
 							while (i < dummy.Length && dummy[i] != ':') {
 								i++;
@@ -215,30 +215,30 @@ namespace GNU.Gettext
 					}
 					
 					// msgctxt
-					else if (CatalogParser.ReadParam (line, "msgctxt \"", out dummy) ||
-					         CatalogParser.ReadParam (line, "msgctxt\t\"", out dummy))
+					else if (ReadParam (line, "msgctxt \"", out dummy) ||
+					         ReadParam (line, "msgctxt\t\"", out dummy))
 					{
 						msgctxt = ParseMessage (ref line, ref dummy, sr);
 					}
 					
 					// msgid:
-					else if (CatalogParser.ReadParam (line, "msgid \"", out dummy) ||
-					         CatalogParser.ReadParam (line, "msgid\t\"", out dummy))
+					else if (ReadParam (line, "msgid \"", out dummy) ||
+					         ReadParam (line, "msgid\t\"", out dummy))
 					{
 						mstr = ParseMessage (ref line, ref dummy, sr);
 					}
 					
 					// msgid_plural:
-					else if (CatalogParser.ReadParam (line, "msgid_plural \"", out dummy) ||
-					         CatalogParser.ReadParam (line, "msgid_plural\t\"", out dummy))
+					else if (ReadParam (line, "msgid_plural \"", out dummy) ||
+					         ReadParam (line, "msgid_plural\t\"", out dummy))
 					{
 						msgidPlural = ParseMessage (ref line, ref dummy, sr);
 						hasPlural = true;
 					}
 	
 					// msgstr:
-					else if (CatalogParser.ReadParam (line, "msgstr \"", out dummy) ||
-					         CatalogParser.ReadParam (line, "msgstr\t\"", out dummy))
+					else if (ReadParam (line, "msgstr \"", out dummy) ||
+					         ReadParam (line, "msgstr\t\"", out dummy))
 					{
 						if (hasPlural) {
 							// TODO: use logging
@@ -249,7 +249,7 @@ namespace GNU.Gettext
 						string str = ParseMessage (ref line, ref dummy, sr);
 						mtranslations.Add (str);
 						
-						if (! OnEntry (mstr, String.Empty, false, mtranslations.ToArray (),
+						if (! OnEntry (mstr, string.Empty, false, mtranslations.ToArray (),
 						               mflags, mrefs.ToArray (), mcomment,
 						               mautocomments.ToArray (),
 						               msgctxt))
@@ -258,12 +258,12 @@ namespace GNU.Gettext
 						}
 						
 						// Cleanup vars
-						mcomment = mstr = msgidPlural = mflags = msgctxt = String.Empty;
+						mcomment = mstr = msgidPlural = mflags = msgctxt = string.Empty;
 						hasPlural = false;
 						mrefs.Clear ();
 						mautocomments.Clear ();
 						mtranslations.Clear ();
-					} else if (CatalogParser.ReadParam (line, "msgstr[", out dummy)) {
+					} else if (ReadParam (line, "msgstr[", out dummy)) {
 						// msgstr[i]:
 						if (!hasPlural){
 							// TODO: use logging
@@ -275,10 +275,10 @@ namespace GNU.Gettext
 						string idx = dummy.Substring (pos - 1, 1);
 						string label = "msgstr[" + idx + "]";
 						
-						while (CatalogParser.ReadParam (line, label + " \"", out dummy) || CatalogParser.ReadParam (line, label + "\t\"", out dummy)) {
+						while (ReadParam(line, label + " \"", out dummy) || CatalogParser.ReadParam (line, label + "\t\"", out dummy)) {
 							StringBuilder str = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 							
-							while (!String.IsNullOrEmpty (line = sr.ReadLine ())) {
+							while (!string.IsNullOrEmpty (line = sr.ReadLine ())) {
 								if (line[0] == '\t')
 									line = line.Substring (1);
 								if (line[0] == '"' && line[line.Length - 1] == '"') {
@@ -303,17 +303,19 @@ namespace GNU.Gettext
 							return false;
 						}
 						
-						mcomment = mstr = msgidPlural = mflags = String.Empty;
+						mcomment = mstr = msgidPlural = mflags = string.Empty;
 						hasPlural = false;
 						mrefs.Clear ();
 						mautocomments.Clear ();
 						mtranslations.Clear ();
-					}else if (CatalogParser.ReadParam (line, "#~ ", out dummy)) {
-						// deleted lines:
-						
-						List<string> deletedLines = new List<string> ();
-						deletedLines.Add (line);
-						while (!String.IsNullOrEmpty (line = sr.ReadLine ())) {
+					}else if (ReadParam (line, "#~ ", out dummy)) {
+                        // deleted lines:
+
+                        List<string> deletedLines = new List<string>
+                        {
+                            line
+                        };
+                        while (!string.IsNullOrEmpty (line = sr.ReadLine ())) {
 							// if line does not start with "#~ " anymore, stop reading
 							if (! ReadParam (line, "#~ ", out dummy))
 								break;
@@ -323,7 +325,7 @@ namespace GNU.Gettext
 						if (! OnDeletedEntry (deletedLines.ToArray (), mflags, null, mcomment, mautocomments.ToArray ())) 
 							return false;
 						
-						mcomment = mstr = msgidPlural = mflags = msgctxt = String.Empty;
+						mcomment = mstr = msgidPlural = mflags = msgctxt = string.Empty;
 						hasPlural = false;
 						mrefs.Clear ();
 						mautocomments.Clear ();
@@ -332,7 +334,7 @@ namespace GNU.Gettext
 						// comment:
 						
 						//  added line[1] != '~' check as deleted lines where being wrongly detected as comments
-						while (!String.IsNullOrEmpty (line) &&
+						while (!string.IsNullOrEmpty (line) &&
 						       ((line[0] == '#' && line.Length < 2) ||
 							   (line[0] == '#' && line[1] != ',' && line[1] != ':' && line[1] != '.' && line[1] != '~'))) 
 						{
@@ -344,7 +346,7 @@ namespace GNU.Gettext
 						
 					}
 					
-					while (line == String.Empty)
+					while (line == string.Empty)
 						line = sr.ReadLine ();
 				}
 			}
@@ -369,104 +371,5 @@ namespace GNU.Gettext
 			return true;
 		}
 		
-	}
-	
-	internal class CharsetInfoFinder : CatalogParser
-	{
-		string charset;
-
-		// Expecting iso-8859-1 encoding
-		public CharsetInfoFinder (string poFile)
-			: base (poFile, Encoding.GetEncoding ("iso-8859-1"))
-		{
-			charset = "iso-8859-1";
-		}
-		
-		public string Charset {
-			get { 
-				return charset; 
-			}
-		}
-		
-		protected override bool OnEntry (string msgid, string msgidPlural, bool hasPlural,
-		                                 string[] translations, string flags,
-		                                 string[] references, string comment,
-		                                 string[] autocomments,
-		                                 string msgctxt)
-		{
-			if (String.IsNullOrEmpty (msgid)) {
-				// gettext header:
-				Catalog headers = new Catalog ();
-				headers.ParseHeaderString (translations[0]);
-				charset = headers.Charset;
-				if (charset == "CHARSET")
-					charset = "iso-8859-1";
-				return false; // stop parsing
-			}
-			return true;
-		}
-	}
-	
-	/// <summary>
-	/// Load parser.
-	/// </summary>
-	internal class LoadParser : CatalogParser
-	{
-		Catalog catalog;
-		bool headerParsed = false;
-		
-		public LoadParser (Catalog catalog, string poFile, Encoding encoding) : base (poFile, encoding)
-		{
-			this.catalog = catalog;
-		}
-		
-		protected override bool OnEntry (string msgid, string msgidPlural, bool hasPlural,
-		                                 string[] translations, string flags,
-		                                 string[] references, string comment,
-		                                 string[] autocomments,
-		                                 string msgctxt)
-		{
-			if (String.IsNullOrEmpty (msgid) && ! headerParsed) {
-				// gettext header:
-				catalog.ParseHeaderString (translations[0]);
-				catalog.Comment = comment;
-				headerParsed = true;
-			} else {
-				CatalogEntry d = new CatalogEntry (catalog, String.Empty, String.Empty);
-				if (! String.IsNullOrEmpty (flags))
-					d.Flags = flags;
-				d.SetString (msgid);
-				if (hasPlural)
-				    d.SetPluralString (msgidPlural);
-				d.SetTranslations (translations);
-				d.Comment = comment;
-				for (uint i = 0; i < references.Length; i++) {
-					d.AddReference (references[i]);
-				}
-				for (uint i = 0; i < autocomments.Length; i++) {
-					d.AddAutoComment (autocomments[i]);
-				}
-				d.Context = msgctxt;
-				catalog.AddItem (d);
-			}
-			return true;
-		}
-		
-		 protected override bool OnDeletedEntry (string[] deletedLines, string flags,
-		                                        string[] references, string comment,
-		                                        string[] autocomments)
-		{
-			CatalogDeletedEntry d = new CatalogDeletedEntry (new string[0]);
-			if (!String.IsNullOrEmpty (flags))
-				d.Flags = flags;
-			d.SetDeletedLines (deletedLines);
-			d.SetComment (comment);
-			for (uint i = 0; i < autocomments.Length; i++) {
-				d.AddAutoComments (autocomments[i]);
-				
-			}
-			catalog.AddDeletedItem (d);
-			return true;
-		}
 	}
 }

@@ -79,7 +79,7 @@ namespace GNU.Gettext
 				}
 				
 				if (c != '_' && char.IsControl (c))
-					throw new FormatException (String.Format("Invalid character '{0}' in translatable string: '{1}'", c, text));
+					throw new FormatException (string.Format("Invalid character '{0}' in translatable string: '{1}'", c, text));
 				
 				sb.Append (c);
 			}
@@ -115,7 +115,7 @@ namespace GNU.Gettext
 							i++;
 							continue;
 						}
-						throw new FormatException (String.Format("Invalid escape sequence '{0}' in string: '{1}'", nextChar, text));
+						throw new FormatException (string.Format("Invalid escape sequence '{0}' in string: '{1}'", nextChar, text));
 					}
 					break;
 				}

@@ -1,18 +1,14 @@
-using System;
-using System.Reflection;
 using System.Text;
 
 using NUnit.Framework;
-
-using GNU.Getopt;
 using GNU.Gettext.Msgfmt;
 
 namespace GNU.Gettext.Test
 {
-	[TestFixture()]
+    [TestFixture()]
 	public class GetoptTest
 	{
-		[SetUpAttribute]
+		[SetUp]
 		public void TestSetup()
 		{ }
 
@@ -31,9 +27,8 @@ namespace GNU.Gettext.Test
 				"./po/ru.po"
 			};
 			Options options = new Options();
-			StringBuilder message;
-			Assert.IsTrue(Msgfmt.Program.GetOptions(args, Program.SOpts, Program.LOpts, options, out message), message.ToString());
-			CheckOptions(options);
+            Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
+            CheckOptions(options);
 			Assert.AreEqual(Mode.SateliteAssembly, options.Mode);
 		}
 
@@ -53,9 +48,8 @@ namespace GNU.Gettext.Test
 				"./po/ru.po"
 			};
 			Options options = new Options();
-			StringBuilder message;
-			Assert.IsTrue(Msgfmt.Program.GetOptions(args, Program.SOpts, Program.LOpts, options, out message), message.ToString());
-			Assert.AreEqual(0, message.Length, message.ToString());
+            Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
+            Assert.AreEqual(0, message.Length, message.ToString());
 			CheckOptions(options);
 			Assert.AreEqual("gmcs", options.CompilerName);
 			Assert.AreEqual(Mode.SateliteAssembly, options.Mode);
@@ -89,9 +83,8 @@ namespace GNU.Gettext.Test
 				"./po/ru.po"
 			};
 			Options options = new Options();
-			StringBuilder message;
-			Assert.IsTrue(Msgfmt.Program.GetOptions(args, Program.SOpts, Program.LOpts, options, out message), message.ToString());
-			CheckOptions(options);
+            Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
+            CheckOptions(options);
 			Assert.AreEqual(Mode.Resources, options.Mode);
 		}
 

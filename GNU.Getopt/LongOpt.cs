@@ -29,51 +29,29 @@ using System.Text;
 
 namespace GNU.Getopt
 {
-	/// <summary>
-	/// Constant enumeration values used for the LongOpt <c>hasArg</c>
-	/// constructor argument.
-	/// </summary>
-	public enum Argument 
-	{
-		/// <summary>
-		/// This value indicates that the option takes no argument.
-		/// </summary>
-		No			= 0,
-		/// <summary>
-		/// This value indicates that the option takes an argument that is
-		/// required.
-		/// </summary>
-		Required	= 1,
-		/// <summary>
-		/// This value indicates that the option takes an argument that is
-		/// optional.
-		/// </summary>
-		Optional	= 2
-	}
-
-	/// <summary>
-	/// This object represents the definition of a long option in the C# port
-	/// of GNU getopt. An array of LongOpt objects is passed to the
-	/// <see cref="Getopt"/> object to define the list of valid long options
-	/// for a given parsing session. Refer to the <see cref="Getopt"/>
-	/// documentation for details on the format of long options.
-	/// </summary>
-	/// <seealso cref="Getopt">Getopt</seealso>
-	/// <author>Aaron M. Renn (arenn@urbanophile.com)</author>
-	/// <author>Klaus Prückl (klaus.prueckl@aon.at)</author>
-	public class LongOpt
+    /// <summary>
+    /// This object represents the definition of a long option in the C# port
+    /// of GNU getopt. An array of LongOpt objects is passed to the
+    /// <see cref="Getopt"/> object to define the list of valid long options
+    /// for a given parsing session. Refer to the <see cref="Getopt"/>
+    /// documentation for details on the format of long options.
+    /// </summary>
+    /// <seealso cref="Getopt">Getopt</seealso>
+    /// <author>Aaron M. Renn (arenn@urbanophile.com)</author>
+    /// <author>Klaus Prückl (klaus.prueckl@aon.at)</author>
+    public class LongOpt
 	{
 		#region Instance Variables
 		/// <summary>
 		/// The name of the long option.
 		/// </summary>
-		private string name;
+		private readonly string name;
 		
 		/// <summary>
 		/// Indicates whether the option has no argument, a required argument,
 		/// or an optional argument.
 		/// </summary>
-		private Argument hasArg;
+		private readonly Argument hasArg;
 		
 		/// <summary>
 		/// If this variable is not null, then the value stored in <c>val</c>
@@ -81,26 +59,26 @@ namespace GNU.Getopt
 		/// null, the value stored in <c>val</c> is treated as the name of an
 		/// equivalent short option.
 		/// </summary>
-		private StringBuilder flag;
+		private readonly StringBuilder flag;
 		
 		/// <summary>
 		/// The value to store in <c>flag</c> if flag is not null, otherwise
 		/// the equivalent short option character for this long option.
 		/// </summary>
-		private int val;
+		private readonly int val;
 		
 		/// <summary>
 		/// The localized strings are kept in the resources, which can be
 		/// accessed by the <see cref="ResourceManager"/> class.
 		/// </summary>
-		private ResourceManager resManager = new ResourceManager(
+		private readonly ResourceManager resManager = new ResourceManager(
 			"Gnu.Getopt.MessagesBundle", Assembly.GetExecutingAssembly());
 		
 		/// <summary>
 		/// The current UI culture (set to en-US when posixly correctness is
 		/// enabled).
 		/// </summary>
-		private CultureInfo cultureInfo = CultureInfo.CurrentUICulture;
+		private readonly CultureInfo cultureInfo = CultureInfo.CurrentUICulture;
 		#endregion
 	
 		#region Constructors
@@ -144,11 +122,13 @@ namespace GNU.Getopt
 				if((bool) new AppSettingsReader().GetValue(
 					"Gnu.PosixlyCorrect", typeof(bool))) 
 				{
-					this.cultureInfo = new CultureInfo("en-US");
+					cultureInfo = new CultureInfo("en-US");
 				}
 			}
-			catch(Exception)
+			catch(Exception e)
 			{
+				Console.WriteLine(e.Message);
+				throw;
 			}
 
 			// Validate hasArg
@@ -177,7 +157,7 @@ namespace GNU.Getopt
 		/// </returns>
 		public string Name
 		{
-			get { return this.name; }
+			get { return name; }
 		}
 
 		/// <summary>
@@ -189,7 +169,7 @@ namespace GNU.Getopt
 		/// </returns>
 		public Argument HasArg
 		{
-			get { return this.hasArg; }
+			get { return hasArg; }
 		}
 
 		/// <summary>
@@ -200,7 +180,7 @@ namespace GNU.Getopt
 		/// </returns>
 		public StringBuilder Flag
 		{
-			get { return this.flag; }
+			get { return flag; }
 		}
 
 		/// <summary>
@@ -211,7 +191,7 @@ namespace GNU.Getopt
 		/// </returns>
 		public int Val
 		{
-			get	{ return this.val; }
+			get	{ return val; }
 		}
 	} // Class LongOpt
 }

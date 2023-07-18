@@ -35,9 +35,9 @@ namespace GNU.Gettext.Msgfmt
 					}
                     catch (Exception e)
 					{
-						string message = String.Format("Error adding item {0}", entry.String);
-						if (!String.IsNullOrEmpty(entry.Context))
-							message = String.Format("Error adding item {0} in context '{1}'",
+						string message = string.Format("Error adding item {0}", entry.String);
+						if (!string.IsNullOrEmpty(entry.Context))
+							message = string.Format("Error adding item {0} in context '{1}'",
 							                        entry.String, entry.Context);
 						throw new Exception(message, e);
 					}

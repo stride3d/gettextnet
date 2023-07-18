@@ -8,13 +8,14 @@ using System.CodeDom.Compiler;
 using System.Diagnostics;
 
 using GNU.Gettext;
+using System.Linq;
 
 namespace GNU.Gettext.Msgfmt
 {
     public class AssemblyGen
     {
-        private IndentedTextWriter cw;
-        private StringWriter sw;
+        private readonly IndentedTextWriter cw;
+        private readonly StringWriter sw;
 		private Catalog catalog;
 
         public Dictionary<string, string> Entries { get; private set; }
@@ -28,12 +29,9 @@ namespace GNU.Gettext.Msgfmt
         {
             sw = new StringWriter();
             cw = new IndentedTextWriter(sw);
-			this.Options = options;
+			Options = options;
 			ClassName = GettextResourceManager.MakeResourceSetClassName(Options.BaseName, Options.Locale);
-//            CsharpSourceFileName = Path.Combine(
-//				Options.OutDir,
-//                String.Format("{0}.{1}.resources.cs", Options.BaseName, Options.Locale.Name));
-            CsharpSourceFileName = Path.GetTempFileName();
+            CsharpSourceFileName = Path.GetRandomFileName();
         }
 		#endregion
 
@@ -59,17 +57,14 @@ namespace GNU.Gettext.Msgfmt
 		{
 			if (!Options.CheckFormat)
 				return;
-			foreach(CatalogEntry entry in catalog)
-			{
-				if (entry.IsInFormat("csharp"))
-				{
-					ValidateFormatString(entry.String);
-					ValidateFormatString(entry.PluralString);
-					for (int i = 0; i < entry.TranslationsCount; i++)
-						ValidateFormatString(entry.GetTranslation(i));
-				}
-			}
-		}
+            foreach (var entry in catalog.Where(entry => entry.IsInFormat("csharp")))
+            {
+                ValidateFormatString(entry.String);
+                ValidateFormatString(entry.PluralString);
+                for (int i = 0; i < entry.TranslationsCount; i++)
+                    ValidateFormatString(entry.GetTranslation(i));
+            }
+        }
 		
 		private void ValidateFormatString(string s)
 		{
@@ -77,7 +72,7 @@ namespace GNU.Gettext.Msgfmt
 			FormatValidateResult result = v.Validate();
 			if (!result.Result)
 			{
-				throw new FormatException(String.Format("Invalid sting format: '{0}'\n{1}", s, result.ErrorMessage));
+				throw new FormatException(string.Format("Invalid sting format: '{0}'\n{1}", s, result.ErrorMessage));
 			}
 		}
 
@@ -187,7 +182,7 @@ namespace GNU.Gettext.Msgfmt
 			if (!Directory.Exists(AssemblyOutDir))
 				Directory.CreateDirectory(AssemblyOutDir);
 			if (!Directory.Exists(AssemblyOutDir))
-				throw new Exception(String.Format("Error creating output directory {0}", AssemblyOutDir));
+				throw new Exception(string.Format("Error creating output directory {0}", AssemblyOutDir));
 		}
 
 
@@ -199,7 +194,7 @@ namespace GNU.Gettext.Msgfmt
 			p.StartInfo.RedirectStandardError = true;
 			p.StartInfo.RedirectStandardOutput = true;
 			p.StartInfo.FileName = Options.CompilerName;
-			p.StartInfo.Arguments = String.Format(
+			p.StartInfo.Arguments = string.Format(
 				"-target:library -out:\"{0}/{1}\" -lib:\"{2}\" -reference:GNU.Gettext.dll -reference:netstandard.dll -optimize+ \"{3}\"",
 				AssemblyOutDir,
 				GettextResourceManager.GetSatelliteAssemblyName(Options.BaseName),
@@ -214,7 +209,7 @@ namespace GNU.Gettext.Msgfmt
 			{
 				if (p.ExitCode != 0)
 				{
-					throw new Exception(String.Format(
+					throw new Exception(string.Format(
 						"Assembly compilation failed. ExitCode: {0}\nSee source file: {1}\n{2}\n{3}",
 						p.ExitCode,
 						CsharpSourceFileName,
@@ -233,7 +228,7 @@ namespace GNU.Gettext.Msgfmt
 
 		static string ToConstStr(string s)
 		{
-			return String.Format("@\"{0}\"", s.Replace("\"", "\"\""));
+			return string.Format("@\"{0}\"", s.Replace("\"", "\"\""));
 		}
 
 		static string ToMsgid(CatalogEntry entry)
@@ -247,7 +242,7 @@ namespace GNU.Gettext.Msgfmt
 		/// <summary>
 		/// Write C# code that returns the value for a message.  If the message
 		/// has plural forms, it is an expression of type System.String[], otherwise it
-		/// is an expression of type System.String.
+		/// is an expression of type System.string.
 		/// </summary>
 		/// <returns>
 		/// The expression (string or string[]) to initialize hashtable associated object.

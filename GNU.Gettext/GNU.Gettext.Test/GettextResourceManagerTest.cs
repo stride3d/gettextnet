@@ -1,13 +1,9 @@
-using System;
-
 using NUnit.Framework;
-
-using GNU.Gettext;
-
+using System;
 
 namespace GNU.Gettext.Test
 {
-	[TestFixture()]
+    [TestFixture()]
 	public class GettextResourceManagerTest
 	{
 		[Test()]
@@ -18,25 +14,27 @@ namespace GNU.Gettext.Test
 			Assert.AreEqual("One.Two", GettextResourceManager.ExtractNamespace(n1));
 
 			Assert.AreEqual("Class", GettextResourceManager.ExtractClassName("Class"));
-			Assert.AreEqual(String.Empty, GettextResourceManager.ExtractNamespace(".Test"));
+			Assert.AreEqual(string.Empty, GettextResourceManager.ExtractNamespace(".Test"));
 		}
 		
-		[Test][ExpectedException]
+		[Test]
 		public void Ex1Test()
 		{
-			GettextResourceManager.ExtractClassName(null);
+			Assert.Throws<Exception>(() => GettextResourceManager.ExtractClassName(null));
 		}
 		
-		[Test][ExpectedException]
+		[Test]
 		public void Ex2Test()
 		{
-			GettextResourceManager.ExtractClassName(String.Empty);
+            Assert.Throws<Exception>(() =>
+            GettextResourceManager.ExtractClassName(string.Empty));
 		}
 
-		[Test][ExpectedException]
+		[Test]
 		public void Ex3Test()
 		{
-			GettextResourceManager.ExtractClassName("Class.");
+            Assert.Throws<Exception>(() =>
+            GettextResourceManager.ExtractClassName("Class."));
 		}
 	}
 }

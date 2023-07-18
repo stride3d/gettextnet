@@ -38,7 +38,7 @@ namespace GNU.Gettext
 		
 		public FormatValidator(string inputString)
 		{
-			this.InputString = inputString == null ? String.Empty : inputString;
+			this.InputString = inputString == null ? string.Empty : inputString;
 		}
 		
 		public bool ContainsFormat

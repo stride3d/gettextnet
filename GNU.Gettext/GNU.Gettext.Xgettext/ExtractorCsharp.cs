@@ -182,14 +182,14 @@ namespace GNU.Gettext.Xgettext
             {
                 GroupCollection groups = match.Groups;
                 if (groups.Count < 2)
-                    throw new Exception(String.Format(
+                    throw new Exception(string.Format(
                         "Invalid pattern '{0}'.\nTwo groups are required at least.\nSource: {1}",
                         pattern, match.Value));
 
                 // Initialisation
-                string context = String.Empty;
-                string msgid = String.Empty;
-                string msgidPlural = String.Empty;
+                string context = string.Empty;
+                string msgid = string.Empty;
+                string msgidPlural = string.Empty;
                 switch (mode)
                 {
                     case ExtractMode.Msgid:
@@ -207,10 +207,10 @@ namespace GNU.Gettext.Xgettext
                     case ExtractMode.MsgidFromResx:
                         string controlId = Unescape(groups[1].Value);
                         msgid = ExtractResourceString(controlId);
-                        if (String.IsNullOrEmpty(msgid))
+                        if (string.IsNullOrEmpty(msgid))
                         {
                             if (Options.Verbose)
-                                Trace.WriteLine(String.Format(
+                                Trace.WriteLine(string.Format(
                                     "Warning: cannot extract string for control '{0}' ({1})",
                                     controlId, inputFile));
                             continue;
@@ -220,13 +220,13 @@ namespace GNU.Gettext.Xgettext
                         break;
                     case ExtractMode.MsgidPlural:
                         if (groups.Count < 3)
-                            throw new Exception(String.Format("Invalid 'GetPluralString' call.\nSource: {0}", match.Value));
+                            throw new Exception(string.Format("Invalid 'GetPluralString' call.\nSource: {0}", match.Value));
                         msgid = Unescape(groups[1].Value);
                         msgidPlural = Unescape(groups[2].Value);
                         break;
                     case ExtractMode.ContextMsgid:
                         if (groups.Count < 3)
-                            throw new Exception(String.Format("Invalid get context message call.\nSource: {0}", match.Value));
+                            throw new Exception(string.Format("Invalid get context message call.\nSource: {0}", match.Value));
                         context = Unescape(groups[1].Value);
                         msgid = Unescape(groups[2].Value);
                         if (groups.Count == 4)
@@ -234,10 +234,10 @@ namespace GNU.Gettext.Xgettext
                         break;
                 }
 
-                if (String.IsNullOrEmpty(msgid))
+                if (string.IsNullOrEmpty(msgid))
                 {
 					if (Options.Verbose)
-                    	Trace.Write(String.Format("WARN: msgid is empty in {0}\r\n", inputFile));
+                    	Trace.Write(string.Format("WARN: msgid is empty in {0}\r\n", inputFile));
                 }
 				else
 				{
@@ -261,7 +261,7 @@ namespace GNU.Gettext.Xgettext
 
             // Add source reference if it not exists yet
             // Each reference is in the form "path_name:line_number"
-            string sourceRef = String.Format("{0}:{1}",
+            string sourceRef = string.Format("{0}:{1}",
                                              Utils.FileUtils.GetRelativeUri(Path.GetFullPath(inputFile), Path.GetFullPath(Options.OutFile)),
                                              line);
             entry.AddReference(sourceRef); // Wont be added if exists
@@ -272,13 +272,13 @@ namespace GNU.Gettext.Xgettext
                     entry.Flags += ", csharp-format";
                 Trace.WriteLineIf(
                     !FormatValidator.IsValidFormatString(msgid),
-                    String.Format("Warning: string format may be invalid: '{0}'\nSource: {1}", msgid, sourceRef));
+                    string.Format("Warning: string format may be invalid: '{0}'\nSource: {1}", msgid, sourceRef));
                 Trace.WriteLineIf(
                     !FormatValidator.IsValidFormatString(msgidPlural),
-                    String.Format("Warning: plural string format may be invalid: '{0}'\nSource: {1}", msgidPlural, sourceRef));
+                    string.Format("Warning: plural string format may be invalid: '{0}'\nSource: {1}", msgidPlural, sourceRef));
             }
 
-            if (!String.IsNullOrEmpty(msgidPlural))
+            if (!string.IsNullOrEmpty(msgidPlural))
             {
                 if (!entryFound)
                 {
@@ -287,10 +287,10 @@ namespace GNU.Gettext.Xgettext
                 else
                     UpdatePluralEntry(entry, msgidPlural);
             }
-            if (!String.IsNullOrEmpty(context))
+            if (!string.IsNullOrEmpty(context))
             {
                 entry.Context = context;
-                entry.AddAutoComment(String.Format("Context: {0}", context), true);
+                entry.AddAutoComment(string.Format("Context: {0}", context), true);
             }
 
             if (!entryFound)
@@ -298,7 +298,7 @@ namespace GNU.Gettext.Xgettext
         }
 
 
-        private Dictionary<string, string> resources = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> resources = new Dictionary<string, string>();
 
         private bool ReadResources(string inputFile)
         {
@@ -313,7 +313,7 @@ namespace GNU.Gettext.Xgettext
             else
             {
                 if (Options.Verbose)
-                    Debug.WriteLine(String.Format("Extracting from resource file: {0} (Input file: {1})",
+                    Debug.WriteLine(string.Format("Extracting from resource file: {0} (Input file: {1})",
                                                   resxFileName, inputFile));
             }
             ResXResourceReader rsxr = new ResXResourceReader(resxFileName);
@@ -327,7 +327,6 @@ namespace GNU.Gettext.Xgettext
                 if (entry.Value is string)
                 {
                     resources.Add(entry.Key.ToString(), entry.Value.ToString());
-                    //Debug.WriteLine(String.Format("{0}: {1}", entry.Key.ToString(), entry.Value.ToString()));
                 }
             }
             return true;
@@ -335,11 +334,10 @@ namespace GNU.Gettext.Xgettext
 
         private string ExtractResourceString(string controlId)
         {
-            string msgid = null;
-            if (!resources.TryGetValue(controlId + ".Text", out msgid))
-                if (!resources.TryGetValue(controlId + ".TooTipText", out msgid))
-                    if (!resources.TryGetValue(controlId + ".HeaderText", out msgid))
-                        return null;
+            if (!resources.TryGetValue(controlId + ".Text", out string msgid) 
+                && !resources.TryGetValue(controlId + ".TooTipText", out msgid) 
+                && !resources.TryGetValue(controlId + ".HeaderText", out msgid))
+                return null;
             return msgid;
         }
 

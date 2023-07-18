@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
 using System.Diagnostics;
@@ -15,36 +14,9 @@ namespace GNU.Gettext.Msgfmt
         Resources,
         SateliteAssembly
     }
-
-    public class Options
+    public static class Program
     {
-		public Options()
-		{
-			InputFiles = new List<string>();
-		}
-
-        public string CompilerName { get; set; }
-        public string OutFile { get; set; }
-        public string OutDir { get; set; }
-        public string LibDir { get; set; }
-        public string LocaleStr { get; set; }
-        public CultureInfo Locale { get; set; }
-        public string BaseName { get; set; }
-		public Mode Mode { get; set; }
-		public bool CheckFormat { get; set; }
-		public bool Verbose { get; set; }
-		public bool ShowUsage { get; set; }
-		public bool DebugMode { get; set; }
-		public bool HasNamespace
-		{
-			get { return !String.IsNullOrEmpty(BaseName); }
-		}
-		public List<string> InputFiles { get; private set; }
-    }
-
-    public class Program
-    {
-		public const String SOpts = "-:hvo:d:r:l:L:";
+		public const string SOpts = "-:hvo:d:r:l:L:";
 		public static LongOpt[] LOpts
 		{
 			get
@@ -220,7 +192,7 @@ namespace GNU.Gettext.Msgfmt
                 }
 
 
-                if (accepted && options.Mode == Mode.Resources && String.IsNullOrEmpty(options.OutFile))
+                if (accepted && options.Mode == Mode.Resources && string.IsNullOrEmpty(options.OutFile))
                 {
                     message.Append("Undefined output file name");
                     accepted = false;
@@ -228,22 +200,22 @@ namespace GNU.Gettext.Msgfmt
 
                 if (accepted && options.Mode == Mode.SateliteAssembly)
                 {
-                    if (accepted && String.IsNullOrEmpty(options.BaseName))
+                    if (accepted && string.IsNullOrEmpty(options.BaseName))
                     {
                         message.Append("Undefined base name");
                         accepted = false;
                     }
-                    if (accepted && String.IsNullOrEmpty(options.OutDir))
+                    if (accepted && string.IsNullOrEmpty(options.OutDir))
                     {
                         message.Append("Output dirictory name required");
                         accepted = false;
                     }
-                    if (accepted && String.IsNullOrEmpty(options.LibDir))
+                    if (accepted && string.IsNullOrEmpty(options.LibDir))
                     {
                         message.Append("Assembly reference dirictory name required");
                         accepted = false;
                     }
-                    if (accepted && String.IsNullOrEmpty(options.LocaleStr))
+                    if (accepted && string.IsNullOrEmpty(options.LocaleStr))
                     {
                         message.Append("Locale is not defined");
                         accepted = false;

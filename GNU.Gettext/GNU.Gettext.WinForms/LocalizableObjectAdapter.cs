@@ -70,10 +70,9 @@ namespace GNU.Gettext.WinForms
 		
 		private void StoreIfOriginal(string propertyName, string value)
 		{
-			if (Store != null)
-			{
-				if (Store.GetState(Source, propertyName) == null)
-					Store.SetState(Source, propertyName, value);
+			if (Store != null && Store.GetState(Source, propertyName) == null)
+			{ 	
+				Store.SetState(Source, propertyName, value);
 			}
 		}
 		
@@ -100,7 +99,7 @@ namespace GNU.Gettext.WinForms
 			if (pi != null && pi.CanRead)
 			{
 				object value = pi.GetValue(Source, null);
-				return value != null && value is string ? (string)value : null;
+				return value is string val ? val : null;
 			}
 			return null;
 		}
@@ -121,7 +120,7 @@ namespace GNU.Gettext.WinForms
                     // Property may exist and be accessible as read/write but not supported
                     // Example: WebBrowser.Text
                     if (!(ex is NotSupportedException ||
-                        (ex.InnerException != null && ex.InnerException is NotSupportedException)))
+                        (ex.InnerException is NotSupportedException)))
                         throw;
                 }
 			}

@@ -496,7 +496,7 @@ namespace GNU.Gettext
 		/// </param>
 		public static PluralFormsCalculator Make(string str)
 		{
-			if (String.IsNullOrEmpty(str))
+			if (string.IsNullOrEmpty(str))
 				return null;
 			if (str.EndsWith("\n"))
 				str = str.Remove(str.Length - 1, 1);

@@ -14,7 +14,7 @@ namespace GNU.Gettext.Test
 		[Test()]
 		public void ExtractorCSharpTest()
 		{
-			string ressourceId = String.Format("{0}.{1}", this.GetType().Assembly.GetName().Name, "Data.XgettextTest.txt");
+			string ressourceId = string.Format("{0}.{1}", this.GetType().Assembly.GetName().Name, "Data.XgettextTest.txt");
 			string text = "";
 			using (Stream stream = this.GetType().Assembly.GetManifestResourceStream(ressourceId))
 			{

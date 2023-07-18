@@ -18,7 +18,7 @@
 /* 11 */ someCatalog.GetStringFmt("d123\"{0}\"456", 222);
 /* 12 */ someCatalog.GetStringFmt(@"e123""{0}""456", 222);
 
-/* 13 */ Console.WriteLine(String.Format(
+/* 13 */ Console.WriteLine(string.Format(
 	catalog.GetPluralString(
 		"found {0} similar word", 
 		"found {0} similar words", 1),

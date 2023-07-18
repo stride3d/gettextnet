@@ -50,17 +50,15 @@ namespace GNU.Gettext
 		bool hasPlural;
 		List<string> translations;
 
-		List<string> references;
-		List<string> autocomments;
-		bool isFuzzy, isModified, isAutomatic;
-		bool hasBadTokens;
+        readonly List<string> references;
+        readonly List<string> autocomments;
+		bool isFuzzy;
+        readonly bool hasBadTokens;
 		string moreFlags;
 		string comment;
-		Validity validity;
-		string errorString;
-		string context = String.Empty;
-		
-		Catalog owner;
+        string context = string.Empty;
+
+        readonly Catalog owner;
 		
 		#region Constructors
 		// Initializes the object with original string and translation.
@@ -70,14 +68,14 @@ namespace GNU.Gettext
 			this.str = str;
 			this.plural = plural;
 
-			hasPlural = ! String.IsNullOrEmpty (plural);
+			hasPlural = ! string.IsNullOrEmpty (plural);
 			references = new List<string> ();
 			autocomments = new List<string> ();
 			translations = new List<string> ();
 			isFuzzy = false;
-			isModified = false;
-			isAutomatic = false;
-			validity = Validity.Unknown;
+			IsModified = false;
+			IsAutomatic = false;
+			DataValidity = Validity.Unknown;
 		}
 
         public CatalogEntry (Catalog owner, CatalogEntry dt)
@@ -90,13 +88,13 @@ namespace GNU.Gettext
 			references = new List<string> (dt.references);
 			autocomments = new List<string> (dt.autocomments);
 			isFuzzy = dt.isFuzzy;
-			isModified = dt.isModified;
-			isAutomatic = dt.isAutomatic;
+			IsModified = dt.IsModified;
+			IsAutomatic = dt.IsAutomatic;
             hasBadTokens = dt.hasBadTokens;
             moreFlags =dt.moreFlags;
             comment = dt.comment;
-            validity = dt.validity;
-            errorString = dt.errorString;
+            DataValidity = dt.DataValidity;
+            ErrorString = dt.ErrorString;
 			context = dt.Context;
         }
 		#endregion
@@ -134,7 +132,7 @@ namespace GNU.Gettext
         public string GetTranslation (int index)
         {
 			if (index < 0 || index >= translations.Count)
-				return String.Empty;
+				return string.Empty;
 			else
 				return translations[index];
         }
@@ -145,19 +143,19 @@ namespace GNU.Gettext
 		}
 
 		public bool HasContext {
-			get { return !String.IsNullOrEmpty(context); }
+			get { return !string.IsNullOrEmpty(context); }
 		}
 		
 		public string Key {
-			get { return MakeKey(this.String, this.Context); }
+			get { return MakeKey(String, Context); }
 		}
 	
 		public static string MakeKey(string msgid, string context)
 		{
-			if (String.IsNullOrEmpty(msgid))
+			if (string.IsNullOrEmpty(msgid))
 				throw new Exception("Msgid cannot be empty");
-			return String.Format("{0}{1}", 
-			                     String.IsNullOrEmpty(context) ? String.Empty : context.Trim() + '|',
+			return string.Format("{0}{1}", 
+			                     string.IsNullOrEmpty(context) ? string.Empty : context.Trim() + '|',
 			                     msgid);
 		}
 
@@ -187,7 +185,7 @@ namespace GNU.Gettext
         // Convenience function: does this entry has a comment?
         public bool HasComment
         {
-			get { return ! String.IsNullOrEmpty (comment); }
+			get { return ! string.IsNullOrEmpty (comment); }
 		}
 
         // Adds new reference to the entry (used by SourceDigger).
@@ -226,26 +224,26 @@ namespace GNU.Gettext
 		public void SetString (string str)
 		{
 			this.str = str;
-			validity = Validity.Unknown;
+			DataValidity = Validity.Unknown;
 		}
 		
 		// Sets the plural form (if applicable).
 		public void SetPluralString (string plural)
 		{
 			this.plural = plural;
-			this.hasPlural = ! String.IsNullOrEmpty (plural);
+			this.hasPlural = ! string.IsNullOrEmpty (plural);
 		}
 		
 		// Sets the translation. Changes "translated" status to true if \a t is not empty.
 		public void SetTranslation (string translation, int index)
 		{
 			while (index >= translations.Count)
-				translations.Add (String.Empty);
+				translations.Add (string.Empty);
 			
 			if (translations[index] != translation) {
 				translations[index] = translation;
 				
-				validity = Validity.Unknown;
+				DataValidity = Validity.Unknown;
 				MarkOwnerDirty ();
 			}
 		}
@@ -255,7 +253,7 @@ namespace GNU.Gettext
 		{
 			this.translations = new List<string> (translations);
 			
-			validity = Validity.Unknown;
+			DataValidity = Validity.Unknown;
 			MarkOwnerDirty ();
 		}
 		
@@ -264,23 +262,23 @@ namespace GNU.Gettext
 		// #, csharp-format" or others.
 		public string Flags {
 			get {
-				string retStr = String.Empty;
+				string retStr = string.Empty;
 				if (isFuzzy)
 					retStr = ", fuzzy";
 				retStr += moreFlags;
-				if (! String.IsNullOrEmpty (retStr))
+				if (! string.IsNullOrEmpty (retStr))
 					return "#" + retStr;
 				else
-					return String.Empty;
+					return string.Empty;
 			}
 			set {
 				isFuzzy = false;
-				moreFlags = String.Empty;
+				moreFlags = string.Empty;
 				
-				if (String.IsNullOrEmpty (value))
+				if (string.IsNullOrEmpty (value))
 					return;
 				
-				string[] tokens = value.TrimStart(new char[] {'#', ','}).Split (',');
+				string[] tokens = value.TrimStart('#', ',').Split (',');
 				foreach (string token in tokens) {
 					if (token.Trim () == "fuzzy")
 						isFuzzy = true;
@@ -304,10 +302,10 @@ namespace GNU.Gettext
 			get {
 				bool isTranslated = false;    
 				isTranslated = (translations.Count >= owner.PluralFormsCount) ||
-					(! HasPlural && ! String.IsNullOrEmpty (translations[0]));
+					(! HasPlural && ! string.IsNullOrEmpty (translations[0]));
 				if (isTranslated && HasPlural) {
 					for (int i = 0; i <owner.PluralFormsCount; i++) {
-						if (String.IsNullOrEmpty (translations[i])) {
+						if (string.IsNullOrEmpty (translations[i])) {
 							isTranslated = false;
 							break;
 						}
@@ -316,28 +314,20 @@ namespace GNU.Gettext
 				return isTranslated;
 			}
 		}
-		
-		// Modified flag.
-		public bool IsModified
+
+        // Modified flag.
+        public bool IsModified { get; set; }
+
+        // Automatic translation flag.
+        public bool IsAutomatic { get; set; }
+
+        // Returns true if the gettext flags line contains "foo-format"
+        // flag when called with "foo" as argument.
+        public bool IsInFormat (string format)
 		{
-			get { return isModified; }
-			set { isModified = value; }
-		}
-		
-		// Automatic translation flag.
-		public bool IsAutomatic
-		{
-			get { return isAutomatic; }
-			set { isAutomatic = value; }
-		}
-		
-		// Returns true if the gettext flags line contains "foo-format"
-		// flag when called with "foo" as argument.
-		public bool IsInFormat (string format)
-		{
-			if (String.IsNullOrEmpty(moreFlags))
+			if (string.IsNullOrEmpty(moreFlags))
 				return false;
-			string lookingFor = String.Format ("{0}-format", format);
+			string lookingFor = string.Format ("{0}-format", format);
 			string[] tokens = moreFlags.Split (',');
 			foreach (string token in tokens) {
 				if (token.Trim () == lookingFor)
@@ -364,23 +354,15 @@ namespace GNU.Gettext
 		{
 			autocomments.Clear ();
 		}
-		
-		// Checks if %i etc. are correct in the translation (true if yes).
-		// Strings that are not c-format are always correct.
-		// TODO: make it checking for c-sharp, .Net string validity
-		public Validity DataValidity
-		{
-			get { return validity; }
-			set { validity = value; }
-		}
-		
-		public string ErrorString
-		{
-			get { return errorString; }
-			set { errorString = value; }
-		}
-		
-		public string LocaleCode
+
+        // Checks if %i etc. are correct in the translation (true if yes).
+        // Strings that are not c-format are always correct.
+        // TODO: make it checking for c-sharp, .Net string validity
+        public Validity DataValidity { get; set; }
+
+        public string ErrorString { get; set; }
+
+        public string LocaleCode
 		{
 			get { return owner.LocaleCode; }
 		}

@@ -146,7 +146,7 @@ namespace GNU.Gettext
 					+ GetSatelliteAssemblyName(resourceName);
             if (File.Exists(satelliteExpectedLocation))
             {
-                return Assembly.LoadFrom(satelliteExpectedLocation);
+                return Assembly.Load(satelliteExpectedLocation);
             }
             // Try to load embedded assembly
             string embeddedResourceId = String.Format("{0}.{1}.{2}",

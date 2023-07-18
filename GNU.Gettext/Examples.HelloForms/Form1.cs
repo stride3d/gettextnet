@@ -29,18 +29,18 @@ namespace GNU.Gettext.Examples
 			// Manually formatted strings
 			label2.Text = catalog.GetStringFmt("This program is running as process number \"{0}\".",
 			                                   System.Diagnostics.Process.GetCurrentProcess().Id);
-            label3.Text = String.Format(
+            label3.Text = string.Format(
 				catalog.GetPluralString("found {0} similar word", "found {0} similar words", 1),
 				1);
-            label4.Text = String.Format(
+            label4.Text = string.Format(
 				catalog.GetPluralString("found {0} similar word", "found {0} similar words", 2),
 				2);
-            label5.Text = String.Format(
+            label5.Text = string.Format(
 				catalog.GetPluralString("found {0} similar word", "found {0} similar words", 5),
 				5);
-            label6.Text = String.Format("{0} ('computers')",  catalog.GetParticularString("Computers", "Text encoding"));
-            label7.Text = String.Format("{0} ('military')",  catalog.GetParticularString("Military", "Text encoding"));
-            label8.Text = String.Format("{0} (non contextual)",  catalog.GetString("Text encoding"));
+            label6.Text = string.Format("{0} ('computers')",  catalog.GetParticularString("Computers", "Text encoding"));
+            label7.Text = string.Format("{0} ('military')",  catalog.GetParticularString("Military", "Text encoding"));
+            label8.Text = string.Format("{0} (non contextual)",  catalog.GetString("Text encoding"));
 		}
 
 		private void OnLocaleChanged(object sender, EventArgs e)

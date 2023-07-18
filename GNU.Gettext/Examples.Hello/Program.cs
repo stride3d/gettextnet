@@ -5,41 +5,38 @@
 
 using System;
 using System.Diagnostics;
-using System.Resources;
 using System.Globalization;
-using System.Reflection;
-
-using GNU.Gettext;
+using System.Threading;
 
 namespace GNU.Gettext.Examples
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 			ShowMessages();
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-FR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-FR");
 			ShowMessages();
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
 			ShowMessages();
             //Console.ReadKey();
         }
 
 		static void ShowMessages()
 		{
-            Console.WriteLine("Current culture {0}", System.Threading.Thread.CurrentThread.CurrentUICulture);
+            Console.WriteLine("Current culture {0}", Thread.CurrentThread.CurrentUICulture);
             GettextResourceManager catalog = new GettextResourceManager();
             Console.WriteLine(catalog.GetString("Hello, world!"));
 			// GetStringFmt is an Gettext.NET extension
             Console.WriteLine(catalog.GetStringFmt("This program is running as process number \"{0}\".",
 			                  Process.GetCurrentProcess().Id));
-            Console.WriteLine(String.Format(
+            Console.WriteLine(string.Format(
 				catalog.GetPluralString("found {0} similar word", "found {0} similar words", 1),
 				1));
 			// GetPluralStringFmt is an Gettext.NET extension
             Console.WriteLine(catalog.GetPluralStringFmt("found {0} similar word", "found {0} similar words", 2));
-            Console.WriteLine(String.Format(
+            Console.WriteLine(string.Format(
 				catalog.GetPluralString("found {0} similar word", "found {0} similar words", 5),
 				5));
 			
