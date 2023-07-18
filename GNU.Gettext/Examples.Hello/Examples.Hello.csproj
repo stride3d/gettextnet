@@ -16,7 +16,4 @@
     <None Include="po\fr.po" />
     <None Include="po\ru.po" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="spectre.console" Version="0.47.0" />
-  </ItemGroup>
 </Project>
