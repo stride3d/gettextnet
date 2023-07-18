@@ -35,7 +35,6 @@
     <None Include="Data\UtilsTest.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\XgettextTest.txt" />
