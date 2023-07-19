@@ -3,6 +3,10 @@ using System.Resources;
 
 namespace GNU.Gettext
 {
+    /// <summary>
+    /// Custom <see cref="IResourceReader"/> used to pass a collection of translations 
+    /// to <see cref="GettextResourceSet(IResourceReader)"/>.
+    /// </summary>
     public class GettextResourceReader : IResourceReader
     {
         private readonly Hashtable _resources;

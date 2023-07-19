@@ -3,19 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
-using System.Globalization;
 using System.CodeDom.Compiler;
-using System.Diagnostics;
-
-using GNU.Gettext;
 using System.Linq;
-using System.CodeDom;
-using Microsoft.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using System.Resources;
-using Basic.Reference.Assemblies;
 using System.Runtime.Versioning;
 
 namespace GNU.Gettext.Msgfmt
