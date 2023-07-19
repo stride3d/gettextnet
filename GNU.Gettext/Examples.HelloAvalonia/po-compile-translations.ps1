@@ -13,5 +13,5 @@ $catalogs = Get-ChildItem -Path $catalogPath -Filter "*.po"
 
 
 foreach ($c in $catalogs) {
-    & $exePath -l $c.BaseName -d $directory -r ($currentDirectoryName).Message -L $directory --check-format $c.FullName
+    & $exePath -l $c.BaseName -d $directory -r $currentDirectoryName -L $directory --check-format $c.FullName
 }

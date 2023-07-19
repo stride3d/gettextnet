@@ -29,7 +29,7 @@
 			</StackPanel>
 		</Border>
 
-        <Label Grid.Row="1" Content="Hello, world!" Margin="10,10,0,0"/>
+        <Label Grid.Row="1" x:Name="label1" Margin="10,10,0,0"/>
         <Label Grid.Row="2" x:Name="label2" Margin="10,10,0,0"/>
 
 		<StackPanel Grid.Row="3" Margin="10">

@@ -21,7 +21,6 @@ public partial class MainWindow : Window
         string locale = (sender as Button)?.Content?.ToString() ?? "en-US";
 
         Thread.CurrentThread.CurrentUICulture = new CultureInfo(locale);
-        //GNU.Gettext.Avalonia.Localizer.Revert(this, store);
         SetTexts();
     }
 
@@ -29,13 +28,8 @@ public partial class MainWindow : Window
     {
         var catalog = new GettextResourceManager();
         // If satellite assemblies have another base name use GettextResourceManager("Examples.HelloForms.Messages") constructor
-        // If you call from another assembly, use GettextResourceManager(anotherAssembly) constructor
-        //Localizer.Localize(this, catalog, store);
-        // We need pass 'store' argument only to be able revert original text and switch languages on fly
-        // Common use case doesn't required it: Localizer.Localize(this, catalog);
-
-        Title = catalog.GetString("Hello world!");
-
+        Title = catalog.GetString("Hello, world!");
+        label1.Content = catalog.GetString("Hello, world!");
         // Manually formatted strings
         label2.Content = catalog.GetStringFmt("This program is running as process number \"{0}\".", Environment.ProcessId);
         label3.Content = string.Format(
@@ -50,5 +44,6 @@ public partial class MainWindow : Window
         label6.Content = string.Format("{0} ('computers')", catalog.GetParticularString("Computers", "Text encoding"));
         label7.Content = string.Format("{0} ('military')", catalog.GetParticularString("Military", "Text encoding"));
         label8.Content = string.Format("{0} (non-contextual)", catalog.GetString("Text encoding"));
+        textBox1.Text = catalog.GetString("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.\n");
     }
 }
