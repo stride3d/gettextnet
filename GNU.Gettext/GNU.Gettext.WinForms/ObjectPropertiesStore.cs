@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace GNU.Gettext.WinForms
+namespace GNU.Gettext.Avalonia
 {
 	class PropertiesValuesStore : Dictionary<string, object>
 	{

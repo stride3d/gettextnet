@@ -136,9 +136,9 @@ namespace GNU.Getopt
 				(hasArg != Argument.Optional))
 			{
 				object[] msgArgs = new object[]{hasArg};
-				throw new System.ArgumentException(string.Format(
-					this.resManager.GetString("getopt.invalidValue",
-					this.cultureInfo), msgArgs));
+                throw new ArgumentException(string.Format(
+					resManager.GetString("getopt.invalidValue",
+					cultureInfo), msgArgs));
 			}
 			
 			// Store off values

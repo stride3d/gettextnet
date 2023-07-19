@@ -75,7 +75,7 @@ namespace GNU.Gettext.Msgfmt
                         break;
                     case Mode.SateliteAssembly:
                         (new AssemblyGen(options)).Run();
-                        Console.WriteLine("Generated OK");
+                        Console.WriteLine("Done");
                         break;
                 }
             }
@@ -270,7 +270,6 @@ namespace GNU.Gettext.Msgfmt
             	"                                       On Windows you should check if compiler directory is in PATH environment variable\n\n" +
             	"   --check-format                      Verify C# format strings and raise error if invalid format is detected\n\n" +
             	"   --csharp-resources                  Convert a PO file to a .resources file instead of satellite assembly\n\n" +
-            	"   -v, --verbose                       Verbose output\n\n" +
             	"   -h, --help                          Display this help and exit",
 				GettextResourceManager.ResourceNameSuffix
 				);

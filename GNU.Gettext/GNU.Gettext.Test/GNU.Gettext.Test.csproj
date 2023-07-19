@@ -21,9 +21,9 @@
       <Project>{69B39E65-093E-417A-BFC9-B1CF7B981680}</Project>
       <Name>GNU.Gettext.Xgettext</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GNU.Gettext.WinForms\GNU.Gettext.WinForms.csproj">
+    <ProjectReference Include="..\GNU.Gettext.Avalonia\GNU.Gettext.Avalonia.csproj">
       <Project>{A458C869-B3C4-4130-8D3F-00F44548DD5C}</Project>
-      <Name>GNU.Gettext.WinForms</Name>
+      <Name>GNU.Gettext.Avalonia</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

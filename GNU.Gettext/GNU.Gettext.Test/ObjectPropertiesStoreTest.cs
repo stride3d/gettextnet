@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Windows.Forms;
 
-using GNU.Gettext.WinForms;
+using GNU.Gettext.Avalonia;
 
 namespace GNU.Gettext.Test
 {

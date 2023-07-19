@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-06-28 14:26:54+0200\n"
-"PO-Revision-Date: 2012-07-09 10:35:52+0200\n"
+"POT-Creation-Date: 2023-07-18 19:58:10+0200\n"
+"PO-Revision-Date: 2023-07-18 19:58:10+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -11,28 +11,28 @@ msgstr ""
 "X-Generator: MonoDevelop Gettext addin\n"
 
 
-#: ../Program.cs:33
+#: ../Program.cs:29
 msgid "Hello, world!"
 msgstr ""
 
-#: ../Program.cs:48
+#: ../Program.cs:44
 msgid "Text encoding"
 msgstr ""
 
-#: ../Program.cs:50
+#: ../Program.cs:46
 msgid ""
 "Here is an example of how one might continue a very long string\n"
 "for the common case the string represents multi-line output.\n"
 msgstr ""
 
-#: ../Program.cs:35
+#: ../Program.cs:31
 #, csharp-format
 msgid "This program is running as process number \"{0}\"."
 msgstr ""
 
-#: ../Program.cs:38
-#: ../Program.cs:43
-#: ../Program.cs:41
+#: ../Program.cs:34
+#: ../Program.cs:39
+#: ../Program.cs:37
 #, csharp-format
 msgid "found {0} similar word"
 msgid_plural "found {0} similar words"
@@ -40,13 +40,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Context: Computers
-#: ../Program.cs:46
+#: ../Program.cs:42
 msgctxt "Computers"
 msgid "Text encoding"
 msgstr ""
 
 #. Context: Military
-#: ../Program.cs:47
+#: ../Program.cs:43
 msgctxt "Military"
 msgid "Text encoding"
 msgstr ""

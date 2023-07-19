@@ -14,8 +14,8 @@
     <ProjectReference Include="..\GNU.Gettext\GNU.Gettext.csproj">
       <Name>GNU.Gettext</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GNU.Gettext.WinForms\GNU.Gettext.WinForms.csproj">
-      <Name>GNU.Gettext.WinForms</Name>
+    <ProjectReference Include="..\GNU.Gettext.Avalonia\GNU.Gettext.Avalonia.csproj">
+      <Name>GNU.Gettext.Avalonia</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

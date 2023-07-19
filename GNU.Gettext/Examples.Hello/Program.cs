@@ -20,12 +20,11 @@ namespace GNU.Gettext.Examples
 			ShowMessages();
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
 			ShowMessages();
-            //Console.ReadKey();
         }
 
 		static void ShowMessages()
 		{
-            Console.WriteLine("Current culture {0}", Thread.CurrentThread.CurrentUICulture);
+            Console.WriteLine("===[ Current culture {0} ]===", Thread.CurrentThread.CurrentUICulture);
             GettextResourceManager catalog = new GettextResourceManager();
             Console.WriteLine(catalog.GetString("Hello, world!"));
 			// GetStringFmt is an Gettext.NET extension

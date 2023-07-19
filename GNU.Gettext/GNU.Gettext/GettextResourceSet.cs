@@ -109,7 +109,7 @@ namespace GNU.Gettext
         /// be in the format of a <c>.resources</c> file. The message catalog will
         /// not support plural forms.
         /// </summary>
-        public GettextResourceSet(String fileName)
+        public GettextResourceSet(string fileName)
             : base(fileName)
         {
         }
@@ -183,7 +183,7 @@ namespace GNU.Gettext
         /// <returns>the translation, or <c>null</c> if none is found</returns>
         public virtual string GetPluralString(string msgid, String msgidPlural, long n)
         {
-            Object value = GetObject(msgid);
+            object value = GetObject(msgid);
             if (value == null || value is string)
                 return (string)value;
             else if (value is string[])

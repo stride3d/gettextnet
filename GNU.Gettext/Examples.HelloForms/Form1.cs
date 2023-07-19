@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Globalization;
 
-using GNU.Gettext.WinForms;
+using GNU.Gettext.Avalonia;
 
 namespace GNU.Gettext.Examples
 {
@@ -55,7 +55,7 @@ namespace GNU.Gettext.Examples
 				locale = "ru-RU";
 			}
             System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(locale);
-			GNU.Gettext.WinForms.Localizer.Revert(this, store);
+			GNU.Gettext.Avalonia.Localizer.Revert(this, store);
 			SetTexts();
 		}
 

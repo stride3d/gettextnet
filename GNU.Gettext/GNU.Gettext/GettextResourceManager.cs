@@ -56,6 +56,7 @@ using System.Collections; /* Hashtable, ICollection, IEnumerator, IDictionaryEnu
 using System.IO; /* Path, FileNotFoundException, Stream */
 using System.Text; /* StringBuilder */
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace GNU.Gettext
 {
@@ -99,7 +100,7 @@ namespace GNU.Gettext
         /// </summary>
         /// <param name="baseName">the resource name, also the assembly base
         ///                        name</param>
-        public GettextResourceManager(String baseName)
+        public GettextResourceManager(string baseName)
             : base(baseName, Assembly.GetCallingAssembly(), typeof(GettextResourceSet))
         {
         }
@@ -109,7 +110,7 @@ namespace GNU.Gettext
         /// </summary>
         /// <param name="baseName">the resource name, also the assembly base
         ///                        name</param>
-        public GettextResourceManager(String baseName, Assembly assembly)
+        public GettextResourceManager(string baseName, Assembly assembly)
             : base(baseName, assembly, typeof(GettextResourceSet))
         {
         }
@@ -128,7 +129,7 @@ namespace GNU.Gettext
 		/// </param>
 		public static string GetSatelliteAssemblyName(string resourceName)
 		{
-			return String.Format("{0}{1}.resources.dll", resourceName, ResourceNameSuffix);
+			return string.Format("{0}{1}.resources.dll", resourceName, ResourceNameSuffix);
 		}
 
         /// <summary>
@@ -137,7 +138,7 @@ namespace GNU.Gettext
         // This is like Assembly.GetSatelliteAssembly, but uses resourceName
         // instead of assembly.GetName().Name, and works around a bug in
         // mono-0.28.
-        private static Assembly GetSatelliteAssembly(Assembly assembly, String resourceName, CultureInfo culture)
+        private static Assembly GetSatelliteAssembly(Assembly assembly, string resourceName, CultureInfo culture)
         {
             string satelliteExpectedLocation =
               Path.GetDirectoryName(assembly.Location)
@@ -146,10 +147,10 @@ namespace GNU.Gettext
 					+ GetSatelliteAssemblyName(resourceName);
             if (File.Exists(satelliteExpectedLocation))
             {
-                return Assembly.Load(satelliteExpectedLocation);
+                return Assembly.LoadFile(satelliteExpectedLocation);
             }
             // Try to load embedded assembly
-            string embeddedResourceId = String.Format("{0}.{1}.{2}",
+            string embeddedResourceId = string.Format("{0}.{1}.{2}",
                 assembly.GetName().Name, culture.Name, GetSatelliteAssemblyName(resourceName));
 			Stream satAssemblyStream = null;
             using (satAssemblyStream = assembly.GetManifestResourceStream(embeddedResourceId))
@@ -158,7 +159,7 @@ namespace GNU.Gettext
 				{
 					// Workaround: .NET doesn't alow '-' in embedded resources names 
 					// https://sourceforge.net/p/gettextnet/discussion/general/thread/88033218/
-					embeddedResourceId = String.Format("{0}.{1}.{2}",
+					embeddedResourceId = string.Format("{0}.{1}.{2}",
 					                                   assembly.GetName().Name, 
 					                                   culture.Name.Replace('-', '_'), 
 					                                   GetSatelliteAssemblyName(resourceName));
@@ -178,7 +179,7 @@ namespace GNU.Gettext
         /// </summary>
         /// <returns>a nonempty string consisting of alphanumerics and underscores
         ///          and starting with a letter or underscore</returns>
-        private static String ConstructClassName(String resourceName)
+        private static String ConstructClassName(string resourceName)
         {
             // We could just return an arbitrary fixed class name, like "Messages",
             // assuming that every assembly will only ever contain one
@@ -197,7 +198,7 @@ namespace GNU.Gettext
             else
             {
                 // Use hexadecimal escapes, using the underscore as escape character.
-                String hexdigit = "0123456789abcdef";
+                string hexdigit = "0123456789abcdef";
                 StringBuilder b = new StringBuilder();
                 b.Append("__UESCAPED__");
                 for (int i = 0; i < resourceName.Length; i++)
@@ -242,7 +243,7 @@ namespace GNU.Gettext
 
 		public static string ExtractClassName(string baseName)
 		{
-			if (String.IsNullOrEmpty(baseName))
+			if (string.IsNullOrEmpty(baseName))
 				throw new Exception("Empty base name");
 			int pos = baseName.LastIndexOf('.');
 			if (pos == baseName.Length - 1)
@@ -254,12 +255,12 @@ namespace GNU.Gettext
 
 		public static string ExtractNamespace(string baseName)
 		{
-			if (String.IsNullOrEmpty(baseName))
-				return String.Empty;
+			if (string.IsNullOrEmpty(baseName))
+				return string.Empty;
 			int pos = baseName.LastIndexOf('.');
 			if (pos > 0)
 				return baseName.Substring(0, pos);
-			return String.Empty;
+			return string.Empty;
 		}
 
         /// <summary>
@@ -274,11 +275,11 @@ namespace GNU.Gettext
         /// <exception cref="NullReferenceException">
         ///   The type has no no-arguments constructor.
         /// </exception>
-        private static GettextResourceSet InstantiateResourceSet(Assembly satelliteAssembly, String resourceName, CultureInfo culture)
+        private static GettextResourceSet InstantiateResourceSet(Assembly satelliteAssembly, string resourceName, CultureInfo culture)
         {
             // We expect a class with a culture dependent class name.
             Type type = satelliteAssembly.GetType(
-				String.Format("{0}.{1}",
+				string.Format("{0}.{1}",
 			              resourceName,
 			              MakeResourceSetClassName(resourceName, culture)));
             // We expect it has a no-argument constructor, and invoke it.
@@ -310,8 +311,7 @@ namespace GNU.Gettext
         {
             //Console.WriteLine(">> GetResourceSetsFor "+culture);
             // Look up in the cache.
-            GettextResourceSet[] result = Loaded[culture] as GettextResourceSet[];
-            if (result == null)
+            if (Loaded[culture] is not GettextResourceSet[] result)
             {
                 lock (this)
                 {
@@ -347,8 +347,8 @@ namespace GNU.Gettext
                                 }
                                 catch (Exception e)
                                 {
-                                    System.Diagnostics.Trace.WriteLine(e);
-                                    System.Diagnostics.Trace.WriteLine(e.StackTrace);
+                                    Trace.WriteLine(e);
+                                    Trace.WriteLine(e.StackTrace);
                                     satelliteResourceSet = null;
                                 }
                                 if (satelliteResourceSet != null)
@@ -389,12 +389,12 @@ namespace GNU.Gettext
         ///                     string</param>
         /// <returns>the translation of <paramref name="msgid"/>, or
         ///          <paramref name="msgid"/> if none is found</returns>
-        public override String GetString(String msgid, CultureInfo culture)
+        public override string GetString(string msgid, CultureInfo culture)
         {
             foreach (GettextResourceSet rs in GetResourceSetsFor(culture))
             {
-                String translation = rs.GetString(msgid);
-                if (!String.IsNullOrEmpty(translation))
+                string translation = rs.GetString(msgid);
+                if (!string.IsNullOrEmpty(translation))
                     return translation;
             }
             // Fallback.
@@ -413,12 +413,12 @@ namespace GNU.Gettext
         /// <param name="n">the number, should be &gt;= 0</param>
         /// <returns>the translation, or <paramref name="msgid"/> or
         ///          <paramref name="msgidPlural"/> if none is found</returns>
-        public virtual String GetPluralString(String msgid, String msgidPlural, long n, CultureInfo culture)
+        public virtual string GetPluralString(string msgid, string msgidPlural, long n, CultureInfo culture)
         {
             foreach (GettextResourceSet rs in GetResourceSetsFor(culture))
             {
-                String translation = rs.GetPluralString(msgid, msgidPlural, n);
-                if (!String.IsNullOrEmpty(translation))
+                string translation = rs.GetPluralString(msgid, msgidPlural, n);
+                if (!string.IsNullOrEmpty(translation))
                     return translation;
             }
             // Fallback: Germanic plural form.
@@ -427,7 +427,7 @@ namespace GNU.Gettext
 
         // ======================== Public Methods ========================
 		
-		public static string MakeContextMsgid(String msgctxt, String msgid)
+		public static string MakeContextMsgid(string msgctxt, string msgid)
 		{
 			return msgctxt + "\u0004" + msgid;
 		}
@@ -442,16 +442,16 @@ namespace GNU.Gettext
         ///                     string</param>
         /// <returns>the translation of <paramref name="msgid"/>, or
         ///          <paramref name="msgid"/> if none is found</returns>
-        public String GetParticularString(String msgctxt, String msgid, CultureInfo culture)
+        public String GetParticularString(string msgctxt, String msgid, CultureInfo culture)
         {
             foreach (GettextResourceSet rs in GetResourceSetsFor(culture))
             {
-                String translation = rs.GetString(MakeContextMsgid(msgctxt, msgid));
-                if (!String.IsNullOrEmpty(translation))
+                string translation = rs.GetString(MakeContextMsgid(msgctxt, msgid));
+                if (!string.IsNullOrEmpty(translation))
                     return translation;
 				// Fallback to non cotextual translation
 				translation = rs.GetString(msgid);
-                if (!String.IsNullOrEmpty(translation))
+                if (!string.IsNullOrEmpty(translation))
                     return translation;
             }
             // Fallback.
@@ -473,16 +473,16 @@ namespace GNU.Gettext
         /// <param name="n">the number, should be &gt;= 0</param>
         /// <returns>the translation, or <paramref name="msgid"/> or
         ///          <paramref name="msgidPlural"/> if none is found</returns>
-        public virtual String GetParticularPluralString(String msgctxt, String msgid, String msgidPlural, long n, CultureInfo culture)
+        public virtual string GetParticularPluralString(string msgctxt, string msgid, String msgidPlural, long n, CultureInfo culture)
         {
             foreach (GettextResourceSet rs in GetResourceSetsFor(culture))
             {
-                String translation = rs.GetPluralString(MakeContextMsgid(msgctxt, msgid), msgidPlural, n);
-                if (!String.IsNullOrEmpty(translation))
+                string translation = rs.GetPluralString(MakeContextMsgid(msgctxt, msgid), msgidPlural, n);
+                if (!string.IsNullOrEmpty(translation))
                     return translation;
 				// Fallback to non cotextual translation
 				translation = rs.GetPluralString(msgid, msgidPlural, n);
-                if (!String.IsNullOrEmpty(translation))
+                if (!string.IsNullOrEmpty(translation))
                     return translation;
             }
             // Fallback: Germanic plural form.
@@ -495,7 +495,7 @@ namespace GNU.Gettext
         /// <param name="msgid">the key string to be translated</param>
         /// <returns>the translation of <paramref name="msgid"/>, or
         ///          <paramref name="msgid"/> if none is found</returns>
-        public override String GetString(String msgid)
+        public override string GetString(string msgid)
         {
             return GetString(msgid, CultureInfo.CurrentUICulture);
         }
@@ -510,9 +510,9 @@ namespace GNU.Gettext
 		/// <param name="args">
 		/// Arguments to apply with given format.
 		/// </param>
-        public virtual String GetStringFmt(String msgid, params object[] args)
+        public virtual string GetStringFmt(string msgid, params object[] args)
         {
-            return String.Format(GetString(msgid, CultureInfo.CurrentUICulture), args);
+            return string.Format(GetString(msgid, CultureInfo.CurrentUICulture), args);
         }
 
         /// <summary>
@@ -527,7 +527,7 @@ namespace GNU.Gettext
         /// <param name="n">the number, should be &gt;= 0</param>
         /// <returns>the translation, or <paramref name="msgid"/> or
         ///          <paramref name="msgidPlural"/> if none is found</returns>
-        public virtual String GetPluralString(String msgid, String msgidPlural, long n)
+        public virtual String GetPluralString(string msgid, String msgidPlural, long n)
         {
             return GetPluralString(msgid, msgidPlural, n, CultureInfo.CurrentUICulture);
         }
@@ -544,9 +544,9 @@ namespace GNU.Gettext
         /// <param name="n">the number, should be &gt;= 0</param>
         /// <returns>the translation, or <paramref name="msgid"/> or
         ///          <paramref name="msgidPlural"/> if none is found</returns>
-        public virtual String GetPluralStringFmt(String msgid, String msgidPlural, long n)
+        public virtual string GetPluralStringFmt(string msgid, string msgidPlural, long n)
         {
-            return String.Format(GetPluralString(msgid, msgidPlural, n, CultureInfo.CurrentUICulture), n);
+            return string.Format(GetPluralString(msgid, msgidPlural, n, CultureInfo.CurrentUICulture), n);
         }
 		
         /// <summary>
@@ -559,7 +559,7 @@ namespace GNU.Gettext
         ///                     string</param>
         /// <returns>the translation of <paramref name="msgid"/>, or
         ///          <paramref name="msgid"/> if none is found</returns>
-        public String GetParticularString(String msgctxt, String msgid)
+        public String GetParticularString(String msgctxt, string msgid)
         {
             return GetParticularString(msgctxt, msgid, CultureInfo.CurrentUICulture);
         }
@@ -579,7 +579,7 @@ namespace GNU.Gettext
         /// <param name="n">the number, should be &gt;= 0</param>
         /// <returns>the translation, or <paramref name="msgid"/> or
         ///          <paramref name="msgidPlural"/> if none is found</returns>
-        public virtual String GetParticularPluralString(String msgctxt, String msgid, String msgidPlural, long n)
+        public virtual String GetParticularPluralString(String msgctxt, string msgid, String msgidPlural, long n)
         {
             return GetParticularPluralString(msgctxt, msgid, msgidPlural, n, CultureInfo.CurrentUICulture);
         }

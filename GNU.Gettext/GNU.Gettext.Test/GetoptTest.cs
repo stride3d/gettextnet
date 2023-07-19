@@ -22,7 +22,6 @@ namespace GNU.Gettext.Test
 				"-d", "./bin/Debug",
 				"-r", "Examples.Hello.Messages",
 				"-L", "./../../Bin",
-				"-v",
 				"./po/fr.po",
 				"./po/ru.po"
 			};
@@ -78,7 +77,6 @@ namespace GNU.Gettext.Test
 				"-r", "Examples.Hello.Messages",
 				"--compiler-name=gmcs",
 				"-L", "./../../Bin",
-				"-v",
 				"./po/fr.po",
 				"./po/ru.po"
 			};

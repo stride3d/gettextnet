@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace GNU.Gettext.WinForms
+namespace GNU.Gettext.Avalonia
 {
 	class LocalizableObjectAdapter
 	{

@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNU.Gettext.Test", "GNU.Get
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNU.Gettext.Xgettext", "GNU.Gettext.Xgettext\GNU.Gettext.Xgettext.csproj", "{69B39E65-093E-417A-BFC9-B1CF7B981680}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNU.Gettext.WinForms", "GNU.Gettext.WinForms\GNU.Gettext.WinForms.csproj", "{A458C869-B3C4-4130-8D3F-00F44548DD5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNU.Gettext.Avalonia", "GNU.Gettext.Avalonia\GNU.Gettext.Avalonia.csproj", "{A458C869-B3C4-4130-8D3F-00F44548DD5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

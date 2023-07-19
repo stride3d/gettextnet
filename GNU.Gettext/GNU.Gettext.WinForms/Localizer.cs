@@ -5,7 +5,7 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace GNU.Gettext.WinForms
+namespace GNU.Gettext.Avalonia
 {
 	public class ToolTipControls : List<ToolTip>
 	{
