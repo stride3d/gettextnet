@@ -39,9 +39,7 @@ namespace GNU.Gettext.Test
                 "--locale=fr-FR",
                 "-d./bin/Debug",
                 "--resource=Examples.Hello.Messages",
-                "--compiler-name=gmcs",
                 "--lib-dir=./../../Bin",
-                "--verbose",
                 "--check-format",
                 "./po/fr.po",
                 "./po/ru.po"
@@ -50,7 +48,6 @@ namespace GNU.Gettext.Test
             Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
             Assert.AreEqual(0, message.Length, message.ToString());
             CheckOptions(options);
-            Assert.AreEqual("gmcs", options.CompilerName);
             Assert.AreEqual(Mode.SateliteAssembly, options.Mode);
         }
 
@@ -62,7 +59,6 @@ namespace GNU.Gettext.Test
             Assert.AreEqual("./bin/Debug", options.OutDir);
             Assert.AreEqual("Examples.Hello.Messages", options.BaseName);
             Assert.AreEqual("./../../Bin", options.LibDir);
-            Assert.IsTrue(options.Verbose);
         }
 
         [Test()]

@@ -28,8 +28,6 @@ namespace GNU.Gettext.Msgfmt
                     new LongOpt("output-file", Argument.Required, null, 'o'),
                     new LongOpt("locale", Argument.Required, null, 'l'),
                     new LongOpt("lib-dir", Argument.Required, null, 'L'),
-                    new LongOpt("verbose", Argument.No, null, 'v'),
-                    new LongOpt("compiler-name", Argument.Required, null, '5'),
                     new LongOpt("debug", Argument.No, null, 4),
                     new LongOpt("check-format", Argument.No, null, 2),
                     new LongOpt("csharp-resources", Argument.No, null, 3)
@@ -98,8 +96,6 @@ namespace GNU.Gettext.Msgfmt
             };
 
             options.Mode = Mode.SateliteAssembly;
-            options.Verbose = false;
-            options.CompilerName = Path.DirectorySeparatorChar == '/' ? "mcs" : "csc";
             options.ShowUsage = false;
             options.CheckFormat = false;
             options.DebugMode = false;
@@ -122,9 +118,6 @@ namespace GNU.Gettext.Msgfmt
                         options.DebugMode = true;
                         Trace.WriteLine("Debug mode is ON");
                         break;
-                    case '5':
-                        options.CompilerName = getopt.Optarg;
-                        break;
                     case ':':
                         message.AppendFormat("Option {0} requires an argument", getopt.OptoptStr);
                         return false;
@@ -145,9 +138,6 @@ namespace GNU.Gettext.Msgfmt
                         break;
                     case 'L':
                         options.LibDir = getopt.Optarg;
-                        break;
-                    case 'v':
-                        options.Verbose = true;
                         break;
                     case 'h':
                         options.ShowUsage = true;

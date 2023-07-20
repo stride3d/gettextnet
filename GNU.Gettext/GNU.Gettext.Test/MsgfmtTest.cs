@@ -21,13 +21,8 @@ namespace GNU.Gettext.Test
             options.InputFiles.Add("../../../Examples.Hello/po/fr.po");
             options.BaseName = "Examples.Hello.Messages";
             options.OutDir = "../../../Examples.Hello/bin/Debug";
-            if (Path.DirectorySeparatorChar == '\\')
-                options.CompilerName = "csc";
-            else
-                options.CompilerName = "mcs";
             options.LibDir = "./";
             options.Locale = new CultureInfo("fr-FR");
-            options.Verbose = true;
             options.DebugMode = true;
 
             AssemblyGen gen = new AssemblyGen(options);
@@ -48,7 +43,6 @@ namespace GNU.Gettext.Test
             options.Mode = Mode.Resources;
             options.InputFiles.Add("./Data/Test01.po");
             options.OutFile = "./Messages.fr-FR.resources";
-            options.Verbose = true;
 
             ResourcesGen gen = new ResourcesGen(options);
             gen.Run();
