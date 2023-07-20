@@ -48,13 +48,13 @@
  * program can be used.
  */
 
-using System; /* String, InvalidOperationException, Console */
-using System.Globalization; /* CultureInfo */
-using System.Resources; /* ResourceManager, ResourceSet, IResourceReader */
-using System.Reflection; /* Assembly, ConstructorInfo */
-using System.Collections; /* Hashtable, ICollection, IEnumerator, IDictionaryEnumerator */
-using System.IO; /* Path, FileNotFoundException, Stream */
-using System.Text; /* StringBuilder */
+using System;
+using System.Globalization;
+using System.Resources;
+using System.Reflection;
+using System.Collections;
+using System.IO;
+using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -69,29 +69,29 @@ namespace GNU.Gettext
     /// </summary>
     public class GettextResourceManager : ResourceManager
     {
-		
-		public const string ResourceNameSuffix = ".Messages";
+
+        public const string ResourceNameSuffix = ".Messages";
 
         // ======================== Public Constructors ========================
 
-		/// <summary>
-		/// Default constructor use assembly name + ".Messages" as base name to locate satellite assemblies.
-		/// </summary>
+        /// <summary>
+        /// Default constructor use assembly name + ".Messages" as base name to locate satellite assemblies.
+        /// </summary>
         public GettextResourceManager()
             : this(Assembly.GetCallingAssembly())
         {
         }
 
-		/// <summary>
-		/// Same as default constructor but can be called from assembly other than calling one.
-		/// </summary>
-		/// <param name='assembly'>
-		/// Assembly for locate satellites.
-		/// </param>
+        /// <summary>
+        /// Same as default constructor but can be called from assembly other than calling one.
+        /// </summary>
+        /// <param name='assembly'>
+        /// Assembly for locate satellites.
+        /// </param>
         public GettextResourceManager(Assembly assembly)
             : base(assembly.GetName().Name,
-			       assembly,
-			       typeof(GettextResourceSet))
+                   assembly,
+                   typeof(GettextResourceSet))
         {
         }
 
@@ -116,21 +116,21 @@ namespace GNU.Gettext
         }
 
         // ======================== Implementation ========================
-		
-		/// <summary>
-		/// Returns file name for satellite assembly.
-		/// Used for compiling by Msgfmt.NET and loading by this resource manager
-		/// </summary>
-		/// <returns>
-		/// The satellite assembly file name.
-		/// </returns>
-		/// <param name='resourceName'>
-		/// Resource base name, i.e. "Solution1.App2.Module3".
-		/// </param>
-		public static string GetSatelliteAssemblyName(string resourceName)
-		{
-			return string.Format("{0}{1}.resources.dll", resourceName, ResourceNameSuffix);
-		}
+
+        /// <summary>
+        /// Returns file name for satellite assembly.
+        /// Used for compiling by Msgfmt.NET and loading by this resource manager
+        /// </summary>
+        /// <returns>
+        /// The satellite assembly file name.
+        /// </returns>
+        /// <param name='resourceName'>
+        /// Resource base name, i.e. "Solution1.App2.Module3".
+        /// </param>
+        public static string GetSatelliteAssemblyName(string resourceName)
+        {
+            return string.Format("{0}{1}.resources.dll", resourceName, ResourceNameSuffix);
+        }
 
         /// <summary>
         /// Loads and returns a satellite assembly for a given culture..
@@ -144,7 +144,7 @@ namespace GNU.Gettext
               Path.GetDirectoryName(assembly.Location)
               + Path.DirectorySeparatorChar + culture.Name
               + Path.DirectorySeparatorChar
-					+ GetSatelliteAssemblyName(resourceName);
+                    + GetSatelliteAssemblyName(resourceName);
             if (File.Exists(satelliteExpectedLocation))
             {
                 return Assembly.LoadFile(satelliteExpectedLocation);
@@ -152,19 +152,19 @@ namespace GNU.Gettext
             // Try to load embedded assembly
             string embeddedResourceId = string.Format("{0}.{1}.{2}",
                 assembly.GetName().Name, culture.Name, GetSatelliteAssemblyName(resourceName));
-			Stream satAssemblyStream = null;
+            Stream satAssemblyStream = null;
             using (satAssemblyStream = assembly.GetManifestResourceStream(embeddedResourceId))
             {
-				if (satAssemblyStream == null)
-				{
-					// Workaround: .NET doesn't alow '-' in embedded resources names 
-					// https://sourceforge.net/p/gettextnet/discussion/general/thread/88033218/
-					embeddedResourceId = string.Format("{0}.{1}.{2}",
-					                                   assembly.GetName().Name, 
-					                                   culture.Name.Replace('-', '_'), 
-					                                   GetSatelliteAssemblyName(resourceName));
-					satAssemblyStream = assembly.GetManifestResourceStream(embeddedResourceId);
-				}
+                if (satAssemblyStream == null)
+                {
+                    // Workaround: .NET doesn't alow '-' in embedded resources names 
+                    // https://sourceforge.net/p/gettextnet/discussion/general/thread/88033218/
+                    embeddedResourceId = string.Format("{0}.{1}.{2}",
+                                                       assembly.GetName().Name,
+                                                       culture.Name.Replace('-', '_'),
+                                                       GetSatelliteAssemblyName(resourceName));
+                    satAssemblyStream = assembly.GetManifestResourceStream(embeddedResourceId);
+                }
                 if (satAssemblyStream == null)
                     return null;
                 Byte[] assemblyData = new Byte[satAssemblyStream.Length];
@@ -241,27 +241,27 @@ namespace GNU.Gettext
             }
         }
 
-		public static string ExtractClassName(string baseName)
-		{
-			if (string.IsNullOrEmpty(baseName))
-				throw new Exception("Empty base name");
-			int pos = baseName.LastIndexOf('.');
-			if (pos == baseName.Length - 1)
-				throw new Exception("Invalid base name");
-			if (pos != -1)
-				return baseName.Substring(pos + 1);
-			return baseName;
-		}
+        public static string ExtractClassName(string baseName)
+        {
+            if (string.IsNullOrEmpty(baseName))
+                throw new Exception("Empty base name");
+            int pos = baseName.LastIndexOf('.');
+            if (pos == baseName.Length - 1)
+                throw new Exception("Invalid base name");
+            if (pos != -1)
+                return baseName.Substring(pos + 1);
+            return baseName;
+        }
 
-		public static string ExtractNamespace(string baseName)
-		{
-			if (string.IsNullOrEmpty(baseName))
-				return string.Empty;
-			int pos = baseName.LastIndexOf('.');
-			if (pos > 0)
-				return baseName.Substring(0, pos);
-			return string.Empty;
-		}
+        public static string ExtractNamespace(string baseName)
+        {
+            if (string.IsNullOrEmpty(baseName))
+                return string.Empty;
+            int pos = baseName.LastIndexOf('.');
+            if (pos > 0)
+                return baseName.Substring(0, pos);
+            return string.Empty;
+        }
 
         /// <summary>
         /// Instantiates a resource set for a given culture.
@@ -279,9 +279,9 @@ namespace GNU.Gettext
         {
             // We expect a class with a culture dependent class name.
             Type type = satelliteAssembly.GetType(
-				string.Format("{0}.{1}",
-			              resourceName,
-			              MakeResourceSetClassName(resourceName, culture)));
+                string.Format("{0}.{1}",
+                          resourceName,
+                          MakeResourceSetClassName(resourceName, culture)));
             // We expect it has a no-argument constructor, and invoke it.
             ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
             return constructor.Invoke(null) as GettextResourceSet;
@@ -426,11 +426,11 @@ namespace GNU.Gettext
         }
 
         // ======================== Public Methods ========================
-		
-		public static string MakeContextMsgid(string msgctxt, string msgid)
-		{
-			return msgctxt + "\u0004" + msgid;
-		}
+
+        public static string MakeContextMsgid(string msgctxt, string msgid)
+        {
+            return msgctxt + "\u0004" + msgid;
+        }
 
         /// <summary>
         /// Returns the translation of <paramref name="msgid"/> in the context
@@ -449,8 +449,8 @@ namespace GNU.Gettext
                 string translation = rs.GetString(MakeContextMsgid(msgctxt, msgid));
                 if (!string.IsNullOrEmpty(translation))
                     return translation;
-				// Fallback to non cotextual translation
-				translation = rs.GetString(msgid);
+                // Fallback to non cotextual translation
+                translation = rs.GetString(msgid);
                 if (!string.IsNullOrEmpty(translation))
                     return translation;
             }
@@ -480,8 +480,8 @@ namespace GNU.Gettext
                 string translation = rs.GetPluralString(MakeContextMsgid(msgctxt, msgid), msgidPlural, n);
                 if (!string.IsNullOrEmpty(translation))
                     return translation;
-				// Fallback to non cotextual translation
-				translation = rs.GetPluralString(msgid, msgidPlural, n);
+                // Fallback to non cotextual translation
+                translation = rs.GetPluralString(msgid, msgidPlural, n);
                 if (!string.IsNullOrEmpty(translation))
                     return translation;
             }
@@ -500,16 +500,16 @@ namespace GNU.Gettext
             return GetString(msgid, CultureInfo.CurrentUICulture);
         }
 
-		/// <summary>
-		/// Returns the formatted translation of <paramref name="msgid"/> in the current culture.
-		/// </summary>
-		/// <returns>
-		/// Formatted translated or original message
-		/// </returns>
-		/// <param name="msgid">the key string to be translated</param>
-		/// <param name="args">
-		/// Arguments to apply with given format.
-		/// </param>
+        /// <summary>
+        /// Returns the formatted translation of <paramref name="msgid"/> in the current culture.
+        /// </summary>
+        /// <returns>
+        /// Formatted translated or original message
+        /// </returns>
+        /// <param name="msgid">the key string to be translated</param>
+        /// <param name="args">
+        /// Arguments to apply with given format.
+        /// </param>
         public virtual string GetStringFmt(string msgid, params object[] args)
         {
             return string.Format(GetString(msgid, CultureInfo.CurrentUICulture), args);
@@ -531,8 +531,8 @@ namespace GNU.Gettext
         {
             return GetPluralString(msgid, msgidPlural, n, CultureInfo.CurrentUICulture);
         }
-		
-		/// <summary>
+
+        /// <summary>
         /// Returns the formatted translation of <paramref name="msgid"/> and
         /// <paramref name="msgidPlural"/> in the current culture, choosing the
         /// right plural form depending on the number <paramref name="n"/>.
@@ -548,7 +548,7 @@ namespace GNU.Gettext
         {
             return string.Format(GetPluralString(msgid, msgidPlural, n, CultureInfo.CurrentUICulture), n);
         }
-		
+
         /// <summary>
         /// Returns the translation of <paramref name="msgid"/> in the context
         /// of <paramref name="msgctxt"/> in the current culture.

@@ -113,16 +113,16 @@ namespace GNU.Gettext
             : base(fileName)
         {
         }
-		
-		/// <summary>
-		/// Constant for default plural forms (English/French/Germany).
-		/// </summary>
-		public const string DefaultPluralForms = "nplurals=2; plural=(n != 1);";
-		
-        public virtual string PluralForms 
-		{
-			get { return DefaultPluralForms; }
-		}
+
+        /// <summary>
+        /// Constant for default plural forms (English/French/Germany).
+        /// </summary>
+        public const string DefaultPluralForms = "nplurals=2; plural=(n != 1);";
+
+        public virtual string PluralForms
+        {
+            get { return DefaultPluralForms; }
+        }
 
 
         /// <summary>
@@ -203,12 +203,12 @@ namespace GNU.Gettext
         /// </summary>
         protected virtual long PluralEval(long n)
         {
-			PluralFormsCalculator pfc = PluralFormsCalculator.Make(PluralForms);
-			if (pfc != null)
-				return pfc.Evaluate(n);
-			pfc = PluralFormsCalculator.Make(DefaultPluralForms);
-			if (pfc != null)
-				return pfc.Evaluate(n);
+            PluralFormsCalculator pfc = PluralFormsCalculator.Make(PluralForms);
+            if (pfc != null)
+                return pfc.Evaluate(n);
+            pfc = PluralFormsCalculator.Make(DefaultPluralForms);
+            if (pfc != null)
+                return pfc.Evaluate(n);
             return (n == 1 ? 0 : 1);
         }
 

@@ -35,62 +35,67 @@ namespace GNU.Gettext
     /// Load parser.
     /// </summary>
     internal class LoadParser : CatalogParser
-	{
+    {
         readonly Catalog catalog;
-		bool headerParsed = false;
-		
-		public LoadParser (Catalog catalog, string poFile, Encoding encoding) : base (poFile, encoding)
-		{
-			this.catalog = catalog;
-		}
-		
-		protected override bool OnEntry (string msgid, string msgidPlural, bool hasPlural,
-		                                 string[] translations, string flags,
-		                                 string[] references, string comment,
-		                                 string[] autocomments,
-		                                 string msgctxt)
-		{
-			if (string.IsNullOrEmpty (msgid) && ! headerParsed) {
-				// gettext header:
-				catalog.ParseHeaderString (translations[0]);
-				catalog.Comment = comment;
-				headerParsed = true;
-			} else {
-				CatalogEntry d = new CatalogEntry (catalog, string.Empty, string.Empty);
-				if (! string.IsNullOrEmpty (flags))
-					d.Flags = flags;
-				d.SetString (msgid);
-				if (hasPlural)
-				    d.SetPluralString (msgidPlural);
-				d.SetTranslations (translations);
-				d.Comment = comment;
-				for (uint i = 0; i < references.Length; i++) {
-					d.AddReference (references[i]);
-				}
-				for (uint i = 0; i < autocomments.Length; i++) {
-					d.AddAutoComment (autocomments[i]);
-				}
-				d.Context = msgctxt;
-				catalog.AddItem (d);
-			}
-			return true;
-		}
-		
-		 protected override bool OnDeletedEntry (string[] deletedLines, string flags,
-		                                        string[] references, string comment,
-		                                        string[] autocomments)
-		{
-			CatalogDeletedEntry d = new CatalogDeletedEntry (new string[0]);
-			if (!string.IsNullOrEmpty (flags))
-				d.Flags = flags;
-			d.SetDeletedLines (deletedLines);
-			d.SetComment (comment);
-			for (uint i = 0; i < autocomments.Length; i++) {
-				d.AddAutoComments (autocomments[i]);
-				
-			}
-			catalog.AddDeletedItem (d);
-			return true;
-		}
-	}
+        bool headerParsed = false;
+
+        public LoadParser(Catalog catalog, string poFile, Encoding encoding) : base(poFile, encoding)
+        {
+            this.catalog = catalog;
+        }
+
+        protected override bool OnEntry(string msgid, string msgidPlural, bool hasPlural,
+                                         string[] translations, string flags,
+                                         string[] references, string comment,
+                                         string[] autocomments,
+                                         string msgctxt)
+        {
+            if (string.IsNullOrEmpty(msgid) && !headerParsed)
+            {
+                // gettext header:
+                catalog.ParseHeaderString(translations[0]);
+                catalog.Comment = comment;
+                headerParsed = true;
+            }
+            else
+            {
+                CatalogEntry d = new CatalogEntry(catalog, string.Empty, string.Empty);
+                if (!string.IsNullOrEmpty(flags))
+                    d.Flags = flags;
+                d.SetString(msgid);
+                if (hasPlural)
+                    d.SetPluralString(msgidPlural);
+                d.SetTranslations(translations);
+                d.Comment = comment;
+                for (uint i = 0; i < references.Length; i++)
+                {
+                    d.AddReference(references[i]);
+                }
+                for (uint i = 0; i < autocomments.Length; i++)
+                {
+                    d.AddAutoComment(autocomments[i]);
+                }
+                d.Context = msgctxt;
+                catalog.AddItem(d);
+            }
+            return true;
+        }
+
+        protected override bool OnDeletedEntry(string[] deletedLines, string flags,
+                                               string[] references, string comment,
+                                               string[] autocomments)
+        {
+            CatalogDeletedEntry d = new CatalogDeletedEntry(new string[0]);
+            if (!string.IsNullOrEmpty(flags))
+                d.Flags = flags;
+            d.SetDeletedLines(deletedLines);
+            d.SetComment(comment);
+            for (uint i = 0; i < autocomments.Length; i++)
+            {
+                d.AddAutoComments(autocomments[i]);
+            }
+            catalog.AddDeletedItem(d);
+            return true;
+        }
+    }
 }

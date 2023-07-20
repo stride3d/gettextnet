@@ -38,410 +38,461 @@ using System.Diagnostics;
 
 namespace GNU.Gettext
 {
-	public class Catalog : IEnumerable<CatalogEntry>
-	{
+    public class Catalog : IEnumerable<CatalogEntry>
+    {
         readonly IDictionary<string, CatalogEntry> entriesDict;
         readonly List<CatalogEntry> entriesList;
         readonly List<CatalogDeletedEntry> deletedEntriesList;
-		bool isOk;
-		string fileName;
-		string originalNewLine = Environment.NewLine;
-		bool isDirty;
+        bool isOk;
+        string fileName;
+        string originalNewLine = Environment.NewLine;
+        bool isDirty;
 
-		public bool IsDirty {
-			get { return isDirty; }
-			set {
+        public bool IsDirty
+        {
+            get { return isDirty; }
+            set
+            {
                 isDirty = value;
-				OnDirtyChanged (EventArgs.Empty);
-			}
-		}
-		
-		public string FileName {
-			get {
-				return fileName;
-			}
-		}
-		
-		/// <value>
-		/// The number of strings/translations in the catalog.
-		/// </value>
-		public int Count {
-			get { 
-				return entriesList.Count; 
-			}
-		}
-		
-		
-		/// <value>
-		/// Gets n-th item in the catalog (read-write access).
-		/// </value>
-		public CatalogEntry this[int index] {
-			get {
-				return index >= 0 && index < entriesList.Count ? entriesList[index] : null;
-			}
-		}
-		
-		
-		public const string PluralFormsHeader = "Plural-Forms";
-		
-		public string GetPluralFormsHeader()
-		{
-			if (HasHeader (PluralFormsHeader)) {
-				return GetHeader (PluralFormsHeader);
-			}
-			return "nplurals=2; plural=(n != 1);\\n";
-		}
-		
-		
-		/// <value>
-		/// Returns plural forms count: taken from Plural-Forms header if present, 0 otherwise
-		/// </value>
-		public int PluralFormsCount {
-			get 
-			{
-				int nplurals = 2;
-				PluralFormsCalculator pfc = PluralFormsCalculator.Make(GetPluralFormsHeader());
-				if (pfc != null)
-					nplurals = pfc.NPlurals;
-				return nplurals;
-			}
-		}
+                OnDirtyChanged(EventArgs.Empty);
+            }
+        }
 
-		/// <summary>
-		/// Creates empty catalog
-		/// </summary>
-		public Catalog ()
-		{
-			entriesDict = new Dictionary<string, CatalogEntry> ();
-			entriesList = new List<CatalogEntry> ();
-			deletedEntriesList = new List<CatalogDeletedEntry> ();
-			isOk = true;
-			CreateNewHeaders ();
-		}
+        public string FileName
+        {
+            get
+            {
+                return fileName;
+            }
+        }
 
-		static string GetDateTimeRfc822Format ()
-		{
-			return DateTime.Now.ToString ("yyyy-MM-dd HH':'mm':'sszz00"); //rfc822 format
-		}
-		
-		//escapes string and lays it out to 80 cols
-		static void FormatMessageForFile (StringBuilder sb, string prefix, string message, string newlineChar)
-		{
-			string escaped = StringEscaping.ToGettextFormat (message);
-			
-			//format to 80 cols
-			//first the simple case: does it fit one one line, with the prefix, and contain no newlines?
-			if (prefix.Length + escaped.Length < 77  && !escaped.Contains ("\\n")) {
-				sb.Append (prefix);
-				sb.Append (" \"");
-				sb.Append (escaped);
-				sb.Append ("\"");
-				sb.Append (newlineChar);
-				return;
-			}
-						
-			//not the simple case.
-			
-			// first line is typically: prefix ""
-			sb.Append (prefix);
-			sb.Append (" \"\"");
-			sb.Append (newlineChar);
-			
-			//followed by 80-col width break on spaces
-			int possibleBreak = -1;
-			int currLineLen = 0;
-			int lastBreakAt = 0;
-			bool forceBreak = false;
-			
-			int pos = 0;
-			while (pos < escaped.Length) {
-				char c = escaped[pos];
-				
-				//handle escapes			
-				if (c == '\\' && pos+1 < escaped.Length) {
-					pos++;
-					currLineLen++;
-					
-					char c2 = escaped[pos];
-					if (c2 == 'n') {
-						possibleBreak = pos+1;
-						forceBreak = true;
-					} else if (c2 == 't') {
-						possibleBreak = pos+1;
-					}
-				}
-							
-				if (c == ' ')
-					possibleBreak = pos + 1;
-				
-				if (forceBreak || (currLineLen >= 77 && possibleBreak != -1)) {
-					sb.Append ("\"");
-					sb.Append (escaped.Substring (lastBreakAt, possibleBreak - lastBreakAt));
-					sb.Append ("\"");
-					sb.Append (newlineChar);
-					
-					//reset state for new line
-					currLineLen = 0;
-					lastBreakAt = possibleBreak;
-					possibleBreak = -1;
-					forceBreak = false;
-				}
-				pos++;
-				currLineLen++;
-			}
-			string remainder = escaped.Substring (lastBreakAt);
-			if (remainder.Length > 0) {
-				sb.Append ("\"");
-				sb.Append (remainder);
-				sb.Append ("\"");
-				sb.Append (newlineChar);
-			}
-			return;
-		}
-		
-		// Clears the catalog, removes all entries from it.
-		void Clear ()
-		{
-			entriesDict.Clear ();
-			entriesList.Clear ();
-			deletedEntriesList.Clear ();
-			isOk = true;
-		}
-		
-		/// <summary>
-		/// Loads catalog from .po file.
-		/// </summary>
-		public void Load (string poFile)
-		{
-			Clear ();
-			isOk = false;
-			fileName = poFile;
+        /// <value>
+        /// The number of strings/translations in the catalog.
+        /// </value>
+        public int Count
+        {
+            get
+            {
+                return entriesList.Count;
+            }
+        }
 
-			// Load the .po file:
-			CharsetInfoFinder charsetFinder = new CharsetInfoFinder (poFile);
-			Charset = charsetFinder.Charset;
-			try {
-				charsetFinder.Parse ();
-				Charset = charsetFinder.Charset;
-				originalNewLine = charsetFinder.NewLine;
-				Charset = charsetFinder.Charset;
-			} catch (Exception) {
-				Trace.WriteLine(string.Format(
-					"Cannot detect charset of file '{0}'. Using default charset '{1}'",
-					poFile,
-					charsetFinder.Charset));
-			}
 
-			LoadParser parser = new LoadParser (this, poFile, GetEncoding(Charset));
-			if (!parser.Parse ()) {
-				throw new Exception(string.Format ("Error during parsing '{0}' file, file is probably corrupted.", poFile));
-			}
+        /// <value>
+        /// Gets n-th item in the catalog (read-write access).
+        /// </value>
+        public CatalogEntry this[int index]
+        {
+            get
+            {
+                return index >= 0 && index < entriesList.Count ? entriesList[index] : null;
+            }
+        }
 
-			isOk = true;
-			IsDirty = false;
-		}
-		
-		// Ensures that the end lines of text are the same as in the reference string.
-		static string EnsureCorrectEndings (string reference, string text)
-		{
-			if (text.Length == 0)
-				return "";
-			
-			int numEndings = 0;
-			for (int i = text.Length - 1; i >= 0 && text[i] == '\n'; i--, numEndings++);
-			StringBuilder sb = new StringBuilder (text, 0, text.Length - numEndings, text.Length + reference.Length - numEndings);
-			for (int i = reference.Length - 1; i >= 0 && reference[i] == '\n'; i--) {
-				sb.Append ('\n');
-			}
-			return sb.ToString ();
-		}
-		
-		// Saves catalog to file.
-		public bool Save (string poFile)
-		{
-			StringBuilder sb = new StringBuilder ();
-			
-			// Update information about last modification time:
-			RevisionDate = Catalog.GetDateTimeRfc822Format ();
-			
-			// Save .po file
-			if (string.IsNullOrEmpty (Charset) || Charset == "CHARSET")
-				Charset = "utf-8";
-			if (!CanEncodeToCharset (Charset)) {
-				// TODO: log that we don't support such encoding, utf-8 would be used
-				Charset = "utf-8";
-			}
-			
-			Encoding encoding = Catalog.GetEncoding (Charset);
-			
-			if (!string.IsNullOrEmpty (Comment))
-				Catalog.SaveMultiLines (sb, Comment, originalNewLine);
-			
-			sb.AppendFormat ("msgid \"\"{0}", originalNewLine);
-			sb.AppendFormat ("msgstr \"\"{0}", originalNewLine);
-			
-			string pohdr = GetHeaderString (originalNewLine);
-			pohdr = pohdr.Substring (0, pohdr.Length - 1);
-			Catalog.SaveMultiLines (sb, pohdr, originalNewLine);
-			sb.Append (originalNewLine);
-			
-			foreach (CatalogEntry data in entriesList) {
-				if (data.Comment != string.Empty)
-					SaveMultiLines (sb, data.Comment, originalNewLine);
-				foreach (string autoComment in data.AutoComments) {
-					if (string.IsNullOrEmpty (autoComment))
-						sb.AppendFormat ("#.{0}", originalNewLine);
-					else
-						sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
-				}
-				foreach (string reference in data.References) {
-					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
-				}
-				if (! string.IsNullOrEmpty (data.Flags)) {
-					sb.Append (data.Flags);
-					sb.Append (originalNewLine);
-				}
-				if (data.HasContext)
-					FormatMessageForFile (sb, "msgctxt", data.Context, originalNewLine);
-				FormatMessageForFile (sb, "msgid", data.String, originalNewLine);
-				if (data.HasPlural) {
-					FormatMessageForFile (sb, "msgid_plural", data.PluralString, originalNewLine);
-					for (int n = 0; n < data.NumberOfTranslations; n++) {
-						string hdr = string.Format ("msgstr[{0}]", n);
-						
-						FormatMessageForFile (sb, hdr, EnsureCorrectEndings (data.String, data.GetTranslation (n)), originalNewLine);
-					}
-				} else {
-					FormatMessageForFile (sb, "msgstr", EnsureCorrectEndings (data.String, data.GetTranslation (0)), originalNewLine);
-				}
-				sb.Append (originalNewLine);
-			}
-			
-			// Write back deleted items in the file so that they're not lost
-			foreach (CatalogDeletedEntry deletedItem in deletedEntriesList) {
-				if (deletedItem.Comment != string.Empty)
-					SaveMultiLines (sb, deletedItem.Comment, originalNewLine);
-				foreach (string autoComment in deletedItem.AutoComments) {
-					sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
-				}
-				foreach (string reference in deletedItem.References) {
-					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
-				}
-				string flags = deletedItem.Flags;
-				if (! string.IsNullOrEmpty (flags)) {
-					sb.Append (flags);
-					sb.Append (originalNewLine);
-				}
-				foreach (string deletedLine in deletedItem.DeletedLines){
-					sb.AppendFormat ("{0}{1}", deletedLine, originalNewLine);
-				}
-				sb.Append (originalNewLine);
-			}
-			
-			bool saved = false;
-			try {
-				// Write it as bytes, text writer includes BOF for utf-8,
-				// getetext utils are refusing to work with this
-				byte[] content = encoding.GetBytes (sb.ToString ());
-				File.WriteAllBytes (poFile, content);
-				saved = true;
-			} catch (Exception ex) {
-				throw new Exception(string.Format("Unhandled error saving Gettext Catalog '{0}': {1}", fileName, ex), ex);
-			}
-			if (!saved)
-				return false;
-			
-			fileName = poFile;
-			IsDirty = false;
-			return true;
-		}
-		
-		static void SaveMultiLines (StringBuilder sb, string text, string newLine)
-		{
-			if (text != null) {
-				foreach (string line in text.Split (new string[] { "\n\r", "\r\n", "\r", "\n", "\r"}, StringSplitOptions.None)) {
-					sb.AppendFormat ("{0}{1}", line, newLine);
-				}
-			}
-		}
-		
-		static bool CanEncodeToCharset (string charset)
-		{
-			foreach (EncodingInfo info in Encoding.GetEncodings ()) {
-				try {
-					if (info.Name.ToLower () == charset.ToLower ())
-						return true;
-				} catch (Exception) {
-					// info.Name may fail.
-				}
-			}
-			return false;
-		}
-		
-		static Encoding GetEncoding (string charset)
-		{
-			foreach (EncodingInfo info in Encoding.GetEncodings ()) {
-				try {
-					if (info.Name.ToLower () == charset.ToLower ())
-						return info.GetEncoding ();
-				} catch (Exception) {
-					// info.Name may fail.
-				}
-			}
-			return null;
-		}
-		
-		// Updates the catalog from POT file.
-		public bool UpdateFromPOT (string potFile, bool summary)
-		{
-			if (! isOk)
-				return false;
 
-			Catalog newCat = new Catalog ();
-			newCat.Load (potFile);
+        public const string PluralFormsHeader = "Plural-Forms";
 
-			if (!newCat.IsOk)
-				return false;
+        public string GetPluralFormsHeader()
+        {
+            if (HasHeader(PluralFormsHeader))
+            {
+                return GetHeader(PluralFormsHeader);
+            }
+            return "nplurals=2; plural=(n != 1);\\n";
+        }
 
-			// TODO: add some interactivity
-			//if (! summary) //|| ShowMergeSummary (newcat)
-				return Merge (newCat);
-			//else
-			//	return false;
-		}
-		
-		// Adds translation into the catalog. Returns true on success or false
-		// if such key does not exist in the catalog
-		public bool Translate (string msgid, string context, string translation)
-		{
-			CatalogEntry d = FindItem (msgid, context);
-			if (d == null)
-			{
-				return false;
-			} else
-			{
-				d.SetTranslation (translation, 0);
-				return true;
-			}
-		}
-		
-		
-		// Returns catalog item with key or null if such key is not available.
-		public CatalogEntry FindItem (string msgid, string context)
-		{
-			return entriesDict.ContainsKey (CatalogEntry.MakeKey(msgid, context)) ? 
-				entriesDict[CatalogEntry.MakeKey(msgid, context)] : null;
-		}
-		
-		public CatalogEntry FindItem (CatalogEntry entry)
-		{
-			return entriesDict.ContainsKey (entry.Key) ? 
-				entriesDict[entry.Key] : null;
-		}
-		
-		// Adds an item to the catalog if it isn't already there
-		public CatalogEntry AddItem (string original, string plural)
-		{
+
+        /// <value>
+        /// Returns plural forms count: taken from Plural-Forms header if present, 0 otherwise
+        /// </value>
+        public int PluralFormsCount
+        {
+            get
+            {
+                int nplurals = 2;
+                PluralFormsCalculator pfc = PluralFormsCalculator.Make(GetPluralFormsHeader());
+                if (pfc != null)
+                    nplurals = pfc.NPlurals;
+                return nplurals;
+            }
+        }
+
+        /// <summary>
+        /// Creates empty catalog
+        /// </summary>
+        public Catalog()
+        {
+            entriesDict = new Dictionary<string, CatalogEntry>();
+            entriesList = new List<CatalogEntry>();
+            deletedEntriesList = new List<CatalogDeletedEntry>();
+            isOk = true;
+            CreateNewHeaders();
+        }
+
+        static string GetDateTimeRfc822Format()
+        {
+            return DateTime.Now.ToString("yyyy-MM-dd HH':'mm':'sszz00"); //rfc822 format
+        }
+
+        //escapes string and lays it out to 80 cols
+        static void FormatMessageForFile(StringBuilder sb, string prefix, string message, string newlineChar)
+        {
+            string escaped = StringEscaping.ToGettextFormat(message);
+
+            //format to 80 cols
+            //first the simple case: does it fit one one line, with the prefix, and contain no newlines?
+            if (prefix.Length + escaped.Length < 77 && !escaped.Contains("\\n"))
+            {
+                sb.Append(prefix);
+                sb.Append(" \"");
+                sb.Append(escaped);
+                sb.Append("\"");
+                sb.Append(newlineChar);
+                return;
+            }
+
+            //not the simple case.
+
+            // first line is typically: prefix ""
+            sb.Append(prefix);
+            sb.Append(" \"\"");
+            sb.Append(newlineChar);
+
+            //followed by 80-col width break on spaces
+            int possibleBreak = -1;
+            int currLineLen = 0;
+            int lastBreakAt = 0;
+            bool forceBreak = false;
+
+            int pos = 0;
+            while (pos < escaped.Length)
+            {
+                char c = escaped[pos];
+
+                //handle escapes			
+                if (c == '\\' && pos + 1 < escaped.Length)
+                {
+                    pos++;
+                    currLineLen++;
+
+                    char c2 = escaped[pos];
+                    if (c2 == 'n')
+                    {
+                        possibleBreak = pos + 1;
+                        forceBreak = true;
+                    }
+                    else if (c2 == 't')
+                    {
+                        possibleBreak = pos + 1;
+                    }
+                }
+
+                if (c == ' ')
+                    possibleBreak = pos + 1;
+
+                if (forceBreak || (currLineLen >= 77 && possibleBreak != -1))
+                {
+                    sb.Append("\"");
+                    sb.Append(escaped.Substring(lastBreakAt, possibleBreak - lastBreakAt));
+                    sb.Append("\"");
+                    sb.Append(newlineChar);
+
+                    //reset state for new line
+                    currLineLen = 0;
+                    lastBreakAt = possibleBreak;
+                    possibleBreak = -1;
+                    forceBreak = false;
+                }
+                pos++;
+                currLineLen++;
+            }
+            string remainder = escaped.Substring(lastBreakAt);
+            if (remainder.Length > 0)
+            {
+                sb.Append("\"");
+                sb.Append(remainder);
+                sb.Append("\"");
+                sb.Append(newlineChar);
+            }
+            return;
+        }
+
+        // Clears the catalog, removes all entries from it.
+        void Clear()
+        {
+            entriesDict.Clear();
+            entriesList.Clear();
+            deletedEntriesList.Clear();
+            isOk = true;
+        }
+
+        /// <summary>
+        /// Loads catalog from .po file.
+        /// </summary>
+        public void Load(string poFile)
+        {
+            Clear();
+            isOk = false;
+            fileName = poFile;
+
+            // Load the .po file:
+            CharsetInfoFinder charsetFinder = new CharsetInfoFinder(poFile);
+            Charset = charsetFinder.Charset;
+            try
+            {
+                charsetFinder.Parse();
+                Charset = charsetFinder.Charset;
+                originalNewLine = charsetFinder.NewLine;
+                Charset = charsetFinder.Charset;
+            }
+            catch (Exception)
+            {
+                Trace.WriteLine(string.Format(
+                    "Cannot detect charset of file '{0}'. Using default charset '{1}'",
+                    poFile,
+                    charsetFinder.Charset));
+            }
+
+            LoadParser parser = new LoadParser(this, poFile, GetEncoding(Charset));
+            if (!parser.Parse())
+            {
+                throw new Exception(string.Format("Error during parsing '{0}' file, file is probably corrupted.", poFile));
+            }
+
+            isOk = true;
+            IsDirty = false;
+        }
+
+        // Ensures that the end lines of text are the same as in the reference string.
+        static string EnsureCorrectEndings(string reference, string text)
+        {
+            if (text.Length == 0)
+                return "";
+
+            int numEndings = 0;
+            for (int i = text.Length - 1; i >= 0 && text[i] == '\n'; i--, numEndings++) ;
+            StringBuilder sb = new StringBuilder(text, 0, text.Length - numEndings, text.Length + reference.Length - numEndings);
+            for (int i = reference.Length - 1; i >= 0 && reference[i] == '\n'; i--)
+            {
+                sb.Append('\n');
+            }
+            return sb.ToString();
+        }
+
+        // Saves catalog to file.
+        public bool Save(string poFile)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // Update information about last modification time:
+            RevisionDate = Catalog.GetDateTimeRfc822Format();
+
+            // Save .po file
+            if (string.IsNullOrEmpty(Charset) || Charset == "CHARSET")
+                Charset = "utf-8";
+            if (!CanEncodeToCharset(Charset))
+            {
+                // TODO: log that we don't support such encoding, utf-8 would be used
+                Charset = "utf-8";
+            }
+
+            Encoding encoding = Catalog.GetEncoding(Charset);
+
+            if (!string.IsNullOrEmpty(Comment))
+                Catalog.SaveMultiLines(sb, Comment, originalNewLine);
+
+            sb.AppendFormat("msgid \"\"{0}", originalNewLine);
+            sb.AppendFormat("msgstr \"\"{0}", originalNewLine);
+
+            string pohdr = GetHeaderString(originalNewLine);
+            pohdr = pohdr.Substring(0, pohdr.Length - 1);
+            Catalog.SaveMultiLines(sb, pohdr, originalNewLine);
+            sb.Append(originalNewLine);
+
+            foreach (CatalogEntry data in entriesList)
+            {
+                if (data.Comment != string.Empty)
+                    SaveMultiLines(sb, data.Comment, originalNewLine);
+                foreach (string autoComment in data.AutoComments)
+                {
+                    if (string.IsNullOrEmpty(autoComment))
+                        sb.AppendFormat("#.{0}", originalNewLine);
+                    else
+                        sb.AppendFormat("#. {0}{1}", autoComment, originalNewLine);
+                }
+                foreach (string reference in data.References)
+                {
+                    sb.AppendFormat("#: {0}{1}", reference, originalNewLine);
+                }
+                if (!string.IsNullOrEmpty(data.Flags))
+                {
+                    sb.Append(data.Flags);
+                    sb.Append(originalNewLine);
+                }
+                if (data.HasContext)
+                    FormatMessageForFile(sb, "msgctxt", data.Context, originalNewLine);
+                FormatMessageForFile(sb, "msgid", data.String, originalNewLine);
+                if (data.HasPlural)
+                {
+                    FormatMessageForFile(sb, "msgid_plural", data.PluralString, originalNewLine);
+                    for (int n = 0; n < data.NumberOfTranslations; n++)
+                    {
+                        string hdr = string.Format("msgstr[{0}]", n);
+
+                        FormatMessageForFile(sb, hdr, EnsureCorrectEndings(data.String, data.GetTranslation(n)), originalNewLine);
+                    }
+                }
+                else
+                {
+                    FormatMessageForFile(sb, "msgstr", EnsureCorrectEndings(data.String, data.GetTranslation(0)), originalNewLine);
+                }
+                sb.Append(originalNewLine);
+            }
+
+            // Write back deleted items in the file so that they're not lost
+            foreach (CatalogDeletedEntry deletedItem in deletedEntriesList)
+            {
+                if (deletedItem.Comment != string.Empty)
+                    SaveMultiLines(sb, deletedItem.Comment, originalNewLine);
+                foreach (string autoComment in deletedItem.AutoComments)
+                {
+                    sb.AppendFormat("#. {0}{1}", autoComment, originalNewLine);
+                }
+                foreach (string reference in deletedItem.References)
+                {
+                    sb.AppendFormat("#: {0}{1}", reference, originalNewLine);
+                }
+                string flags = deletedItem.Flags;
+                if (!string.IsNullOrEmpty(flags))
+                {
+                    sb.Append(flags);
+                    sb.Append(originalNewLine);
+                }
+                foreach (string deletedLine in deletedItem.DeletedLines)
+                {
+                    sb.AppendFormat("{0}{1}", deletedLine, originalNewLine);
+                }
+                sb.Append(originalNewLine);
+            }
+
+            bool saved = false;
+            try
+            {
+                // Write it as bytes, text writer includes BOF for utf-8,
+                // getetext utils are refusing to work with this
+                byte[] content = encoding.GetBytes(sb.ToString());
+                File.WriteAllBytes(poFile, content);
+                saved = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Unhandled error saving Gettext Catalog '{0}': {1}", fileName, ex), ex);
+            }
+            if (!saved)
+                return false;
+
+            fileName = poFile;
+            IsDirty = false;
+            return true;
+        }
+
+        static void SaveMultiLines(StringBuilder sb, string text, string newLine)
+        {
+            if (text != null)
+            {
+                foreach (string line in text.Split(new string[] { "\n\r", "\r\n", "\r", "\n", "\r" }, StringSplitOptions.None))
+                {
+                    sb.AppendFormat("{0}{1}", line, newLine);
+                }
+            }
+        }
+
+        static bool CanEncodeToCharset(string charset)
+        {
+            foreach (EncodingInfo info in Encoding.GetEncodings())
+            {
+                try
+                {
+                    if (info.Name.ToLower() == charset.ToLower())
+                        return true;
+                }
+                catch (Exception)
+                {
+                    // info.Name may fail.
+                }
+            }
+            return false;
+        }
+
+        static Encoding GetEncoding(string charset)
+        {
+            foreach (EncodingInfo info in Encoding.GetEncodings())
+            {
+                try
+                {
+                    if (info.Name.ToLower() == charset.ToLower())
+                        return info.GetEncoding();
+                }
+                catch (Exception)
+                {
+                    // info.Name may fail.
+                }
+            }
+            return null;
+        }
+
+        // Updates the catalog from POT file.
+        public bool UpdateFromPOT(string potFile, bool summary)
+        {
+            if (!isOk)
+                return false;
+
+            Catalog newCat = new Catalog();
+            newCat.Load(potFile);
+
+            if (!newCat.IsOk)
+                return false;
+
+            // TODO: add some interactivity
+            //if (! summary) //|| ShowMergeSummary (newcat)
+            return Merge(newCat);
+            //else
+            //	return false;
+        }
+
+        // Adds translation into the catalog. Returns true on success or false
+        // if such key does not exist in the catalog
+        public bool Translate(string msgid, string context, string translation)
+        {
+            CatalogEntry d = FindItem(msgid, context);
+            if (d == null)
+            {
+                return false;
+            }
+            else
+            {
+                d.SetTranslation(translation, 0);
+                return true;
+            }
+        }
+
+
+        // Returns catalog item with key or null if such key is not available.
+        public CatalogEntry FindItem(string msgid, string context)
+        {
+            return entriesDict.ContainsKey(CatalogEntry.MakeKey(msgid, context)) ?
+                entriesDict[CatalogEntry.MakeKey(msgid, context)] : null;
+        }
+
+        public CatalogEntry FindItem(CatalogEntry entry)
+        {
+            return entriesDict.ContainsKey(entry.Key) ?
+                entriesDict[entry.Key] : null;
+        }
+
+        // Adds an item to the catalog if it isn't already there
+        public CatalogEntry AddItem(string original, string plural)
+        {
             if (!entriesDict.TryGetValue(original, out CatalogEntry result))
             {
                 result = new CatalogEntry(this, original, plural);
@@ -450,474 +501,519 @@ namespace GNU.Gettext
                 AddItem(result);
             }
             return result;
-		}
+        }
 
-		// Returns number of all, fuzzy, badtokens and untranslated items.
-		public void GetStatistics (out int all, out int fuzzy, out int missing, out int badtokens, out int untranslated)
-		{
-			all = fuzzy = missing = badtokens = untranslated = 0;
-			for (int i = 0; i < Count; i++) {
-				all++;
-				if (this[i].IsFuzzy)
-					fuzzy++;
-				if (this[i].References.Length == 0)
-					missing++;
-				if (this[i].DataValidity == CatalogEntry.Validity.Invalid)
-					badtokens++;
-				if (! this[i].IsTranslated)
-					untranslated++;
-			}
-		}
-		
-		
-		public string[] PluralFormsDescriptions {
-			get {
-				List<string> descriptions = new List<string> ();
-				
-				if (!HasHeader ("Plural-Forms")) {
-					descriptions.Add ("Singular");
-					descriptions.Add ("Plural");
-					return descriptions.ToArray ();
-				}
+        // Returns number of all, fuzzy, badtokens and untranslated items.
+        public void GetStatistics(out int all, out int fuzzy, out int missing, out int badtokens, out int untranslated)
+        {
+            all = fuzzy = missing = badtokens = untranslated = 0;
+            for (int i = 0; i < Count; i++)
+            {
+                all++;
+                if (this[i].IsFuzzy)
+                    fuzzy++;
+                if (this[i].References.Length == 0)
+                    missing++;
+                if (this[i].DataValidity == CatalogEntry.Validity.Invalid)
+                    badtokens++;
+                if (!this[i].IsTranslated)
+                    untranslated++;
+            }
+        }
 
-				PluralFormsCalculator calc = PluralFormsCalculator.Make (GetHeader ("Plural-Forms"));
-				int cnt = PluralFormsCount;
-				for (int i = 0; i < cnt; i++) {
+
+        public string[] PluralFormsDescriptions
+        {
+            get
+            {
+                List<string> descriptions = new List<string>();
+
+                if (!HasHeader("Plural-Forms"))
+                {
+                    descriptions.Add("Singular");
+                    descriptions.Add("Plural");
+                    return descriptions.ToArray();
+                }
+
+                PluralFormsCalculator calc = PluralFormsCalculator.Make(GetHeader("Plural-Forms"));
+                int cnt = PluralFormsCount;
+                for (int i = 0; i < cnt; i++)
+                {
                     // find example number that would use this plural form:
                     int example;
-                    if (calc != null) {
-						for (example = 1; example < 1000; example++) {
-							if (calc.Evaluate (example) == i)
-								break;
-						}
-						// we prefer non-zero values, but if this form is for zero only,
-						// use zero:
-						if (example == 1000 && calc.Evaluate (0) == i)
-							example = 0;
-					} else
-						example = 1000;
+                    if (calc != null)
+                    {
+                        for (example = 1; example < 1000; example++)
+                        {
+                            if (calc.Evaluate(example) == i)
+                                break;
+                        }
+                        // we prefer non-zero values, but if this form is for zero only,
+                        // use zero:
+                        if (example == 1000 && calc.Evaluate(0) == i)
+                            example = 0;
+                    }
+                    else
+                        example = 1000;
 
-					string desc;
-					if (example == 1000)
-						desc = string.Format ("Form {0}", i + 1);
-					else
-						desc = string.Format ("Form {0} (e.g. \"{1}\")", i + 1, example);
-					descriptions.Add (desc);
-				}
-				return descriptions.ToArray ();
-			}
-		}
+                    string desc;
+                    if (example == 1000)
+                        desc = string.Format("Form {0}", i + 1);
+                    else
+                        desc = string.Format("Form {0} (e.g. \"{1}\")", i + 1, example);
+                    descriptions.Add(desc);
+                }
+                return descriptions.ToArray();
+            }
+        }
 
-		// Returns status of catalog object: true if ok, false if damaged (i.e. constructor or Load failed).
-		public bool IsOk
-		{
-			get { return isOk; }
-		}
+        // Returns status of catalog object: true if ok, false if damaged (i.e. constructor or Load failed).
+        public bool IsOk
+        {
+            get { return isOk; }
+        }
 
-		// Appends content of catalog to this catalog.
-		public void Append (Catalog catalog)
-		{
-			CatalogEntry dt, myDt;
+        // Appends content of catalog to this catalog.
+        public void Append(Catalog catalog)
+        {
+            CatalogEntry dt, myDt;
 
-			for (int i = 0; i < catalog.Count; i++)
-			{
-				dt = catalog[i];
-				myDt = FindItem (dt);
-				if (myDt == null)
-				{
-					myDt = new CatalogEntry (this, dt);
-					entriesDict.Add (dt.Key, myDt);
-					entriesList.Add (myDt);
-				} else
-				{
-					for (uint j = 0; j < dt.References.Length; j++)
-						myDt.AddReference (dt.References[j]);
-					if (! string.IsNullOrEmpty (dt.GetTranslation (0)))
-						myDt.SetTranslation (dt.GetTranslation (0), 0);
-					if (dt.IsFuzzy)
-						myDt.IsFuzzy = true;
-					if (!string.IsNullOrEmpty(dt.Flags))
-						myDt.Flags = dt.Flags;
-				}
-			}
-			IsDirty = true;
-		}
+            for (int i = 0; i < catalog.Count; i++)
+            {
+                dt = catalog[i];
+                myDt = FindItem(dt);
+                if (myDt == null)
+                {
+                    myDt = new CatalogEntry(this, dt);
+                    entriesDict.Add(dt.Key, myDt);
+                    entriesList.Add(myDt);
+                }
+                else
+                {
+                    for (uint j = 0; j < dt.References.Length; j++)
+                        myDt.AddReference(dt.References[j]);
+                    if (!string.IsNullOrEmpty(dt.GetTranslation(0)))
+                        myDt.SetTranslation(dt.GetTranslation(0), 0);
+                    if (dt.IsFuzzy)
+                        myDt.IsFuzzy = true;
+                    if (!string.IsNullOrEmpty(dt.Flags))
+                        myDt.Flags = dt.Flags;
+                }
+            }
+            IsDirty = true;
+        }
 
-		// Returns xx_YY ISO code of catalog's language.
-		public string LocaleCode{
-			get {
-				string lang = string.Empty;
+        // Returns xx_YY ISO code of catalog's language.
+        public string LocaleCode
+        {
+            get
+            {
+                string lang = string.Empty;
 
-				// was the language explicitly specified?
-				if (!string.IsNullOrEmpty (Language)) {
-					lang = IsoCodes.LookupLanguageCode (Language).Name;
-					if (!string.IsNullOrEmpty (Country)){
-						lang += '_';
-						lang += IsoCodes.LookupCountryCode (Country);
-					}
-				}
-				
-				// if not, can we deduce it from filename?
-				if (string.IsNullOrEmpty (lang) && ! string.IsNullOrEmpty (fileName)) {
-					string name = Path.GetFileNameWithoutExtension (fileName);
-					if (name.Length == 2)
-					{
-						if (IsoCodes.IsKnownLanguageCode (name))
-						    lang = name;
-					} else if (name.Length == 5 && name[2] == '_'
-					&& IsoCodes.IsKnownLanguageCode (name.Substring (0, 2)) &&
-						    IsoCodes.IsKnownCountryCode (name.Substring (3, 2)))
-						{
-							lang = name;
-						
-					}
-				}
-				return lang;
-			}
-		}
+                // was the language explicitly specified?
+                if (!string.IsNullOrEmpty(Language))
+                {
+                    lang = IsoCodes.LookupLanguageCode(Language).Name;
+                    if (!string.IsNullOrEmpty(Country))
+                    {
+                        lang += '_';
+                        lang += IsoCodes.LookupCountryCode(Country);
+                    }
+                }
 
-		// Adds entry to the catalog (the catalog will take ownership of the object).
-		public void AddItem (CatalogEntry data)
-		{
-			if (FindItem(data) != null)
-			{
+                // if not, can we deduce it from filename?
+                if (string.IsNullOrEmpty(lang) && !string.IsNullOrEmpty(fileName))
+                {
+                    string name = Path.GetFileNameWithoutExtension(fileName);
+                    if (name.Length == 2)
+                    {
+                        if (IsoCodes.IsKnownLanguageCode(name))
+                            lang = name;
+                    }
+                    else if (name.Length == 5 && name[2] == '_'
+                    && IsoCodes.IsKnownLanguageCode(name.Substring(0, 2)) &&
+                            IsoCodes.IsKnownCountryCode(name.Substring(3, 2)))
+                    {
+                        lang = name;
+
+                    }
+                }
+                return lang;
+            }
+        }
+
+        // Adds entry to the catalog (the catalog will take ownership of the object).
+        public void AddItem(CatalogEntry data)
+        {
+            if (FindItem(data) != null)
+            {
                 Trace.TraceWarning(
-					"Duplicate message id '{0}' (context '{1}') in po file, ignoring it to achieve validity", 
-					data.String,
-					data.HasContext ? data.Context : "");
-			} else
-			{
-				entriesDict.Add (data.Key, data);
-				entriesList.Add (data);
-			}
-		}
-		
-		public void RemoveItem (CatalogEntry data)
-		{
-			if (FindItem(data) != null)
-				this.entriesDict.Remove (data.Key);
-			if (entriesList.Contains (data))
-				entriesList.Remove (data);
-		}
-		
-		// Adds entry to the catalog (the catalog will take ownership of the object).
-		public void AddDeletedItem (CatalogDeletedEntry data)
-		{
-			deletedEntriesList.Add (data);
-		}
+                    "Duplicate message id '{0}' (context '{1}') in po file, ignoring it to achieve validity",
+                    data.String,
+                    data.HasContext ? data.Context : "");
+            }
+            else
+            {
+                entriesDict.Add(data.Key, data);
+                entriesList.Add(data);
+            }
+        }
 
-		// Returns true if the catalog contains obsolete entries (~.*)
-		public bool HasDeletedItems
-		{
-			get { return deletedEntriesList.Count > 0; }
-		}
+        public void RemoveItem(CatalogEntry data)
+        {
+            if (FindItem(data) != null)
+                this.entriesDict.Remove(data.Key);
+            if (entriesList.Contains(data))
+                entriesList.Remove(data);
+        }
 
-		// Removes all obsolete translations from the catalog
-		public void RemoveDeletedItems ()
-		{
-			deletedEntriesList.Clear ();
-		}
+        // Adds entry to the catalog (the catalog will take ownership of the object).
+        public void AddDeletedItem(CatalogDeletedEntry data)
+        {
+            deletedEntriesList.Add(data);
+        }
 
-		// Merges the catalog with reference catalog
-		// (in the sense of msgmerge -- this catalog is old one with
-		// translations, \a refcat is reference catalog created by Update().)
-		// return true if the merge was successfull, false otherwise.
-		public bool Merge (Catalog refCat)
-		{
-			// TODO: implement via monitor, not in a GUI thread...
-			// But mind about it as it would be used during build.
-			// Or do we want such a feature also for invoking in gui
-			// for po files not in project?
-			string oldName = fileName;
+        // Returns true if the catalog contains obsolete entries (~.*)
+        public bool HasDeletedItems
+        {
+            get { return deletedEntriesList.Count > 0; }
+        }
 
-			string tmpDir = Path.GetTempPath ();
-			
-			string filePrefix = Path.GetFileNameWithoutExtension (Path.GetRandomFileName());
-			
-			string tmp1 = tmpDir + Path.DirectorySeparatorChar + filePrefix + ".ref.pot";
-			string tmp2 = tmpDir + Path.DirectorySeparatorChar + filePrefix + ".input.po";
-			string tmp3 = tmpDir + Path.DirectorySeparatorChar + filePrefix + ".output.po";
+        // Removes all obsolete translations from the catalog
+        public void RemoveDeletedItems()
+        {
+            deletedEntriesList.Clear();
+        }
 
-			refCat.Save (tmp1);
-			Save (tmp2);
+        // Merges the catalog with reference catalog
+        // (in the sense of msgmerge -- this catalog is old one with
+        // translations, \a refcat is reference catalog created by Update().)
+        // return true if the merge was successfull, false otherwise.
+        public bool Merge(Catalog refCat)
+        {
+            // TODO: implement via monitor, not in a GUI thread...
+            // But mind about it as it would be used during build.
+            // Or do we want such a feature also for invoking in gui
+            // for po files not in project?
+            string oldName = fileName;
 
-			System.Diagnostics.Process process = new System.Diagnostics.Process ();
-			process.StartInfo.FileName = "msgmerge";
-			process.StartInfo.Arguments = "--force-po -o \"" + tmp3 + "\" \"" + tmp2 + "\" \"" + tmp1 + "\"";
+            string tmpDir = Path.GetTempPath();
 
-			process.Start ();
-			process.WaitForExit ();
-			bool succ = process.ExitCode == 0;
-			if (succ)
-			{
-				Catalog c = new Catalog ();
-				c.Load (tmp3);
-				Clear ();
-				Append (c);
-			}
+            string filePrefix = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
 
-			File.Delete (tmp1);
-			File.Delete (tmp2);
-			File.Delete (tmp3);
+            string tmp1 = tmpDir + Path.DirectorySeparatorChar + filePrefix + ".ref.pot";
+            string tmp2 = tmpDir + Path.DirectorySeparatorChar + filePrefix + ".input.po";
+            string tmp3 = tmpDir + Path.DirectorySeparatorChar + filePrefix + ".output.po";
 
-			fileName = oldName;
-			IsDirty = true;
-			return succ;
-		}
+            refCat.Save(tmp1);
+            Save(tmp2);
 
-		// Returns list of strings that are new in reference catalog
-		// (compared to this one) and that are not present in  reference
-		// catalog (i.e. are obsoleted).
-		public void GetMergeSummary (Catalog refCat, out string[] newEntries, out string[] obsoleteEntries)
-		{
-			List<string> newEnt = new List<string> ();
-			List<string> obsoleteEnt = new List<string> ();
-			int i;
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo.FileName = "msgmerge";
+            process.StartInfo.Arguments = "--force-po -o \"" + tmp3 + "\" \"" + tmp2 + "\" \"" + tmp1 + "\"";
 
-			for (i = 0; i < Count; i++)
-				if (refCat.FindItem(this[i]) == null)
-					obsoleteEnt.Add (this[i].String);
+            process.Start();
+            process.WaitForExit();
+            bool succ = process.ExitCode == 0;
+            if (succ)
+            {
+                Catalog c = new Catalog();
+                c.Load(tmp3);
+                Clear();
+                Append(c);
+            }
 
-			for (i = 0; i < refCat.Count; i++)
-				if (FindItem (refCat[i]) == null)
-					newEnt.Add (refCat[i].String);
-			
-			newEntries = newEnt.ToArray ();
-			obsoleteEntries = obsoleteEnt.ToArray ();
-		}
-		
-		protected virtual void OnDirtyChanged (EventArgs e)
-		{
+            File.Delete(tmp1);
+            File.Delete(tmp2);
+            File.Delete(tmp3);
+
+            fileName = oldName;
+            IsDirty = true;
+            return succ;
+        }
+
+        // Returns list of strings that are new in reference catalog
+        // (compared to this one) and that are not present in  reference
+        // catalog (i.e. are obsoleted).
+        public void GetMergeSummary(Catalog refCat, out string[] newEntries, out string[] obsoleteEntries)
+        {
+            List<string> newEnt = new List<string>();
+            List<string> obsoleteEnt = new List<string>();
+            int i;
+
+            for (i = 0; i < Count; i++)
+                if (refCat.FindItem(this[i]) == null)
+                    obsoleteEnt.Add(this[i].String);
+
+            for (i = 0; i < refCat.Count; i++)
+                if (FindItem(refCat[i]) == null)
+                    newEnt.Add(refCat[i].String);
+
+            newEntries = newEnt.ToArray();
+            obsoleteEntries = obsoleteEnt.ToArray();
+        }
+
+        protected virtual void OnDirtyChanged(EventArgs e)
+        {
             DirtyChanged?.Invoke(this, e);
         }
-		
-		public event EventHandler DirtyChanged;
+
+        public event EventHandler DirtyChanged;
 
         #region Header
-        readonly Dictionary<string, string> headerEntries = new Dictionary<string, string> ();
-		
-		// Parsed values
-		public string Project = string.Empty, 
-		              CreationDate = string.Empty,
-		              RevisionDate = string.Empty, 
-		              Translator = string.Empty,
-		              TranslatorEmail = string.Empty, 
-		              Team = string.Empty,
-		              TeamEmail = string.Empty, 
-		              Charset = string.Empty,
-		              Language = string.Empty,
-		              Country = string.Empty, // lang + country not yet used
-					  Comment = string.Empty;
-		
-		// Creates new, empty header. Sets Charset to something meaningful ("UTF-8", currently).
-		void CreateNewHeaders ()
-		{
-			RevisionDate = CreationDate = Catalog.GetDateTimeRfc822Format ();
-			Language = Country = Project = Team = TeamEmail = "";
-			Charset = "utf-8";
-			//dt.SourceCodeCharset = string.Empty;
-			UpdateHeaderDict ();
-		}
-		
-		// Initializes the headers from string that is in msgid "" format (i.e. list of key:value\n entries).
-		public void ParseHeaderString (string headers)
-		{
-			string hdr = StringEscaping.FromGettextFormat (headers);
-			string[] tokens = hdr.Split ('\n');
-			headerEntries.Clear ();
-			
-			foreach (string token in tokens) {
-				if (token != string.Empty) {
-					int pos = token.IndexOf (':');
-					if (pos == -1){
-						throw new Exception (string.Format ("Malformed header: '{0}'", token));
-					} else {
-						string key = token.Substring (0, pos).Trim ();
-						string value = token.Substring (pos + 1).Trim ();
-						headerEntries[key] = value;
-					}
-				}
-			}
-			ParseHeaderDict ();
-		}
+        readonly Dictionary<string, string> headerEntries = new Dictionary<string, string>();
 
-		// Converts the header into string representation that can be directly written to .po file as msgid ""
-		public string GetHeaderString (string lineDelimeter)
-		{
-			UpdateHeaderDict ();
-			StringBuilder sb = new StringBuilder ();
+        // Parsed values
+        public string Project = string.Empty,
+                      CreationDate = string.Empty,
+                      RevisionDate = string.Empty,
+                      Translator = string.Empty,
+                      TranslatorEmail = string.Empty,
+                      Team = string.Empty,
+                      TeamEmail = string.Empty,
+                      Charset = string.Empty,
+                      Language = string.Empty,
+                      Country = string.Empty, // lang + country not yet used
+                      Comment = string.Empty;
 
-			foreach (string key in headerEntries.Keys)
-			{
-				string value = string.Empty;
-				if (headerEntries[key] != null)
-					value = StringEscaping.ToGettextFormat (headerEntries[key]);
-				sb.AppendFormat ("\"{0}: {1}\\n\"{2}", key, value, lineDelimeter);
+        // Creates new, empty header. Sets Charset to something meaningful ("UTF-8", currently).
+        void CreateNewHeaders()
+        {
+            RevisionDate = CreationDate = Catalog.GetDateTimeRfc822Format();
+            Language = Country = Project = Team = TeamEmail = "";
+            Charset = "utf-8";
+            //dt.SourceCodeCharset = string.Empty;
+            UpdateHeaderDict();
+        }
 
-			}
-			return sb.ToString ();
-		}
+        // Initializes the headers from string that is in msgid "" format (i.e. list of key:value\n entries).
+        public void ParseHeaderString(string headers)
+        {
+            string hdr = StringEscaping.FromGettextFormat(headers);
+            string[] tokens = hdr.Split('\n');
+            headerEntries.Clear();
 
-		public string GetHeaderString ()
-		{
-			return GetHeaderString (Environment.NewLine);
-		}
+            foreach (string token in tokens)
+            {
+                if (token != string.Empty)
+                {
+                    int pos = token.IndexOf(':');
+                    if (pos == -1)
+                    {
+                        throw new Exception(string.Format("Malformed header: '{0}'", token));
+                    }
+                    else
+                    {
+                        string key = token.Substring(0, pos).Trim();
+                        string value = token.Substring(pos + 1).Trim();
+                        headerEntries[key] = value;
+                    }
+                }
+            }
+            ParseHeaderDict();
+        }
 
-		// Updates headers list from parsed values entries below
-		public void UpdateHeaderDict ()
-		{
-			SetHeader ("Project-Id-Version", Project);
-			SetHeader ("POT-Creation-Date", CreationDate);
-			SetHeader ("PO-Revision-Date", RevisionDate);
+        // Converts the header into string representation that can be directly written to .po file as msgid ""
+        public string GetHeaderString(string lineDelimeter)
+        {
+            UpdateHeaderDict();
+            StringBuilder sb = new StringBuilder();
 
-			if (string.IsNullOrEmpty (TranslatorEmail)) {
-				SetHeader ("Last-Translator", Translator);
-			} else {
-				SetHeader ("Last-Translator", string.Format ("{0} <{1}>", Translator, TranslatorEmail));
-			}
-			
-			if (string.IsNullOrEmpty (TeamEmail)) {
-				SetHeader ("Language-Team", Team);
-			} else {
-				SetHeader ("Language-Team", string.Format ("{0} <{1}>", Team, TeamEmail));
-			}
+            foreach (string key in headerEntries.Keys)
+            {
+                string value = string.Empty;
+                if (headerEntries[key] != null)
+                    value = StringEscaping.ToGettextFormat(headerEntries[key]);
+                sb.AppendFormat("\"{0}: {1}\\n\"{2}", key, value, lineDelimeter);
 
-			SetHeader ("MIME-Version", "1.0");
-			SetHeader ("Content-Type", "text/plain; charset=" + Charset);
-			SetHeader ("Content-Transfer-Encoding", "8bit");
-			
-			SetHeader ("X-Generator", "MonoDevelop Gettext addin");
-		}
+            }
+            return sb.ToString();
+        }
 
-		// Reverse operation to UpdateDict
-		void ParseHeaderDict ()
-		{
-			string dummy;
-			
-			Project = GetHeader ("Project-Id-Version");
-			CreationDate = GetHeader ("POT-Creation-Date");
-			RevisionDate = GetHeader ("PO-Revision-Date");
-			
-			dummy = GetHeader ("Last-Translator");
-			if (!string.IsNullOrEmpty (dummy)) {
-				string[] tokens = dummy.Split ('<', '>');
-				if (tokens.Length < 2) {
-					Translator = dummy;
-					TranslatorEmail = string.Empty;
-				} else {
-					Translator = tokens[0].Trim ();
-					TranslatorEmail = tokens[1].Trim ();
-				}
-			}
+        public string GetHeaderString()
+        {
+            return GetHeaderString(Environment.NewLine);
+        }
 
-			dummy = GetHeader ("Language-Team");
-			if (!string.IsNullOrEmpty (dummy)) {
-				string[] tokens = dummy.Split ('<', '>');
-				if (tokens.Length < 2) {
-					Team = dummy;
-					TeamEmail = string.Empty;
-				} else {
-					Team = tokens[0].Trim ();
-					TeamEmail = tokens[1].Trim ();
-				}
-			}
+        // Updates headers list from parsed values entries below
+        public void UpdateHeaderDict()
+        {
+            SetHeader("Project-Id-Version", Project);
+            SetHeader("POT-Creation-Date", CreationDate);
+            SetHeader("PO-Revision-Date", RevisionDate);
 
-			string ctype = GetHeader ("Content-Type");
-			int pos = ctype.IndexOf ("; charset=");
-			if (pos != -1) {
-				Charset = ctype.Substring (pos + "; charset=".Length).Trim ();
-			} else {
-				Charset = "iso-8859-1";
-			}
-		}
-		
-		// Returns value of header or empty string if missing.
-		public string GetHeader (string key)
-		{
-			if (headerEntries.ContainsKey (key))
-				return headerEntries[key];
-			return string.Empty;
-		}
-		
-		// Returns true if given key is present in the header.
-		public bool HasHeader (string key)
-		{
-			return headerEntries.ContainsKey (key);
-		}
-		
-		// Sets header to given value. Overwrites old value if present, appends to header values otherwise.
-		public void SetHeader (string key, string value)
-		{
-			headerEntries[key] = value;
-		}
-		
-		// Like SetHeader, but deletes the header if value is empty
-		public void SetHeaderNotEmpty (string key, string value)
-		{
-			if (string.IsNullOrEmpty (value))
-				DeleteHeader (key);
-			else
-				SetHeader (key, value);
-		}
-		
-		// Removes given header entry
-		public void DeleteHeader (string key)
-		{
-			if (HasHeader (key)) {
-				headerEntries.Remove (key);
-			}
-		}
-		
-		public string CommentForGui {
-			get {
-				if (string.IsNullOrEmpty (Comment))
-					return string.Empty;
-				
-				StringBuilder sb = new StringBuilder ();
-				bool first = true;
-				foreach (string line in Comment.Split ('\n')) {
-					if (! first)
-						sb.Append ('\n');
-					else
-						first = false;
-					
-					if (line.StartsWith ("#"))
-						sb.Append (line.Substring (1).TrimStart (' ', '\t'));
-					else
-						sb.Append (line.TrimStart (' ', '\t'));
-				}
-				return sb.ToString ();
-			}
-			set {
-				if (string.IsNullOrEmpty (value)) {
-					Comment = string.Empty;
-					return;
-				}
-				
-				StringBuilder sb = new StringBuilder ();
-				foreach (string line in value.Split (new string[] {Environment.NewLine}, StringSplitOptions.None)) {
-					if (sb.Length != 0)
-						sb.AppendLine ();
-					sb.Append ("# " + line);
-				}
-				Comment = sb.ToString();
-			}
-		}
-		#endregion
-		
-		#region IEnumerable<CatalogEntry> Members
-		public IEnumerator<CatalogEntry> GetEnumerator ()
-		{
-			return entriesList.GetEnumerator ();
-		}
-		#endregion
+            if (string.IsNullOrEmpty(TranslatorEmail))
+            {
+                SetHeader("Last-Translator", Translator);
+            }
+            else
+            {
+                SetHeader("Last-Translator", string.Format("{0} <{1}>", Translator, TranslatorEmail));
+            }
 
-		#region IEnumerable Members
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return entriesList.GetEnumerator ();
-		}
-		#endregion
-	}
+            if (string.IsNullOrEmpty(TeamEmail))
+            {
+                SetHeader("Language-Team", Team);
+            }
+            else
+            {
+                SetHeader("Language-Team", string.Format("{0} <{1}>", Team, TeamEmail));
+            }
+
+            SetHeader("MIME-Version", "1.0");
+            SetHeader("Content-Type", "text/plain; charset=" + Charset);
+            SetHeader("Content-Transfer-Encoding", "8bit");
+
+            SetHeader("X-Generator", "MonoDevelop Gettext addin");
+        }
+
+        // Reverse operation to UpdateDict
+        void ParseHeaderDict()
+        {
+            string dummy;
+
+            Project = GetHeader("Project-Id-Version");
+            CreationDate = GetHeader("POT-Creation-Date");
+            RevisionDate = GetHeader("PO-Revision-Date");
+
+            dummy = GetHeader("Last-Translator");
+            if (!string.IsNullOrEmpty(dummy))
+            {
+                string[] tokens = dummy.Split('<', '>');
+                if (tokens.Length < 2)
+                {
+                    Translator = dummy;
+                    TranslatorEmail = string.Empty;
+                }
+                else
+                {
+                    Translator = tokens[0].Trim();
+                    TranslatorEmail = tokens[1].Trim();
+                }
+            }
+
+            dummy = GetHeader("Language-Team");
+            if (!string.IsNullOrEmpty(dummy))
+            {
+                string[] tokens = dummy.Split('<', '>');
+                if (tokens.Length < 2)
+                {
+                    Team = dummy;
+                    TeamEmail = string.Empty;
+                }
+                else
+                {
+                    Team = tokens[0].Trim();
+                    TeamEmail = tokens[1].Trim();
+                }
+            }
+
+            string ctype = GetHeader("Content-Type");
+            int pos = ctype.IndexOf("; charset=");
+            if (pos != -1)
+            {
+                Charset = ctype.Substring(pos + "; charset=".Length).Trim();
+            }
+            else
+            {
+                Charset = "iso-8859-1";
+            }
+        }
+
+        // Returns value of header or empty string if missing.
+        public string GetHeader(string key)
+        {
+            if (headerEntries.ContainsKey(key))
+                return headerEntries[key];
+            return string.Empty;
+        }
+
+        // Returns true if given key is present in the header.
+        public bool HasHeader(string key)
+        {
+            return headerEntries.ContainsKey(key);
+        }
+
+        // Sets header to given value. Overwrites old value if present, appends to header values otherwise.
+        public void SetHeader(string key, string value)
+        {
+            headerEntries[key] = value;
+        }
+
+        // Like SetHeader, but deletes the header if value is empty
+        public void SetHeaderNotEmpty(string key, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                DeleteHeader(key);
+            else
+                SetHeader(key, value);
+        }
+
+        // Removes given header entry
+        public void DeleteHeader(string key)
+        {
+            if (HasHeader(key))
+            {
+                headerEntries.Remove(key);
+            }
+        }
+
+        public string CommentForGui
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Comment))
+                    return string.Empty;
+
+                StringBuilder sb = new StringBuilder();
+                bool first = true;
+                foreach (string line in Comment.Split('\n'))
+                {
+                    if (!first)
+                        sb.Append('\n');
+                    else
+                        first = false;
+
+                    if (line.StartsWith("#"))
+                        sb.Append(line.Substring(1).TrimStart(' ', '\t'));
+                    else
+                        sb.Append(line.TrimStart(' ', '\t'));
+                }
+                return sb.ToString();
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    Comment = string.Empty;
+                    return;
+                }
+
+                StringBuilder sb = new StringBuilder();
+                foreach (string line in value.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+                {
+                    if (sb.Length != 0)
+                        sb.AppendLine();
+                    sb.Append("# " + line);
+                }
+                Comment = sb.ToString();
+            }
+        }
+        #endregion
+
+        #region IEnumerable<CatalogEntry> Members
+        public IEnumerator<CatalogEntry> GetEnumerator()
+        {
+            return entriesList.GetEnumerator();
+        }
+        #endregion
+
+        #region IEnumerable Members
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return entriesList.GetEnumerator();
+        }
+        #endregion
+    }
 }
 
