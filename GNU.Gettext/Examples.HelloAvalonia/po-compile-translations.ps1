@@ -5,13 +5,8 @@
 $currentDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 $currentDirectoryName = Split-Path -Path $currentDirectory -Leaf
 
-
-$exePath = Join-Path $currentDirectory "..\GNU.Gettext.Msgfmt\bin\Debug\net6.0\GNU.Gettext.Msgfmt.exe"
-$directory = $catalogPath = Join-Path $currentDirectory "bin\Debug\net6.0"
-$catalogPath = Join-Path $currentDirectory "po"
-$catalogs = Get-ChildItem -Path $catalogPath -Filter "*.po"
-
+$catalogs = Get-ChildItem -Path ./po -Filter "*.po"
 
 foreach ($c in $catalogs) {
-    & $exePath -l $c.BaseName -d $directory -r $currentDirectoryName -L $directory --check-format $c.FullName
+    & msgfmt-net -l $c.BaseName -d "./bin/Debug/net6.0" -r $currentDirectoryName -L "./bin/Debug/net6.0" --check-format $c.FullName
 }

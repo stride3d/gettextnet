@@ -208,7 +208,7 @@ namespace GNU.Gettext.Msgfmt
 
             if (!emitResult.Success)
             {
-                Console.WriteLine("Error creating the DLL:");
+                Console.WriteLine($"[lang: {Options.LocaleStr}] Error creating the DLL:");
                 foreach (Diagnostic diagnostic in emitResult.Diagnostics)
                 {
                     Console.WriteLine(diagnostic.ToString());
@@ -216,7 +216,7 @@ namespace GNU.Gettext.Msgfmt
             }
             else
             {
-                Console.WriteLine("DLL created successfully!");
+                Console.WriteLine($"[lang: {Options.LocaleStr}] DLL created successfully!");
             }
         }
 

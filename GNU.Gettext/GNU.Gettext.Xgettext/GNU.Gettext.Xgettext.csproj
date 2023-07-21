@@ -2,7 +2,10 @@
   <PropertyGroup>
     <ProjectGuid>{69B39E65-093E-417A-BFC9-B1CF7B981680}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework> 
+    <PackAsTool>true</PackAsTool>   
+    <ToolCommandName>xgettext-net</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Curiosity.Resources" Version="1.0.1" />

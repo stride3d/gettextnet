@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>msgfmt-net</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Basic.Reference.Assemblies" Version="1.4.2" />
-    <PackageReference Include="Basic.Reference.Assemblies.Net60" Version="1.4.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.6.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.6.0" />
   </ItemGroup>
