@@ -39,7 +39,7 @@ namespace GNU.Gettext.Test
                 "--locale=fr-FR",
                 "-d./bin/Debug",
                 "--resource=Examples.Hello.Messages",
-                "--lib-dir=./../../Bin",
+                "-L ./../../Bin",
                 "--check-format",
                 "./po/fr.po",
                 "./po/ru.po"

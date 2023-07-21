@@ -254,7 +254,7 @@ namespace GNU.Gettext.Msgfmt
                 "   -d directory                        Output directory for satellite assemblies.\n" +
                 "                                       Subdirectory for specified locale will be created\n\n" +
                 "   -l locale, --locale=locale          .NET locale (culture) name i.e. \"en-US\", \"en\" etc.\n\n" +
-                "   -L path, --lib-dir=path             Path to directory where GNU.Gettext.dll is located (need to compile DLL)\n\n" +
+                "   -L path                             Path to directory where GNU.Gettext.dll is located (need to compile DLL)\n\n" +
                 "   --compiler-name=name                C# compiler name.\n" +
                 "                                       Defaults are \"mcs\" for Mono and \"csc\" for Windows.NET.\n" +
                 "                                       On Windows you should check if compiler directory is in PATH environment variable\n\n" +
