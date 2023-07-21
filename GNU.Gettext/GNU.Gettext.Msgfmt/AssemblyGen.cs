@@ -184,8 +184,8 @@ namespace GNU.Gettext.Msgfmt
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(File.ReadAllText(CsharpSourceFileName));
             File.Delete(CsharpSourceFileName);
 
-
-            var gnuPath = Path.Combine(Path.GetFullPath(Options.LibDir), "GNU.Gettext.dll");
+            var libDir = Options.LibDir ?? Directory.GetCurrentDirectory();
+            var gnuPath = Path.Combine(Path.GetFullPath(libDir), "GNU.Gettext.dll");
 
             // Create compilation options
             var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)

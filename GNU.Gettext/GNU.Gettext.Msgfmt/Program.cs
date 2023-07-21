@@ -85,7 +85,7 @@ namespace GNU.Gettext.Msgfmt
             return 0;
         }
 
-        public static bool GetOptions(string[] args, String sopts, LongOpt[] lopts, Options options, out StringBuilder message)
+        public static bool GetOptions(string[] args, string sopts, LongOpt[] lopts, Options options, out StringBuilder message)
         {
             message = new StringBuilder();
             Getopt.Getopt getopt = new Getopt.Getopt(
@@ -198,11 +198,6 @@ namespace GNU.Gettext.Msgfmt
                     if (accepted && string.IsNullOrEmpty(options.OutDir))
                     {
                         message.Append("Output dirictory name required");
-                        accepted = false;
-                    }
-                    if (accepted && string.IsNullOrEmpty(options.LibDir))
-                    {
-                        message.Append("Assembly reference dirictory name required");
                         accepted = false;
                     }
                     if (accepted && string.IsNullOrEmpty(options.LocaleStr))
