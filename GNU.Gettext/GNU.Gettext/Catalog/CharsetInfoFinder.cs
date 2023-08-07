@@ -32,38 +32,41 @@ using System.Text;
 namespace GNU.Gettext
 {
     internal class CharsetInfoFinder : CatalogParser
-	{
-		string charset;
+    {
+        string charset;
 
-		// Expecting iso-8859-1 encoding
-		public CharsetInfoFinder (string poFile)
-			: base (poFile, Encoding.GetEncoding ("iso-8859-1"))
-		{
-			charset = "iso-8859-1";
-		}
-		
-		public string Charset {
-			get { 
-				return charset; 
-			}
-		}
-		
-		protected override bool OnEntry (string msgid, string msgidPlural, bool hasPlural,
-		                                 string[] translations, string flags,
-		                                 string[] references, string comment,
-		                                 string[] autocomments,
-		                                 string msgctxt)
-		{
-			if (string.IsNullOrEmpty (msgid)) {
-				// gettext header:
-				Catalog headers = new Catalog ();
-				headers.ParseHeaderString (translations[0]);
-				charset = headers.Charset;
-				if (charset == "CHARSET")
-					charset = "iso-8859-1";
-				return false; // stop parsing
-			}
-			return true;
-		}
-	}
+        // Expecting iso-8859-1 encoding
+        public CharsetInfoFinder(string poFile)
+            : base(poFile, Encoding.GetEncoding("iso-8859-1"))
+        {
+            charset = "iso-8859-1";
+        }
+
+        public string Charset
+        {
+            get
+            {
+                return charset;
+            }
+        }
+
+        protected override bool OnEntry(string msgid, string msgidPlural, bool hasPlural,
+                                         string[] translations, string flags,
+                                         string[] references, string comment,
+                                         string[] autocomments,
+                                         string msgctxt)
+        {
+            if (string.IsNullOrEmpty(msgid))
+            {
+                // gettext header:
+                Catalog headers = new Catalog();
+                headers.ParseHeaderString(translations[0]);
+                charset = headers.Charset;
+                if (charset == "CHARSET")
+                    charset = "iso-8859-1";
+                return false; // stop parsing
+            }
+            return true;
+        }
+    }
 }

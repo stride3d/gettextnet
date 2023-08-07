@@ -4,8 +4,8 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Resources;
 using System.Collections;
+using Curiosity.Resources;
 
 namespace GNU.Gettext.Xgettext
 {
@@ -117,8 +117,8 @@ namespace GNU.Gettext.Xgettext
             ProcessPattern(ExtractMode.ContextMsgid, @"GetParticularPluralString\s*\(\s*" + ThreeStringsArgumentsPattern, text, inputFile);
 
 
-            // Winforms patterns
-			ProcessPattern(ExtractMode.Msgid, @"\.\s*Text\s*=\s*" + CsharpStringPattern + @"\s*;", text, inputFile);
+            // Avalonia patterns
+            ProcessPattern(ExtractMode.Msgid, @"\.\s*Text\s*=\s*" + CsharpStringPattern + @"\s*;", text, inputFile);
             ProcessPattern(ExtractMode.MsgidConcat, @"\.\s*Text\s*=\s*" + ConcatenatedStringsPattern, text, inputFile);
 
             ProcessPattern(ExtractMode.Msgid, @"\.\s*HeaderText\s*=\s*" + CsharpStringPattern + @"\s*;", text, inputFile);
@@ -162,7 +162,8 @@ namespace GNU.Gettext.Xgettext
             return Regex.Replace(
                 input,
                 blockComments + "|" + lineComments + "|" + CsharpStringPattern,
-				m => {
+                m =>
+                {
                     if (m.Value.StartsWith("/*") || m.Value.StartsWith("//"))
                     {
                         // Replace the comments with empty, i.e. remove them
@@ -236,13 +237,13 @@ namespace GNU.Gettext.Xgettext
 
                 if (string.IsNullOrEmpty(msgid))
                 {
-					if (Options.Verbose)
-                    	Trace.Write(string.Format("WARN: msgid is empty in {0}\r\n", inputFile));
+                    if (Options.Verbose)
+                        Trace.Write(string.Format("WARN: msgid is empty in {0}\r\n", inputFile));
                 }
-				else
-				{
-					MergeWithEntry(context, msgid, msgidPlural, inputFile, CalcLineNumber(text, match.Index));
-				}
+                else
+                {
+                    MergeWithEntry(context, msgid, msgidPlural, inputFile, CalcLineNumber(text, match.Index));
+                }
             }
         }
 
@@ -316,7 +317,7 @@ namespace GNU.Gettext.Xgettext
                     Debug.WriteLine(string.Format("Extracting from resource file: {0} (Input file: {1})",
                                                   resxFileName, inputFile));
             }
-            ResXResourceReader rsxr = new ResXResourceReader(resxFileName);
+            ResXResourceReader rsxr = new(resxFileName);
             // stephane matamontero: the following line was needed when I was debugging
             // Xgettext where I passed commandline parameters: 
             // It tried to search the "Resources.resx" of the project where we wanted to extract
@@ -334,8 +335,8 @@ namespace GNU.Gettext.Xgettext
 
         private string ExtractResourceString(string controlId)
         {
-            if (!resources.TryGetValue(controlId + ".Text", out string msgid) 
-                && !resources.TryGetValue(controlId + ".TooTipText", out msgid) 
+            if (!resources.TryGetValue(controlId + ".Text", out string msgid)
+                && !resources.TryGetValue(controlId + ".TooTipText", out msgid)
                 && !resources.TryGetValue(controlId + ".HeaderText", out msgid))
                 return null;
             return msgid;

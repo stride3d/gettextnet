@@ -20,17 +20,16 @@ namespace GNU.Gettext.Examples
 			ShowMessages();
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
 			ShowMessages();
-            //Console.ReadKey();
         }
 
 		static void ShowMessages()
 		{
-            Console.WriteLine("Current culture {0}", Thread.CurrentThread.CurrentUICulture);
+            Console.WriteLine("===[ Current culture {0} ]===", Thread.CurrentThread.CurrentUICulture);
             GettextResourceManager catalog = new GettextResourceManager();
             Console.WriteLine(catalog.GetString("Hello, world!"));
 			// GetStringFmt is an Gettext.NET extension
             Console.WriteLine(catalog.GetStringFmt("This program is running as process number \"{0}\".",
-			                  Process.GetCurrentProcess().Id));
+                              Environment.ProcessId));
             Console.WriteLine(string.Format(
 				catalog.GetPluralString("found {0} similar word", "found {0} similar words", 1),
 				1));
