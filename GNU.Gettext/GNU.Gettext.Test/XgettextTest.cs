@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
-
 using NUnit.Framework;
 
 using GNU.Gettext.Xgettext;
@@ -43,11 +39,11 @@ namespace GNU.Gettext.Test
                     multiline++;
             }
 
-            Assert.AreEqual(2, ctx, "Context count");
+            Assert.That(2, Is.EqualTo(ctx), "Context count");
 
-            Assert.AreEqual(2, extractor.Catalog.PluralFormsCount, "PluralFormsCount");
-            Assert.AreEqual(17, extractor.Catalog.Count, "Duplicates may not detected");
-            Assert.AreEqual(2, multiline, "Multiline string");
+            Assert.That(2, Is.EqualTo(extractor.Catalog.PluralFormsCount), "PluralFormsCount");
+            Assert.That(17, Is.EqualTo(extractor.Catalog.Count), "Duplicates may not detected");
+            Assert.That(2, Is.EqualTo(multiline), "Multiline string");
         }
 
         [Test()]
@@ -70,10 +66,10 @@ button1.Text = ""Save""; // Save data.Text = ""10""
             string output = ExtractorCsharp.RemoveComments(input);
             Assert.IsTrue(output.IndexOf("/*This is not comment*/") >= 0, "Multiline comment chars in string");
             Assert.IsTrue(output.IndexOf("This is //not comment too") >= 0, "Single line comment chars in string");
-            Assert.AreEqual(-1, output.IndexOf("// Save"), "Single line comment");
-            Assert.AreEqual(-1, output.IndexOf("//button1"), "Single line comment");
-            Assert.AreEqual(-1, output.IndexOf("/*\n"), "Multi line comment");
-            Assert.AreEqual(-1, output.IndexOf("/*button1"), "Multi line comment in single line");
+            Assert.That(-1, Is.EqualTo(output.IndexOf("// Save")), "Single line comment");
+            Assert.That(-1, Is.EqualTo(output.IndexOf("//button1")), "Single line comment");
+            Assert.That(-1, Is.EqualTo(output.IndexOf("/*\n")), "Multi line comment");
+            Assert.That(-1, Is.EqualTo(output.IndexOf("/*button1")), "Multi line comment in single line");
         }
     }
 

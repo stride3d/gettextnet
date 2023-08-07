@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using System.Globalization;
-using System.Collections.Generic;
 
 using NUnit.Framework;
 
@@ -18,7 +15,7 @@ namespace GNU.Gettext.Test
         {
             Options options = new Options();
             options.Mode = Mode.SateliteAssembly;
-            options.InputFiles.Add("../../../Examples.Hello/po/fr.po");
+            options.InputFiles.Add("../../../../Examples.Hello/po/fr.po");
             options.BaseName = "Examples.Hello.Messages";
             options.OutDir = "../../../Examples.Hello/bin/Debug";
             options.LibDir = "./";
@@ -32,7 +29,7 @@ namespace GNU.Gettext.Test
             }
             catch (Exception e)
             {
-                Assert.Fail("Assebly generation faild. Check that CSharp compiler is in PATH.\n{0}", e.Message);
+                Assert.Fail("Assebly generation failed. Exception message:\n{0}", e.Message);
             }
         }
 

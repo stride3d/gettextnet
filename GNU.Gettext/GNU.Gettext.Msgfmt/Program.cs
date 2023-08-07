@@ -9,11 +9,6 @@ using GNU.Getopt;
 
 namespace GNU.Gettext.Msgfmt
 {
-    public enum Mode
-    {
-        Resources,
-        SateliteAssembly
-    }
     public static class Program
     {
         public const string SOpts = "-:hvo:d:r:l:L:";
@@ -250,9 +245,6 @@ namespace GNU.Gettext.Msgfmt
                 "                                       Subdirectory for specified locale will be created\n\n" +
                 "   -l locale, --locale=locale          .NET locale (culture) name i.e. \"en-US\", \"en\" etc.\n\n" +
                 "   -L path                             Path to directory where GNU.Gettext.dll is located (need to compile DLL)\n\n" +
-                "   --compiler-name=name                C# compiler name.\n" +
-                "                                       Defaults are \"mcs\" for Mono and \"csc\" for Windows.NET.\n" +
-                "                                       On Windows you should check if compiler directory is in PATH environment variable\n\n" +
                 "   --check-format                      Verify C# format strings and raise error if invalid format is detected\n\n" +
                 "   --csharp-resources                  Convert a PO file to a .resources file instead of satellite assembly\n\n" +
                 "   -h, --help                          Display this help and exit",

@@ -2,7 +2,7 @@
 /* LongOpt.cs -- C#.NET port of Long option object for Getopt
 /*
 /* Copyright (c) 1998 by Aaron M. Renn (arenn@urbanophile.com)
-/* C#.NET Port Copyright (c) 2004 by Klaus Prückl (klaus.prueckl@aon.at)
+/* C#.NET Port Copyright (c) 2004 by Klaus Prï¿½ckl (klaus.prueckl@aon.at)
 /*
 /* This program is free software; you can redistribute it and/or modify
 /* it under the terms of the GNU Library General Public License as published 
@@ -38,7 +38,7 @@ namespace GNU.Getopt
     /// </summary>
     /// <seealso cref="Getopt">Getopt</seealso>
     /// <author>Aaron M. Renn (arenn@urbanophile.com)</author>
-    /// <author>Klaus Prückl (klaus.prueckl@aon.at)</author>
+    /// <author>Klaus Prï¿½ckl (klaus.prueckl@aon.at)</author>
     public class LongOpt
     {
         #region Instance Variables
@@ -117,18 +117,19 @@ namespace GNU.Getopt
             // Check for application setting "Gnu.PosixlyCorrect" to determine
             // whether to strictly follow the POSIX standard. This replaces the
             // "POSIXLY_CORRECT" environment variable in the C version
+            // By default it follows POSIX standard.
+            bool isPosixlyCorrect = true;
             try
             {
-                if ((bool)new AppSettingsReader().GetValue(
-                    "Gnu.PosixlyCorrect", typeof(bool)))
-                {
-                    cultureInfo = new CultureInfo("en-US");
-                }
+                isPosixlyCorrect = (bool)new AppSettingsReader().GetValue(
+                    "Gnu.PosixlyCorrect", typeof(bool));
             }
-            catch (Exception e)
+            catch{
+                Console.WriteLine("Warning: app.config not found!");
+            }
+            if(isPosixlyCorrect)
             {
-                Console.WriteLine(e.Message);
-                throw;
+                cultureInfo = new CultureInfo("en-US");
             }
 
             // Validate hasArg

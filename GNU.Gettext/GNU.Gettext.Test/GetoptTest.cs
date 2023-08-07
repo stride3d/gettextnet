@@ -28,7 +28,7 @@ namespace GNU.Gettext.Test
             Options options = new Options();
             Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
             CheckOptions(options);
-            Assert.AreEqual(Mode.SateliteAssembly, options.Mode);
+            Assert.That(Mode.SateliteAssembly, Is.EqualTo(options.Mode));
         }
 
         [Test()]
@@ -46,19 +46,19 @@ namespace GNU.Gettext.Test
             };
             Options options = new Options();
             Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
-            Assert.AreEqual(0, message.Length, message.ToString());
+            Assert.That(0, Is.EqualTo(message.Length), message.ToString());
             CheckOptions(options);
-            Assert.AreEqual(Mode.SateliteAssembly, options.Mode);
+            Assert.That(Mode.SateliteAssembly, Is.EqualTo(options.Mode));
         }
 
         private void CheckOptions(Options options)
         {
-            Assert.AreEqual(2, options.InputFiles.Count, "input files");
-            Assert.AreEqual("./po/fr.po", options.InputFiles[0]);
-            Assert.AreEqual("fr-FR", options.LocaleStr);
-            Assert.AreEqual("./bin/Debug", options.OutDir);
-            Assert.AreEqual("Examples.Hello.Messages", options.BaseName);
-            Assert.AreEqual("./../../Bin", options.LibDir);
+            Assert.That(2, Is.EqualTo(options.InputFiles.Count), "input files");
+            Assert.That("./po/fr.po", Is.EqualTo(options.InputFiles[0]));
+            Assert.That("fr-FR", Is.EqualTo(options.LocaleStr));
+            Assert.That("./bin/Debug", Is.EqualTo(options.OutDir));
+            Assert.That("Examples.Hello.Messages", Is.EqualTo(options.BaseName));
+            Assert.That("./../../Bin", Is.EqualTo(options.LibDir));
         }
 
         [Test()]
@@ -71,7 +71,6 @@ namespace GNU.Gettext.Test
                 "-l", "fr-FR",
                 "-d", "./bin/Debug",
                 "-r", "Examples.Hello.Messages",
-                "--compiler-name=gmcs",
                 "-L", "./../../Bin",
                 "./po/fr.po",
                 "./po/ru.po"
@@ -79,7 +78,7 @@ namespace GNU.Gettext.Test
             Options options = new Options();
             Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
             CheckOptions(options);
-            Assert.AreEqual(Mode.Resources, options.Mode);
+            Assert.That(Mode.Resources, Is.EqualTo(options.Mode));
         }
 
     }

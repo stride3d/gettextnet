@@ -9,15 +9,6 @@ using Curiosity.Resources;
 
 namespace GNU.Gettext.Xgettext
 {
-    public enum ExtractMode
-    {
-        Msgid,
-        MsgidConcat, // Like "Str 1 " + "Str 2" + "Str 3"
-        MsgidFromResx, // For forms/controls that have property "Localizable" = true
-        MsgidPlural,
-        ContextMsgid,
-    }
-
     public class ExtractorCsharp
     {
         const string CsharpStringPatternExplained = @"
@@ -47,7 +38,6 @@ namespace GNU.Gettext.Xgettext
         public Catalog Catalog { get; private set; }
         public Options Options { get; private set; }
 
-        #region Constructors
         public ExtractorCsharp(Options options)
         {
             this.Options = options;
@@ -65,7 +55,6 @@ namespace GNU.Gettext.Xgettext
 
             this.Options.OutFile = Path.GetFullPath(this.Options.OutFile);
         }
-        #endregion
 
         public void GetMessages()
         {

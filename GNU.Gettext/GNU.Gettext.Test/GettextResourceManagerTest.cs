@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System;
 
 namespace GNU.Gettext.Test
 {
@@ -10,11 +9,11 @@ namespace GNU.Gettext.Test
         public void NamesExtractionTest()
         {
             string n1 = "One.Two.Three";
-            Assert.AreEqual("Three", GettextResourceManager.ExtractClassName(n1));
-            Assert.AreEqual("One.Two", GettextResourceManager.ExtractNamespace(n1));
+            Assert.That("Three", Is.EqualTo(GettextResourceManager.ExtractClassName(n1)));
+            Assert.That("One.Two", Is.EqualTo(GettextResourceManager.ExtractNamespace(n1)));
 
-            Assert.AreEqual("Class", GettextResourceManager.ExtractClassName("Class"));
-            Assert.AreEqual(string.Empty, GettextResourceManager.ExtractNamespace(".Test"));
+            Assert.That("Class", Is.EqualTo(GettextResourceManager.ExtractClassName("Class")));
+            Assert.That(string.Empty, Is.EqualTo(GettextResourceManager.ExtractNamespace(".Test")));
         }
 
         [Test]
