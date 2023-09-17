@@ -33,114 +33,116 @@ using System.Text;
 
 namespace GNU.Gettext
 {
-	// This class holds information about one particular deleted item.
-	// This includes deleted lines, references, translation's status
-	// (fuzzy, non translated, translated) and optional comment(s).
-	public class CatalogDeletedEntry
-	{
-		List<string> deletedLines;
-		List<string> references;
-		List<string> autocomments;
-		string flags;
-		string comment;
-		
-		// Initializes the object with original string and translation.
-		public CatalogDeletedEntry (string[] deletedLines)
-		{
-			this.deletedLines = new List<string> (deletedLines);
-			references = new List<string> ();
-			autocomments = new List<string> ();
-		}
-		
-		public CatalogDeletedEntry (CatalogDeletedEntry dt)
-		{
-			deletedLines = new List<string> (dt.deletedLines);
-			references = new List<string> (dt.references);
-			autocomments = new List<string> (dt.autocomments);
-			flags = dt.flags;
-			comment = dt.comment;
-		}
-		
-		// Returns the deleted lines.
-		public string[] DeletedLines
-		{
-			get { return deletedLines.ToArray (); }
-		}
-		
-		// Returns array of all occurences of this string in source code.
-		public string[] References
-		{
-			get { return references.ToArray (); }
-		}
-		
-		// Returns comment added by the translator to this entry
-		public string Comment
-		{
-			get { return comment; }
-		}
-		
-		// Returns array of all auto comments.
-		public string[] AutoComments
-		{
-			get { return autocomments.ToArray (); }
-		}
-		
-		// Convenience function: does this entry has a comment?
-		public bool HasComment
-		{
-			get { return ! String.IsNullOrEmpty (comment); }
-		}
-		
-		// Adds new reference to the entry (used by SourceDigger).
-		public void AddReference (string reference)
-		{
-			if (! references.Contains (reference))
-				references.Add (reference);
-		}
-		
-		// Clears references (used by SourceDigger).
-		public void ClearReferences ()
-		{
-			references.Clear ();
-		}
-		
-		// Sets the string.
-		public void SetDeletedLines (string[] lines)
-		{
-			deletedLines = new List<string> (lines);
-		}
+    // This class holds information about one particular deleted item.
+    // This includes deleted lines, references, translation's status
+    // (fuzzy, non translated, translated) and optional comment(s).
+    public class CatalogDeletedEntry
+    {
+        List<string> deletedLines;
+        readonly List<string> references;
+        readonly List<string> autocomments;
+        string flags;
+        string comment;
 
-		// Sets the comment.
-		public void SetComment (string comment)
-		{
-			this.comment = comment;
-		}
+        // Initializes the object with original string and translation.
+        public CatalogDeletedEntry(string[] deletedLines)
+        {
+            this.deletedLines = new List<string>(deletedLines);
+            references = new List<string>();
+            autocomments = new List<string>();
+        }
 
-		// Sets gettext flags directly in string format. It may be
-		// either empty string or "#, fuzzy", "#, c-format",
-		// "#, fuzzy, c-format" or others (not understood by poEdit).
-		public string Flags {
-			get {
-				if (String.IsNullOrEmpty (flags))
-					return String.Empty;
-				if (flags.StartsWith ("#,"))
-					return flags;
-				else
-					return "#, " + flags;
-			}
-			set { flags = value; }
-		}
-		
-		// Adds new autocomments (#. )
-		public void AddAutoComments (string comment)
-		{
-			autocomments.Add (comment);
-		}
+        public CatalogDeletedEntry(CatalogDeletedEntry dt)
+        {
+            deletedLines = new List<string>(dt.deletedLines);
+            references = new List<string>(dt.references);
+            autocomments = new List<string>(dt.autocomments);
+            flags = dt.flags;
+            comment = dt.comment;
+        }
 
-		// Clears autocomments.
-		public void ClearAutoComments ()
-		{
-			autocomments.Clear ();
-		}
-	}
+        // Returns the deleted lines.
+        public string[] DeletedLines
+        {
+            get { return deletedLines.ToArray(); }
+        }
+
+        // Returns array of all occurences of this string in source code.
+        public string[] References
+        {
+            get { return references.ToArray(); }
+        }
+
+        // Returns comment added by the translator to this entry
+        public string Comment
+        {
+            get { return comment; }
+        }
+
+        // Returns array of all auto comments.
+        public string[] AutoComments
+        {
+            get { return autocomments.ToArray(); }
+        }
+
+        // Convenience function: does this entry has a comment?
+        public bool HasComment
+        {
+            get { return !string.IsNullOrEmpty(comment); }
+        }
+
+        // Adds new reference to the entry (used by SourceDigger).
+        public void AddReference(string reference)
+        {
+            if (!references.Contains(reference))
+                references.Add(reference);
+        }
+
+        // Clears references (used by SourceDigger).
+        public void ClearReferences()
+        {
+            references.Clear();
+        }
+
+        // Sets the string.
+        public void SetDeletedLines(string[] lines)
+        {
+            deletedLines = new List<string>(lines);
+        }
+
+        // Sets the comment.
+        public void SetComment(string comment)
+        {
+            this.comment = comment;
+        }
+
+        // Sets gettext flags directly in string format. It may be
+        // either empty string or "#, fuzzy", "#, c-format",
+        // "#, fuzzy, c-format" or others (not understood by poEdit).
+        public string Flags
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(flags))
+                    return string.Empty;
+                if (flags.StartsWith("#,"))
+                    return flags;
+                else
+                    return "#, " + flags;
+            }
+            set { flags = value; }
+        }
+
+        // Adds new autocomments (#. )
+        public void AddAutoComments(string comment)
+        {
+            autocomments.Add(comment);
+        }
+
+        // Clears autocomments.
+        public void ClearAutoComments()
+        {
+            autocomments.Clear();
+        }
+    }
 }

@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Examples.HelloAvalonia.MainWindow"
+        Title="Hello, world!" Height="400" Width="440">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+		<Border>
+			<StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+				<RadioButton 
+					x:Name="radioEnUS"
+					Margin="5"
+					GroupName="LangGroup"
+                    Content="en-US"
+					Click="OnLocaleChanged"/>
+				<RadioButton
+					x:Name="radiofrFR"
+					Margin="5"
+					GroupName="LangGroup"
+					Content="fr-FR"
+					Click="OnLocaleChanged"/>
+				<RadioButton
+					x:Name="radioruRU"
+					Margin="5"
+					GroupName="LangGroup"
+					Content="ru-RU"
+					Click="OnLocaleChanged"/>
+			</StackPanel>
+		</Border>
+
+        <Label Grid.Row="1" x:Name="label1" Margin="10,10,0,0"/>
+        <Label Grid.Row="2" x:Name="label2" Margin="10,10,0,0"/>
+
+		<StackPanel Grid.Row="3" Margin="10">
+			<Label x:Name="label3"/>
+			<Label x:Name="label4"/>
+			<Label x:Name="label5"/>
+		</StackPanel>
+
+       
+        <Label Grid.Row="4" x:Name="label6" Margin="10,20,0,0"/>
+        <Label Grid.Row="5" x:Name="label7" Margin="10,20,0,0"/>
+        <Label Grid.Row="6" x:Name="label8" Margin="10,0,10,0"/>
+        <TextBox IsEnabled="False" TextWrapping="Wrap" Grid.Row="7" x:Name="textBox1" Width="420" Height="80"
+                 Text="Here is an example of how one might continue a very long string&#x0a;for the common case the string represents multi-line output."/>
+    </Grid>
+</Window>

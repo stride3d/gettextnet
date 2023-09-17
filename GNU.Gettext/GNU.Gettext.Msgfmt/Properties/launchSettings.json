@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GNU.Gettext.Msgfmt": {
+      "commandName": "Project",
+      "commandLineArgs": "-l fr-FR -d C:\\Users\\jk\\Desktop\\Stride.GNU.Gettext\\GNU.Gettext\\Examples.Hello\\bin\\Debug\\net6.0 -r Examples.Hello --check-format C:\\Users\\jk\\Desktop\\Stride.GNU.Gettext\\GNU.Gettext\\Examples.Hello\\po\\fr.po"
+    }
+  }
+}

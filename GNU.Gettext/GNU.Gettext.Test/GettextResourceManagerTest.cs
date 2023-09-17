@@ -1,43 +1,40 @@
-using System;
-
 using NUnit.Framework;
-
-using GNU.Gettext;
-
 
 namespace GNU.Gettext.Test
 {
-	[TestFixture()]
-	public class GettextResourceManagerTest
-	{
-		[Test()]
-		public void NamesExtractionTest()
-		{
-			string n1 = "One.Two.Three";
-			Assert.AreEqual("Three", GettextResourceManager.ExtractClassName(n1));
-			Assert.AreEqual("One.Two", GettextResourceManager.ExtractNamespace(n1));
+    [TestFixture()]
+    public class GettextResourceManagerTest
+    {
+        [Test()]
+        public void NamesExtractionTest()
+        {
+            string n1 = "One.Two.Three";
+            Assert.That("Three", Is.EqualTo(GettextResourceManager.ExtractClassName(n1)));
+            Assert.That("One.Two", Is.EqualTo(GettextResourceManager.ExtractNamespace(n1)));
 
-			Assert.AreEqual("Class", GettextResourceManager.ExtractClassName("Class"));
-			Assert.AreEqual(String.Empty, GettextResourceManager.ExtractNamespace(".Test"));
-		}
-		
-		[Test][ExpectedException]
-		public void Ex1Test()
-		{
-			GettextResourceManager.ExtractClassName(null);
-		}
-		
-		[Test][ExpectedException]
-		public void Ex2Test()
-		{
-			GettextResourceManager.ExtractClassName(String.Empty);
-		}
+            Assert.That("Class", Is.EqualTo(GettextResourceManager.ExtractClassName("Class")));
+            Assert.That(string.Empty, Is.EqualTo(GettextResourceManager.ExtractNamespace(".Test")));
+        }
 
-		[Test][ExpectedException]
-		public void Ex3Test()
-		{
-			GettextResourceManager.ExtractClassName("Class.");
-		}
-	}
+        [Test]
+        public void Ex1Test()
+        {
+            Assert.Throws<Exception>(() => GettextResourceManager.ExtractClassName(null));
+        }
+
+        [Test]
+        public void Ex2Test()
+        {
+            Assert.Throws<Exception>(() =>
+            GettextResourceManager.ExtractClassName(string.Empty));
+        }
+
+        [Test]
+        public void Ex3Test()
+        {
+            Assert.Throws<Exception>(() =>
+            GettextResourceManager.ExtractClassName("Class."));
+        }
+    }
 }
 

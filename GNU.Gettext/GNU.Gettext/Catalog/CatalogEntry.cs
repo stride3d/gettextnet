@@ -33,91 +33,89 @@ using System.Text;
 
 namespace GNU.Gettext
 {
-	// This class holds information about one particular string.
-	// This includes original string and its occurences in source code
-	// (so-called references), translation and translation's status
-	// (fuzzy, non translated, translated) and optional comment.
-	public class CatalogEntry
-	{
-		public enum Validity
-		{
-			Unknown,
-			Invalid,
-			Valid
-		}
-		
-		string str, plural;
-		bool hasPlural;
-		List<string> translations;
-
-		List<string> references;
-		List<string> autocomments;
-		bool isFuzzy, isModified, isAutomatic;
-		bool hasBadTokens;
-		string moreFlags;
-		string comment;
-		Validity validity;
-		string errorString;
-		string context = String.Empty;
-		
-		Catalog owner;
-		
-		#region Constructors
-		// Initializes the object with original string and translation.
-        public CatalogEntry (Catalog owner, string str, string plural)
+    // This class holds information about one particular string.
+    // This includes original string and its occurences in source code
+    // (so-called references), translation and translation's status
+    // (fuzzy, non translated, translated) and optional comment.
+    public class CatalogEntry
+    {
+        public enum Validity
         {
-			this.owner = owner;
-			this.str = str;
-			this.plural = plural;
-
-			hasPlural = ! String.IsNullOrEmpty (plural);
-			references = new List<string> ();
-			autocomments = new List<string> ();
-			translations = new List<string> ();
-			isFuzzy = false;
-			isModified = false;
-			isAutomatic = false;
-			validity = Validity.Unknown;
-		}
-
-        public CatalogEntry (Catalog owner, CatalogEntry dt)
-		{
-			this.owner = owner;
-			str = dt.str;
-			plural = dt.plural;
-			hasPlural = dt.hasPlural;
-			translations = new List<string> (dt.translations);
-			references = new List<string> (dt.references);
-			autocomments = new List<string> (dt.autocomments);
-			isFuzzy = dt.isFuzzy;
-			isModified = dt.isModified;
-			isAutomatic = dt.isAutomatic;
-            hasBadTokens = dt.hasBadTokens;
-            moreFlags =dt.moreFlags;
-            comment = dt.comment;
-            validity = dt.validity;
-            errorString = dt.errorString;
-			context = dt.Context;
+            Unknown,
+            Invalid,
+            Valid
         }
-		#endregion
-        
+
+        string str, plural;
+        bool hasPlural;
+        List<string> translations;
+
+        readonly List<string> references;
+        readonly List<string> autocomments;
+        bool isFuzzy;
+        readonly bool hasBadTokens;
+        string moreFlags;
+        string comment;
+        string context = string.Empty;
+
+        readonly Catalog owner;
+
+        #region Constructors
+        // Initializes the object with original string and translation.
+        public CatalogEntry(Catalog owner, string str, string plural)
+        {
+            this.owner = owner;
+            this.str = str;
+            this.plural = plural;
+
+            hasPlural = !string.IsNullOrEmpty(plural);
+            references = new List<string>();
+            autocomments = new List<string>();
+            translations = new List<string>();
+            isFuzzy = false;
+            IsModified = false;
+            IsAutomatic = false;
+            DataValidity = Validity.Unknown;
+        }
+
+        public CatalogEntry(Catalog owner, CatalogEntry dt)
+        {
+            this.owner = owner;
+            str = dt.str;
+            plural = dt.plural;
+            hasPlural = dt.hasPlural;
+            translations = new List<string>(dt.translations);
+            references = new List<string>(dt.references);
+            autocomments = new List<string>(dt.autocomments);
+            isFuzzy = dt.isFuzzy;
+            IsModified = dt.IsModified;
+            IsAutomatic = dt.IsAutomatic;
+            hasBadTokens = dt.hasBadTokens;
+            moreFlags = dt.moreFlags;
+            comment = dt.comment;
+            DataValidity = dt.DataValidity;
+            ErrorString = dt.ErrorString;
+            context = dt.Context;
+        }
+        #endregion
+
         // Returns the original string.
         public string String
         {
-			get { return str; }
-		}
+            get { return str; }
+        }
 
         // Does this entry have a msgid_plural?
         public bool HasPlural
         {
-			get { return hasPlural; }
-		}
+            get { return hasPlural; }
+        }
 
         // Returns the plural string.
         public string PluralString
         {
-			get { return plural; }
-		}
+            get { return plural; }
+        }
 
         // How many translations (plural forms) do we have?
         public int NumberOfTranslations
@@ -131,265 +129,271 @@ namespace GNU.Gettext
         }
 
         // Returns the nth-translation.
-        public string GetTranslation (int index)
+        public string GetTranslation(int index)
         {
-			if (index < 0 || index >= translations.Count)
-				return String.Empty;
-			else
-				return translations[index];
+            if (index < 0 || index >= translations.Count)
+                return string.Empty;
+            else
+                return translations[index];
         }
-		
-		public string Context {
-			get { return context; }
-			set { context = value.Trim(); }
-		}
 
-		public bool HasContext {
-			get { return !String.IsNullOrEmpty(context); }
-		}
-		
-		public string Key {
-			get { return MakeKey(this.String, this.Context); }
-		}
-	
-		public static string MakeKey(string msgid, string context)
-		{
-			if (String.IsNullOrEmpty(msgid))
-				throw new Exception("Msgid cannot be empty");
-			return String.Format("{0}{1}", 
-			                     String.IsNullOrEmpty(context) ? String.Empty : context.Trim() + '|',
-			                     msgid);
-		}
+        public string Context
+        {
+            get { return context; }
+            set { context = value.Trim(); }
+        }
+
+        public bool HasContext
+        {
+            get { return !string.IsNullOrEmpty(context); }
+        }
+
+        public string Key
+        {
+            get { return MakeKey(String, Context); }
+        }
+
+        public static string MakeKey(string msgid, string context)
+        {
+            if (string.IsNullOrEmpty(msgid))
+                throw new Exception("Msgid cannot be empty");
+            return string.Format("{0}{1}",
+                                 string.IsNullOrEmpty(context) ? string.Empty : context.Trim() + '|',
+                                 msgid);
+        }
 
         // Returns array of all occurences of this string in source code.
-        public string[] References {
-			get { return references.ToArray (); }
-		}
+        public string[] References
+        {
+            get { return references.ToArray(); }
+        }
 
         // Returns comment added by the translator to this entry
         public string Comment
         {
-			get { return comment; }
-			set {
-				if (comment != value) {
-					comment = value;
-					MarkOwnerDirty ();
-				}
-			}
-		}
+            get { return comment; }
+            set
+            {
+                if (comment != value)
+                {
+                    comment = value;
+                    MarkOwnerDirty();
+                }
+            }
+        }
 
         // Returns array of all auto comments.
         public string[] AutoComments
         {
-			get { return autocomments.ToArray (); }
-		}
+            get { return autocomments.ToArray(); }
+        }
 
         // Convenience function: does this entry has a comment?
         public bool HasComment
         {
-			get { return ! String.IsNullOrEmpty (comment); }
-		}
+            get { return !string.IsNullOrEmpty(comment); }
+        }
 
         // Adds new reference to the entry (used by SourceDigger).
-        public void AddReference (string reference)
+        public void AddReference(string reference)
         {
-            if (!references.Contains (reference))
-                references.Add (reference);
+            if (!references.Contains(reference))
+                references.Add(reference);
         }
 
         // Clears references (used by SourceDigger).
-        public void ClearReferences ()
+        public void ClearReferences()
         {
-            references.Clear ();
+            references.Clear();
         }
-		
-		public bool RemoveReferenceTo (string fileNamePrefix)
-		{
-			bool result = false;
-			for (int i = 0; i < this.references.Count; i++) {
-				if (references[i].StartsWith (fileNamePrefix)) {
-					references.RemoveAt (i);
-					i--;
-					result = true;
-				}
-			}
-			return result;
-		}
-		
-		public void RemoveReference (string reference)
-		{
-			if (references.Contains (reference))
-				references.Remove (reference);
-		}
-		
-		// Sets the string.
-		public void SetString (string str)
-		{
-			this.str = str;
-			validity = Validity.Unknown;
-		}
-		
-		// Sets the plural form (if applicable).
-		public void SetPluralString (string plural)
-		{
-			this.plural = plural;
-			this.hasPlural = ! String.IsNullOrEmpty (plural);
-		}
-		
-		// Sets the translation. Changes "translated" status to true if \a t is not empty.
-		public void SetTranslation (string translation, int index)
-		{
-			while (index >= translations.Count)
-				translations.Add (String.Empty);
-			
-			if (translations[index] != translation) {
-				translations[index] = translation;
-				
-				validity = Validity.Unknown;
-				MarkOwnerDirty ();
-			}
-		}
-		
-		// Sets all translations.
-		public void SetTranslations (string[] translations)
-		{
-			this.translations = new List<string> (translations);
-			
-			validity = Validity.Unknown;
-			MarkOwnerDirty ();
-		}
-		
-		// gettext flags directly in string format. It may be
-		// either empty string or "#, fuzzy", "#, c-format",
-		// #, csharp-format" or others.
-		public string Flags {
-			get {
-				string retStr = String.Empty;
-				if (isFuzzy)
-					retStr = ", fuzzy";
-				retStr += moreFlags;
-				if (! String.IsNullOrEmpty (retStr))
-					return "#" + retStr;
-				else
-					return String.Empty;
-			}
-			set {
-				isFuzzy = false;
-				moreFlags = String.Empty;
-				
-				if (String.IsNullOrEmpty (value))
-					return;
-				
-				string[] tokens = value.TrimStart(new char[] {'#', ','}).Split (',');
-				foreach (string token in tokens) {
-					if (token.Trim () == "fuzzy")
-						isFuzzy = true;
-					else
-						moreFlags += ", " + token.Trim ();
-				}
-			}
-		}
-		
-		// Fuzzy flag
-		public bool IsFuzzy {
-			get { return isFuzzy; }
-			set {
-				isFuzzy = value;
-				MarkOwnerDirty ();
-			}
-		}
-		
-		// Translated property
-		public bool IsTranslated  {
-			get {
-				bool isTranslated = false;    
-				isTranslated = (translations.Count >= owner.PluralFormsCount) ||
-					(! HasPlural && ! String.IsNullOrEmpty (translations[0]));
-				if (isTranslated && HasPlural) {
-					for (int i = 0; i <owner.PluralFormsCount; i++) {
-						if (String.IsNullOrEmpty (translations[i])) {
-							isTranslated = false;
-							break;
-						}
-					}
-				}
-				return isTranslated;
-			}
-		}
-		
-		// Modified flag.
-		public bool IsModified
-		{
-			get { return isModified; }
-			set { isModified = value; }
-		}
-		
-		// Automatic translation flag.
-		public bool IsAutomatic
-		{
-			get { return isAutomatic; }
-			set { isAutomatic = value; }
-		}
-		
-		// Returns true if the gettext flags line contains "foo-format"
-		// flag when called with "foo" as argument.
-		public bool IsInFormat (string format)
-		{
-			if (String.IsNullOrEmpty(moreFlags))
-				return false;
-			string lookingFor = String.Format ("{0}-format", format);
-			string[] tokens = moreFlags.Split (',');
-			foreach (string token in tokens) {
-				if (token.Trim () == lookingFor)
-					return true;
-			}
-			return false;
-		}
-		
-		// Adds new autocomments (#. )
-		public void AddAutoComment (string comment, bool ifNotExists)
-		{
-			if (!ifNotExists || !autocomments.Contains(comment)) {
-				autocomments.Add (comment);
-			}
-		}
 
-		public void AddAutoComment (string comment)
+        public bool RemoveReferenceTo(string fileNamePrefix)
+        {
+            bool result = false;
+            for (int i = 0; i < this.references.Count; i++)
+            {
+                if (references[i].StartsWith(fileNamePrefix))
+                {
+                    references.RemoveAt(i);
+                    i--;
+                    result = true;
+                }
+            }
+            return result;
+        }
+
+        public void RemoveReference(string reference)
+        {
+            if (references.Contains(reference))
+                references.Remove(reference);
+        }
+
+        // Sets the string.
+        public void SetString(string str)
+        {
+            this.str = str;
+            DataValidity = Validity.Unknown;
+        }
+
+        // Sets the plural form (if applicable).
+        public void SetPluralString(string plural)
+        {
+            this.plural = plural;
+            this.hasPlural = !string.IsNullOrEmpty(plural);
+        }
+
+        // Sets the translation. Changes "translated" status to true if \a t is not empty.
+        public void SetTranslation(string translation, int index)
+        {
+            while (index >= translations.Count)
+                translations.Add(string.Empty);
+
+            if (translations[index] != translation)
+            {
+                translations[index] = translation;
+
+                DataValidity = Validity.Unknown;
+                MarkOwnerDirty();
+            }
+        }
+
+        // Sets all translations.
+        public void SetTranslations(string[] translations)
+        {
+            this.translations = new List<string>(translations);
+
+            DataValidity = Validity.Unknown;
+            MarkOwnerDirty();
+        }
+
+        // gettext flags directly in string format. It may be
+        // either empty string or "#, fuzzy", "#, c-format",
+        // #, csharp-format" or others.
+        public string Flags
+        {
+            get
+            {
+                string retStr = string.Empty;
+                if (isFuzzy)
+                    retStr = ", fuzzy";
+                retStr += moreFlags;
+                if (!string.IsNullOrEmpty(retStr))
+                    return "#" + retStr;
+                else
+                    return string.Empty;
+            }
+            set
+            {
+                isFuzzy = false;
+                moreFlags = string.Empty;
+
+                if (string.IsNullOrEmpty(value))
+                    return;
+
+                string[] tokens = value.TrimStart('#', ',').Split(',');
+                foreach (string token in tokens)
+                {
+                    if (token.Trim() == "fuzzy")
+                        isFuzzy = true;
+                    else
+                        moreFlags += ", " + token.Trim();
+                }
+            }
+        }
+
+        // Fuzzy flag
+        public bool IsFuzzy
+        {
+            get { return isFuzzy; }
+            set
+            {
+                isFuzzy = value;
+                MarkOwnerDirty();
+            }
+        }
+
+        // Translated property
+        public bool IsTranslated
+        {
+            get
+            {
+                bool isTranslated = false;
+                isTranslated = (translations.Count >= owner.PluralFormsCount) ||
+                    (!HasPlural && !string.IsNullOrEmpty(translations[0]));
+                if (isTranslated && HasPlural)
+                {
+                    for (int i = 0; i < owner.PluralFormsCount; i++)
+                    {
+                        if (string.IsNullOrEmpty(translations[i]))
+                        {
+                            isTranslated = false;
+                            break;
+                        }
+                    }
+                }
+                return isTranslated;
+            }
+        }
+
+        // Modified flag.
+        public bool IsModified { get; set; }
+
+        // Automatic translation flag.
+        public bool IsAutomatic { get; set; }
+
+        // Returns true if the gettext flags line contains "foo-format"
+        // flag when called with "foo" as argument.
+        public bool IsInFormat(string format)
+        {
+            if (string.IsNullOrEmpty(moreFlags))
+                return false;
+            string lookingFor = string.Format("{0}-format", format);
+            string[] tokens = moreFlags.Split(',');
+            foreach (string token in tokens)
+            {
+                if (token.Trim() == lookingFor)
+                    return true;
+            }
+            return false;
+        }
+
+        // Adds new autocomments (#. )
+        public void AddAutoComment(string comment, bool ifNotExists)
+        {
+            if (!ifNotExists || !autocomments.Contains(comment))
+            {
+                autocomments.Add(comment);
+            }
+        }
+
+        public void AddAutoComment(string comment)
         {
             AddAutoComment(comment, false);
         }
-		
-		// Clears autocomments.
-		public void ClearAutoComments ()
-		{
-			autocomments.Clear ();
-		}
-		
-		// Checks if %i etc. are correct in the translation (true if yes).
-		// Strings that are not c-format are always correct.
-		// TODO: make it checking for c-sharp, .Net string validity
-		public Validity DataValidity
-		{
-			get { return validity; }
-			set { validity = value; }
-		}
-		
-		public string ErrorString
-		{
-			get { return errorString; }
-			set { errorString = value; }
-		}
-		
-		public string LocaleCode
-		{
-			get { return owner.LocaleCode; }
-		}
-		
-		void MarkOwnerDirty ()
-		{
-			if (owner != null)
-				owner.IsDirty = true;
-		}
-	}
+
+        // Clears autocomments.
+        public void ClearAutoComments()
+        {
+            autocomments.Clear();
+        }
+
+        // Checks if %i etc. are correct in the translation (true if yes).
+        // Strings that are not c-format are always correct.
+        // TODO: make it checking for c-sharp, .Net string validity
+        public Validity DataValidity { get; set; }
+
+        public string ErrorString { get; set; }
+
+        public string LocaleCode
+        {
+            get { return owner.LocaleCode; }
+        }
+
+        void MarkOwnerDirty()
+        {
+            if (owner != null)
+                owner.IsDirty = true;
+        }
+    }
 }
 

@@ -1,3 +1,0 @@
-@echo off
-
-set DOTNET_HOME=C:\Windows\Microsoft.NET\Framework\v4.0.30319
