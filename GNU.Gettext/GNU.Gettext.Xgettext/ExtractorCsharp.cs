@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace GNU.Gettext.Xgettext;
 
-public class ExtractorCsharp
+public partial class ExtractorCsharp
 {
     const string CsharpStringPatternExplained = @"
 			(\w+)\s*=\s*    # key =
@@ -28,6 +28,60 @@ public class ExtractorCsharp
     const string ConcatenatedStringsPattern = @"((@""(?:[^""]|"""")*""|""(?:\\.|[^\\""])*"")\s*(?:\+|;|,|\))\s*){2,}";
     const string TwoStringsArgumentsPattern = CsharpStringPattern + @"\s*,\s*" + CsharpStringPattern;
     const string ThreeStringsArgumentsPattern = TwoStringsArgumentsPattern + @"\s*,\s*" + CsharpStringPattern;
+
+    // Full composite patterns for source-generated regex
+    const string GetStringFullPattern = @"GetString\s*\(\s*" + CsharpStringPattern;
+    const string GetStringFmtFullPattern = @"GetStringFmt\s*\(\s*" + CsharpStringPattern;
+    const string GetPluralStringFullPattern = @"GetPluralString\s*\(\s*" + TwoStringsArgumentsPattern;
+    const string GetPluralStringFmtFullPattern = @"GetPluralStringFmt\s*\(\s*" + TwoStringsArgumentsPattern;
+    const string GetParticularStringFullPattern = @"GetParticularString\s*\(\s*" + TwoStringsArgumentsPattern;
+    const string GetParticularPluralStringFullPattern = @"GetParticularPluralString\s*\(\s*" + ThreeStringsArgumentsPattern;
+    const string TextAssignFullPattern = @"\.\s*Text\s*=\s*" + CsharpStringPattern + @"\s*;";
+    const string TextConcatFullPattern = @"\.\s*Text\s*=\s*" + ConcatenatedStringsPattern;
+    const string HeaderTextAssignFullPattern = @"\.\s*HeaderText\s*=\s*" + CsharpStringPattern + @"\s*;";
+    const string HeaderTextConcatFullPattern = @"\.\s*HeaderText\s*=\s*" + ConcatenatedStringsPattern;
+    const string ToolTipTextAssignFullPattern = @"\.\s*ToolTipText\s*=\s*" + CsharpStringPattern + @"\s*;";
+    const string ToolTipTextConcatFullPattern = @"\.\s*ToolTipText\s*=\s*" + ConcatenatedStringsPattern;
+    const string SetToolTipAssignFullPattern = @"\.\s*SetToolTip\s*\([^\\""]*\s*,\s*" + CsharpStringPattern + @"\s*\)\s*;";
+    const string SetToolTipConcatFullPattern = @"\.\s*SetToolTip\s*\([^\\""]*\s*,\s*" + ConcatenatedStringsPattern;
+    const string ApplyResourcesFullPattern = @"\.\s*ApplyResources\s*\([^\\""]*\s*,\s*" + CsharpStringPattern + @"\s*\)\s*;";
+    const string RemoveCommentsFullPattern = @"/\*(.*?)\*/|//(.*?)(\r?\n|$)|" + CsharpStringPattern;
+
+    // Source-generated regex (compiled at build time, no runtime allocation cost)
+    [GeneratedRegex(GetStringFullPattern, RegexOptions.Multiline)]
+    private static partial Regex GetStringRegex();
+    [GeneratedRegex(GetStringFmtFullPattern, RegexOptions.Multiline)]
+    private static partial Regex GetStringFmtRegex();
+    [GeneratedRegex(GetPluralStringFullPattern, RegexOptions.Multiline)]
+    private static partial Regex GetPluralStringRegex();
+    [GeneratedRegex(GetPluralStringFmtFullPattern, RegexOptions.Multiline)]
+    private static partial Regex GetPluralStringFmtRegex();
+    [GeneratedRegex(GetParticularStringFullPattern, RegexOptions.Multiline)]
+    private static partial Regex GetParticularStringRegex();
+    [GeneratedRegex(GetParticularPluralStringFullPattern, RegexOptions.Multiline)]
+    private static partial Regex GetParticularPluralStringRegex();
+    [GeneratedRegex(TextAssignFullPattern, RegexOptions.Multiline)]
+    private static partial Regex TextAssignRegex();
+    [GeneratedRegex(TextConcatFullPattern, RegexOptions.Multiline)]
+    private static partial Regex TextConcatRegex();
+    [GeneratedRegex(HeaderTextAssignFullPattern, RegexOptions.Multiline)]
+    private static partial Regex HeaderTextAssignRegex();
+    [GeneratedRegex(HeaderTextConcatFullPattern, RegexOptions.Multiline)]
+    private static partial Regex HeaderTextConcatRegex();
+    [GeneratedRegex(ToolTipTextAssignFullPattern, RegexOptions.Multiline)]
+    private static partial Regex ToolTipTextAssignRegex();
+    [GeneratedRegex(ToolTipTextConcatFullPattern, RegexOptions.Multiline)]
+    private static partial Regex ToolTipTextConcatRegex();
+    [GeneratedRegex(SetToolTipAssignFullPattern, RegexOptions.Multiline)]
+    private static partial Regex SetToolTipAssignRegex();
+    [GeneratedRegex(SetToolTipConcatFullPattern, RegexOptions.Multiline)]
+    private static partial Regex SetToolTipConcatRegex();
+    [GeneratedRegex(ApplyResourcesFullPattern, RegexOptions.Multiline)]
+    private static partial Regex ApplyResourcesRegex();
+    [GeneratedRegex(RemoveCommentsFullPattern, RegexOptions.Singleline)]
+    private static partial Regex RemoveCommentsRegex();
+    [GeneratedRegex(CsharpStringPattern)]
+    private static partial Regex CsharpStringRegex();
 
     public const string CsharpStringPatternMacro = "%CsharpString%";
 
@@ -93,34 +147,36 @@ public class ExtractorCsharp
         text = RemoveComments(text);
 
         // Gettext functions patterns
-        ProcessPattern(ExtractMode.Msgid, @"GetString\s*\(\s*" + CsharpStringPattern, text, inputFile);
-        ProcessPattern(ExtractMode.Msgid, @"GetStringFmt\s*\(\s*" + CsharpStringPattern, text, inputFile);
-        ProcessPattern(ExtractMode.MsgidPlural, @"GetPluralString\s*\(\s*" + TwoStringsArgumentsPattern, text, inputFile);
-        ProcessPattern(ExtractMode.MsgidPlural, @"GetPluralStringFmt\s*\(\s*" + TwoStringsArgumentsPattern, text, inputFile);
-        ProcessPattern(ExtractMode.ContextMsgid, @"GetParticularString\s*\(\s*" + TwoStringsArgumentsPattern, text, inputFile);
-        ProcessPattern(ExtractMode.ContextMsgid, @"GetParticularPluralString\s*\(\s*" + ThreeStringsArgumentsPattern, text, inputFile);
-
+        ProcessPattern(ExtractMode.Msgid, GetStringRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.Msgid, GetStringFmtRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.MsgidPlural, GetPluralStringRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.MsgidPlural, GetPluralStringFmtRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.ContextMsgid, GetParticularStringRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.ContextMsgid, GetParticularPluralStringRegex(), text, inputFile);
 
         // Avalonia patterns
-        ProcessPattern(ExtractMode.Msgid, @"\.\s*Text\s*=\s*" + CsharpStringPattern + @"\s*;", text, inputFile);
-        ProcessPattern(ExtractMode.MsgidConcat, @"\.\s*Text\s*=\s*" + ConcatenatedStringsPattern, text, inputFile);
+        ProcessPattern(ExtractMode.Msgid, TextAssignRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.MsgidConcat, TextConcatRegex(), text, inputFile);
 
-        ProcessPattern(ExtractMode.Msgid, @"\.\s*HeaderText\s*=\s*" + CsharpStringPattern + @"\s*;", text, inputFile);
-        ProcessPattern(ExtractMode.MsgidConcat, @"\.\s*HeaderText\s*=\s*" + ConcatenatedStringsPattern, text, inputFile);
+        ProcessPattern(ExtractMode.Msgid, HeaderTextAssignRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.MsgidConcat, HeaderTextConcatRegex(), text, inputFile);
 
-        ProcessPattern(ExtractMode.Msgid, @"\.\s*ToolTipText\s*=\s*" + CsharpStringPattern + @"\s*;", text, inputFile);
-        ProcessPattern(ExtractMode.MsgidConcat, @"\.\s*ToolTipText\s*=\s*" + ConcatenatedStringsPattern, text, inputFile);
+        ProcessPattern(ExtractMode.Msgid, ToolTipTextAssignRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.MsgidConcat, ToolTipTextConcatRegex(), text, inputFile);
 
-        ProcessPattern(ExtractMode.Msgid, @"\.\s*SetToolTip\s*\([^\\""]*\s*,\s*" + CsharpStringPattern + @"\s*\)\s*;", text, inputFile);
-        ProcessPattern(ExtractMode.MsgidConcat, @"\.\s*SetToolTip\s*\([^\\""]*\s*,\s*" + ConcatenatedStringsPattern, text, inputFile);
+        ProcessPattern(ExtractMode.Msgid, SetToolTipAssignRegex(), text, inputFile);
+        ProcessPattern(ExtractMode.MsgidConcat, SetToolTipConcatRegex(), text, inputFile);
 
         if (ReadResources(inputFile))
-            ProcessPattern(ExtractMode.MsgidFromResx, @"\.\s*ApplyResources\s*\([^\\""]*\s*,\s*" + CsharpStringPattern + @"\s*\)\s*;", text, inputFile);
+            ProcessPattern(ExtractMode.MsgidFromResx, ApplyResourcesRegex(), text, inputFile);
 
-        // Custom patterns
+        // Custom patterns (user-supplied at runtime — must remain dynamic)
         foreach (string pattern in Options.SearchPatterns)
         {
-            ProcessPattern(ExtractMode.Msgid, pattern.Replace(CsharpStringPatternMacro, CsharpStringPattern), text, inputFile);
+            var r = new Regex(
+                pattern.Replace(CsharpStringPatternMacro, CsharpStringPattern),
+                RegexOptions.Multiline);
+            ProcessPattern(ExtractMode.Msgid, r, text, inputFile);
         }
     }
 
@@ -140,12 +196,8 @@ public class ExtractorCsharp
 
     public static string RemoveComments(string input)
     {
-        string blockComments = @"/\*(.*?)\*/";
-        string lineComments = @"//(.*?)(\r?\n|$)";
-
-        return Regex.Replace(
+        return RemoveCommentsRegex().Replace(
             input,
-            blockComments + "|" + lineComments + "|" + CsharpStringPattern,
             m =>
             {
                 if (m.Value.StartsWith("/*") || m.Value.StartsWith("//"))
@@ -155,19 +207,17 @@ public class ExtractorCsharp
                 }
                 // Keep the literal strings
                 return m.Value;
-            },
-        RegexOptions.Singleline);
+            });
     }
 
-    private void ProcessPattern(ExtractMode mode, string pattern, string text, string inputFile)
+    private void ProcessPattern(ExtractMode mode, Regex r, string text, string inputFile)
     {
-        Regex r = new Regex(pattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
         MatchCollection matches = r.Matches(text);
         foreach (Match match in matches)
         {
             GroupCollection groups = match.Groups;
             if (groups.Count < 2)
-                throw new Exception($"Invalid pattern '{pattern}'.\nTwo groups are required at least.\nSource: {match.Value}");
+                throw new Exception($"Invalid pattern '{r}'.\nTwo groups are required at least.\nSource: {match.Value}");
 
             // Initialisation
             string context = string.Empty;
@@ -179,7 +229,7 @@ public class ExtractorCsharp
                     msgid = Unescape(groups[1].Value);
                     break;
                 case ExtractMode.MsgidConcat:
-                    MatchCollection matches2 = Regex.Matches(groups[0].Value, CsharpStringPattern);
+                    MatchCollection matches2 = CsharpStringRegex().Matches(groups[0].Value);
                     StringBuilder sb = new StringBuilder();
                     foreach (Match match2 in matches2)
                     {
@@ -292,8 +342,7 @@ public class ExtractorCsharp
         else
         {
             if (Options.Verbose)
-                Debug.WriteLine(string.Format("Extracting from resource file: {0} (Input file: {1})",
-                                              resxFileName, inputFile));
+                Debug.WriteLine($"Extracting from resource file: {resxFileName} (Input file: {inputFile})");
         }
         var doc = XDocument.Load(resxFileName);
         foreach (var data in doc.Root.Elements("data"))
@@ -359,4 +408,3 @@ public class ExtractorCsharp
         return StringEscaping.UnEscape(mode, msgid.Trim(new char[] { '@', '"' }));
     }
 }
-
