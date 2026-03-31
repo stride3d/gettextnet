@@ -308,7 +308,7 @@ namespace GNU.Gettext.Xgettext
             var doc = XDocument.Load(resxFileName);
             foreach (var data in doc.Root.Elements("data"))
             {
-                if (data.Attribute("type") != null) continue; // skip non-string resources
+                if (data.Attribute("type") != null || data.Attribute("mimetype") != null) continue; // skip non-string resources
                 var key = data.Attribute("name")?.Value;
                 var value = data.Element("value")?.Value;
                 if (key != null && value != null)
