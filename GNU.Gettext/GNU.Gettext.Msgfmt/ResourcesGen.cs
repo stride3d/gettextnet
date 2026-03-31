@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Resources;
 using System.IO;
+using System.Resources;
+using System.Text;
 
 namespace GNU.Gettext.Msgfmt
 {

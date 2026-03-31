@@ -1,15 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Reflection;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.Versioning;
+using System.Text;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using System.Resources;
-using System.Runtime.Versioning;
 
 namespace GNU.Gettext.Msgfmt
 {

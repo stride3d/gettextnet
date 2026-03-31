@@ -1,4 +1,5 @@
 namespace GNU.Gettext.Xgettext;
+
 public enum ExtractMode
 {
     Msgid,

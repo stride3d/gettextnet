@@ -49,9 +49,9 @@
  */
 
 using System;
-using System.Resources;
 using System.Collections;
 using System.IO;
+using System.Resources;
 
 namespace GNU.Gettext
 {

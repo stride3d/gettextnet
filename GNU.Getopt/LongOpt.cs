@@ -124,10 +124,11 @@ namespace GNU.Getopt
                 isPosixlyCorrect = (bool)new AppSettingsReader().GetValue(
                     "Gnu.PosixlyCorrect", typeof(bool));
             }
-            catch{
+            catch
+            {
                 Console.WriteLine("Warning: app.config not found!");
             }
-            if(isPosixlyCorrect)
+            if (isPosixlyCorrect)
             {
                 cultureInfo = new CultureInfo("en-US");
             }

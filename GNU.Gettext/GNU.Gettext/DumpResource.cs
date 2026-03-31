@@ -22,19 +22,20 @@
  * or a .resources file as a PO file.
  */
 
-using System; 
-using System.Reflection; 
+using System;
 using System.Collections;
 using System.IO;
-using System.Text;
+using System.Reflection;
 using System.Resources;
+using System.Text;
+
 using GNU.Gettext;
 
 namespace GNU.Gettext
 {
     public class DumpResource
     {
-        private TextWriter Out;
+        private readonly TextWriter Out;
         private void DumpString(String str)
         {
             int n = str.Length;

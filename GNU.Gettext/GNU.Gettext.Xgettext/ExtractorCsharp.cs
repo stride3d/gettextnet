@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Collections;
+
 using Curiosity.Resources;
 
 namespace GNU.Gettext.Xgettext

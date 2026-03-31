@@ -49,14 +49,14 @@
  */
 
 using System;
-using System.Globalization;
-using System.Resources;
-using System.Reflection;
 using System.Collections;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Resources;
+using System.Text;
 
 namespace GNU.Gettext
 {
@@ -168,7 +168,7 @@ namespace GNU.Gettext
                 if (satAssemblyStream == null)
                     return null;
                 Byte[] assemblyData = new Byte[satAssemblyStream.Length];
-                satAssemblyStream.Read(assemblyData, 0, assemblyData.Length);
+                satAssemblyStream.ReadExactly(assemblyData);
                 return Assembly.Load(assemblyData);
             }
         }
@@ -298,10 +298,10 @@ namespace GNU.Gettext
             return ConstructClassName(resourceName) + "_" + culture.Name.Replace('-', '_');
         }
 
-        private static GettextResourceSet[] EmptyResourceSetArray = new GettextResourceSet[0];
+        private static readonly GettextResourceSet[] EmptyResourceSetArray = new GettextResourceSet[0];
 
         // Cache for already loaded GettextResourceSet cascades.
-        private Hashtable /* CultureInfo -> GettextResourceSet[] */ Loaded = new Hashtable();
+        private readonly Hashtable /* CultureInfo -> GettextResourceSet[] */ Loaded = new Hashtable();
 
         /// <summary>
         /// Returns the array of <c>GettextResourceSet</c>s for a given culture,

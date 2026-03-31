@@ -28,8 +28,8 @@
 // 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace GNU.Gettext
 {
@@ -129,9 +129,9 @@ namespace GNU.Gettext
 
     internal class PluralFormsScanner
     {
-        string str;
+        readonly string str;
         int pos = 0;
-        PluralFormsToken token;
+        readonly PluralFormsToken token;
 
         public PluralFormsScanner(string str)
         {
@@ -279,8 +279,8 @@ namespace GNU.Gettext
 
     internal class PluralFormsNode
     {
-        PluralFormsToken token;
-        PluralFormsNode[] nodes = new PluralFormsNode[3];
+        readonly PluralFormsToken token;
+        readonly PluralFormsNode[] nodes = new PluralFormsNode[3];
 
         #region Constructor
         public PluralFormsNode(PluralFormsToken token)
@@ -456,7 +456,7 @@ namespace GNU.Gettext
     {
         int nplurals;
         PluralFormsNode plural;
-        string expression;
+        readonly string expression;
 
         public PluralFormsCalculator(string expression)
         {
@@ -587,7 +587,7 @@ namespace GNU.Gettext
     internal class PluralFormsParser
     {
         // stops at SEMICOLON, returns 0 if error
-        PluralFormsScanner scanner;
+        readonly PluralFormsScanner scanner;
 
         public PluralFormsParser(PluralFormsScanner scanner)
         {

@@ -48,8 +48,8 @@
  * program can be used.
  */
 
-using System.Resources; /* ResourceManager, ResourceSet, IResourceReader */
 using System.Collections; /* Hashtable, ICollection, IEnumerator, IDictionaryEnumerator */
+using System.Resources; /* ResourceManager, ResourceSet, IResourceReader */
 
 namespace GNU.Gettext
 {

@@ -1,8 +1,8 @@
 using System.Globalization;
 
-using Xunit;
-
 using GNU.Gettext.Msgfmt;
+
+using Xunit;
 
 namespace GNU.Gettext.Test
 {

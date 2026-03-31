@@ -1,6 +1,6 @@
-using Xunit;
-
 using GNU.Gettext.Xgettext;
+
+using Xunit;
 
 namespace GNU.Gettext.Test
 {

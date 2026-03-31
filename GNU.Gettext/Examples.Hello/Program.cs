@@ -6,6 +6,7 @@
 using System;
 using System.Globalization;
 using System.Threading;
+
 using GNU.Gettext;
 
 Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
@@ -16,7 +17,7 @@ Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
 ShowMessages();
 
 
-void ShowMessages()
+static void ShowMessages()
 {
     Console.WriteLine("===[ Current culture {0} ]===", Thread.CurrentThread.CurrentUICulture);
     GettextResourceManager catalog = new GettextResourceManager();

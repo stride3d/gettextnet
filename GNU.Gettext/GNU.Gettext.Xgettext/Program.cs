@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Diagnostics;
+using System.Text;
 
 using GNU.Getopt;
 
