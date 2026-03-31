@@ -1,33 +1,31 @@
-using NUnit.Framework;
+using Xunit;
 
 using GNU.Gettext.Utils;
 
 namespace GNU.Gettext.Test
 {
-    [TestFixture()]
     public class UtilsTest
     {
-        [Test()]
+        [Fact]
         public void RelativePathTest()
         {
+            Assert.Equal("test/test.htm", FileUtils.GetRelativeUri("http://www.contoso.com/test/test.htm", "http://www.contoso.com/"));
+            Assert.Equal("../", FileUtils.GetRelativeUri("http://www.contoso.com/", "http://www.contoso.com/test1/dummy"));
 
-            Assert.That("test/test.htm", Is.EqualTo(FileUtils.GetRelativeUri("http://www.contoso.com/test/test.htm", "http://www.contoso.com/")));
-            Assert.That("../", Is.EqualTo(FileUtils.GetRelativeUri("http://www.contoso.com/", "http://www.contoso.com/test1/dummy")));
-
-            Assert.That("../../Messages.pot", Is.EqualTo(FileUtils.GetRelativeUri(@"C:\dir1\dir2\Messages.pot", @"C:\dir1\dir2\dir3\dir4\")));
-            Assert.That("../../Messages.pot", Is.EqualTo(FileUtils.GetRelativeUri(
+            Assert.Equal("../../Messages.pot", FileUtils.GetRelativeUri(@"C:\dir1\dir2\Messages.pot", @"C:\dir1\dir2\dir3\dir4\"));
+            Assert.Equal("../../Messages.pot", FileUtils.GetRelativeUri(
                 Path.Combine(Environment.CurrentDirectory, "Messages.pot"),
-                Path.Combine(Environment.CurrentDirectory, string.Format("dir{0}subdir{0}", Path.DirectorySeparatorChar)))));
+                Path.Combine(Environment.CurrentDirectory, string.Format("dir{0}subdir{0}", Path.DirectorySeparatorChar))));
         }
 
-        [Test()]
+        [Fact]
         public void ReadStringsTest()
         {
             List<string> files = FileUtils.ReadStrings("./Data/UtilsTest.txt");
-            Assert.That(3, Is.EqualTo(files.Count), "Simple reading");
+            Assert.Equal(3, files.Count);
 
             FileUtils.ReadStrings("./Data/UtilsTest.txt", files);
-            Assert.That(3, Is.EqualTo(files.Count), "Merged with duplicates");
+            Assert.Equal(3, files.Count);
 
             files = new List<string>
             {
@@ -35,8 +33,7 @@ namespace GNU.Gettext.Test
                 "Test 2"
             };
             FileUtils.ReadStrings("./Data/UtilsTest.txt", files);
-            Assert.That(5, Is.EqualTo(files.Count), "Merge failed");
+            Assert.Equal(5, files.Count);
         }
     }
 }
-

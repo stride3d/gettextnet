@@ -1,13 +1,12 @@
-using NUnit.Framework;
+using Xunit;
 
 using GNU.Gettext.Xgettext;
 
 namespace GNU.Gettext.Test
 {
-    [TestFixture()]
     public class XgettextTest
     {
-        [Test()]
+        [Fact]
         public void ExtractorCSharpTest()
         {
             string ressourceId = string.Format("{0}.{1}", this.GetType().Assembly.GetName().Name, "Data.XgettextTest.txt");
@@ -21,7 +20,7 @@ namespace GNU.Gettext.Test
             }
 
             Options options = new Options();
-            options.InputFiles.Add(@"./Test/File/Name.cs"); // File wont be used, feed the plain text
+            options.InputFiles.Add(@"./Test/File/Name.cs");
             options.OutFile = @"./Test.pot";
             options.Overwrite = true;
             ExtractorCsharp extractor = new ExtractorCsharp(options);
@@ -39,14 +38,13 @@ namespace GNU.Gettext.Test
                     multiline++;
             }
 
-            Assert.That(2, Is.EqualTo(ctx), "Context count");
-
-            Assert.That(2, Is.EqualTo(extractor.Catalog.PluralFormsCount), "PluralFormsCount");
-            Assert.That(17, Is.EqualTo(extractor.Catalog.Count), "Duplicates may not detected");
-            Assert.That(2, Is.EqualTo(multiline), "Multiline string");
+            Assert.Equal(2, ctx);
+            Assert.Equal(2, extractor.Catalog.PluralFormsCount);
+            Assert.Equal(17, extractor.Catalog.Count);
+            Assert.Equal(2, multiline);
         }
 
-        [Test()]
+        [Fact]
         public void RemoveCommentsTest()
         {
             string input = @"
@@ -64,14 +62,12 @@ button1.Text = ""Save""; // Save data.Text = ""10""
 /*button1.Text = ""Save""; // Save data.Text = ""10""*/
 ";
             string output = ExtractorCsharp.RemoveComments(input);
-            Assert.IsTrue(output.IndexOf("/*This is not comment*/") >= 0, "Multiline comment chars in string");
-            Assert.IsTrue(output.IndexOf("This is //not comment too") >= 0, "Single line comment chars in string");
-            Assert.That(-1, Is.EqualTo(output.IndexOf("// Save")), "Single line comment");
-            Assert.That(-1, Is.EqualTo(output.IndexOf("//button1")), "Single line comment");
-            Assert.That(-1, Is.EqualTo(output.IndexOf("/*\n")), "Multi line comment");
-            Assert.That(-1, Is.EqualTo(output.IndexOf("/*button1")), "Multi line comment in single line");
+            Assert.True(output.IndexOf("/*This is not comment*/") >= 0);
+            Assert.True(output.IndexOf("This is //not comment too") >= 0);
+            Assert.Equal(-1, output.IndexOf("// Save"));
+            Assert.Equal(-1, output.IndexOf("//button1"));
+            Assert.Equal(-1, output.IndexOf("/*\n"));
+            Assert.Equal(-1, output.IndexOf("/*button1"));
         }
     }
-
 }
-

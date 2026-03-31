@@ -1,21 +1,15 @@
 using System.Text;
 
-using NUnit.Framework;
+using Xunit;
 using GNU.Gettext.Msgfmt;
 
 namespace GNU.Gettext.Test
 {
-    [TestFixture()]
     public class GetoptTest
     {
-        [SetUp]
-        public void TestSetup()
-        { }
-
-        [Test()]
+        [Fact]
         public void GetoptParamsTest()
         {
-
             string[] args = new string[]
             {
                 "-l", "fr-FR",
@@ -26,12 +20,12 @@ namespace GNU.Gettext.Test
                 "./po/ru.po"
             };
             Options options = new Options();
-            Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
+            Assert.True(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message));
             CheckOptions(options);
-            Assert.That(Mode.SateliteAssembly, Is.EqualTo(options.Mode));
+            Assert.Equal(Mode.SateliteAssembly, options.Mode);
         }
 
-        [Test()]
+        [Fact]
         public void GetoptLongParamsTest()
         {
             string[] args = new string[]
@@ -45,26 +39,25 @@ namespace GNU.Gettext.Test
                 "./po/ru.po"
             };
             Options options = new Options();
-            Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
-            Assert.That(0, Is.EqualTo(message.Length), message.ToString());
+            Assert.True(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message));
+            Assert.Equal(0, message.Length);
             CheckOptions(options);
-            Assert.That(Mode.SateliteAssembly, Is.EqualTo(options.Mode));
+            Assert.Equal(Mode.SateliteAssembly, options.Mode);
         }
 
         private void CheckOptions(Options options)
         {
-            Assert.That(2, Is.EqualTo(options.InputFiles.Count), "input files");
-            Assert.That("./po/fr.po", Is.EqualTo(options.InputFiles[0]));
-            Assert.That("fr-FR", Is.EqualTo(options.LocaleStr));
-            Assert.That("./bin/Debug", Is.EqualTo(options.OutDir));
-            Assert.That("Examples.Hello.Messages", Is.EqualTo(options.BaseName));
-            Assert.That("./../../Bin", Is.EqualTo(options.LibDir));
+            Assert.Equal(2, options.InputFiles.Count);
+            Assert.Equal("./po/fr.po", options.InputFiles[0]);
+            Assert.Equal("fr-FR", options.LocaleStr);
+            Assert.Equal("./bin/Debug", options.OutDir);
+            Assert.Equal("Examples.Hello.Messages", options.BaseName);
+            Assert.Equal("./../../Bin", options.LibDir);
         }
 
-        [Test()]
+        [Fact]
         public void MsgfmtResourceModeParamsTest()
         {
-
             string[] args = new string[]
             {
                 "--csharp-resources",
@@ -76,11 +69,9 @@ namespace GNU.Gettext.Test
                 "./po/ru.po"
             };
             Options options = new Options();
-            Assert.IsTrue(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message), message.ToString());
+            Assert.True(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message));
             CheckOptions(options);
-            Assert.That(Mode.Resources, Is.EqualTo(options.Mode));
+            Assert.Equal(Mode.Resources, options.Mode);
         }
-
     }
 }
-

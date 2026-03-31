@@ -1,40 +1,38 @@
-using NUnit.Framework;
+using Xunit;
 
 namespace GNU.Gettext.Test
 {
-    [TestFixture()]
     public class GettextResourceManagerTest
     {
-        [Test()]
+        [Fact]
         public void NamesExtractionTest()
         {
             string n1 = "One.Two.Three";
-            Assert.That("Three", Is.EqualTo(GettextResourceManager.ExtractClassName(n1)));
-            Assert.That("One.Two", Is.EqualTo(GettextResourceManager.ExtractNamespace(n1)));
+            Assert.Equal("Three", GettextResourceManager.ExtractClassName(n1));
+            Assert.Equal("One.Two", GettextResourceManager.ExtractNamespace(n1));
 
-            Assert.That("Class", Is.EqualTo(GettextResourceManager.ExtractClassName("Class")));
-            Assert.That(string.Empty, Is.EqualTo(GettextResourceManager.ExtractNamespace(".Test")));
+            Assert.Equal("Class", GettextResourceManager.ExtractClassName("Class"));
+            Assert.Equal(string.Empty, GettextResourceManager.ExtractNamespace(".Test"));
         }
 
-        [Test]
+        [Fact]
         public void Ex1Test()
         {
             Assert.Throws<Exception>(() => GettextResourceManager.ExtractClassName(null));
         }
 
-        [Test]
+        [Fact]
         public void Ex2Test()
         {
             Assert.Throws<Exception>(() =>
-            GettextResourceManager.ExtractClassName(string.Empty));
+                GettextResourceManager.ExtractClassName(string.Empty));
         }
 
-        [Test]
+        [Fact]
         public void Ex3Test()
         {
             Assert.Throws<Exception>(() =>
-            GettextResourceManager.ExtractClassName("Class."));
+                GettextResourceManager.ExtractClassName("Class."));
         }
     }
 }
-

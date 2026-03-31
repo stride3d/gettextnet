@@ -1,16 +1,14 @@
 using System.Globalization;
 
-using NUnit.Framework;
+using Xunit;
 
 using GNU.Gettext.Msgfmt;
 
-
 namespace GNU.Gettext.Test
 {
-    [TestFixture()]
     public class MsgfmtTest
     {
-        [Test()]
+        [Fact]
         public void AssemblyGenerationTest()
         {
             Options options = new Options();
@@ -23,17 +21,10 @@ namespace GNU.Gettext.Test
             options.DebugMode = true;
 
             AssemblyGen gen = new AssemblyGen(options);
-            try
-            {
-                gen.Run();
-            }
-            catch (Exception e)
-            {
-                Assert.Fail("Assebly generation failed. Exception message:\n{0}", e.Message);
-            }
+            gen.Run();
         }
 
-        [Test()]
+        [Fact]
         public void ResourcesGenerationTest()
         {
             Options options = new Options();
@@ -46,4 +37,3 @@ namespace GNU.Gettext.Test
         }
     }
 }
-
