@@ -7,9 +7,7 @@
     <ToolCommandName>xgettext-net</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Curiosity.Resources" Version="1.0.1" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\GNU.Getopt\GNU.Getopt.csproj">
       <Project>{24BE81B3-C22E-448B-A892-AAF95AB28747}</Project>

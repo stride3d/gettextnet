@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using Curiosity.Resources;
+using System.Xml.Linq;
 
 namespace GNU.Gettext.Xgettext
 {
@@ -307,18 +305,14 @@ namespace GNU.Gettext.Xgettext
                     Debug.WriteLine(string.Format("Extracting from resource file: {0} (Input file: {1})",
                                                   resxFileName, inputFile));
             }
-            ResXResourceReader rsxr = new(resxFileName);
-            // stephane matamontero: the following line was needed when I was debugging
-            // Xgettext where I passed commandline parameters: 
-            // It tried to search the "Resources.resx" of the project where we wanted to extract
-            // the messages in a subdirectory of *this* project. Possibly a VS2008 bug !
-            rsxr.BasePath = Path.GetDirectoryName(resxFileName);
-            foreach (DictionaryEntry entry in rsxr)
+            var doc = XDocument.Load(resxFileName);
+            foreach (var data in doc.Root.Elements("data"))
             {
-                if (entry.Value is string)
-                {
-                    resources.Add(entry.Key.ToString(), entry.Value.ToString());
-                }
+                if (data.Attribute("type") != null) continue; // skip non-string resources
+                var key = data.Attribute("name")?.Value;
+                var value = data.Element("value")?.Value;
+                if (key != null && value != null)
+                    resources.Add(key, value);
             }
             return true;
         }
