@@ -51,34 +51,32 @@
 using System.Collections; /* Hashtable, ICollection, IEnumerator, IDictionaryEnumerator */
 using System.Resources; /* ResourceManager, ResourceSet, IResourceReader */
 
-namespace GNU.Gettext
+namespace GNU.Gettext;
+
+/// <summary>
+/// A trivial <c>IResourceReader</c> implementation.
+/// </summary>
+class DummyResourceReader : IResourceReader
 {
-    /// <summary>
-    /// A trivial <c>IResourceReader</c> implementation.
-    /// </summary>
-    class DummyResourceReader : IResourceReader
+
+    // Implementation of IDisposable.
+    void System.IDisposable.Dispose()
     {
+    }
 
-        // Implementation of IDisposable.
-        void System.IDisposable.Dispose()
-        {
-        }
+    // Implementation of IEnumerable.
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return null;
+    }
 
-        // Implementation of IEnumerable.
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return null;
-        }
-
-        // Implementation of IResourceReader.
-        void System.Resources.IResourceReader.Close()
-        {
-        }
-        IDictionaryEnumerator IResourceReader.GetEnumerator()
-        {
-            return null;
-        }
-
+    // Implementation of IResourceReader.
+    void System.Resources.IResourceReader.Close()
+    {
+    }
+    IDictionaryEnumerator IResourceReader.GetEnumerator()
+    {
+        return null;
     }
 
 }

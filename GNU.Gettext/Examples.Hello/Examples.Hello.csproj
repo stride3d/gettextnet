@@ -5,6 +5,7 @@
     <RootNamespace>GNU.Gettext.Examples</RootNamespace>
     <AssemblyName>Examples.Hello</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\GNU.Gettext\GNU.Gettext.csproj">

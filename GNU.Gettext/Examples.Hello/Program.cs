@@ -3,9 +3,7 @@
 //
 // Source code of the C# program.
 
-using System;
 using System.Globalization;
-using System.Threading;
 
 using GNU.Gettext;
 

@@ -20,27 +20,26 @@
 /* Boston, MA  02111-1307 USA
 /**************************************************************************/
 
-namespace GNU.Getopt
+namespace GNU.Getopt;
+
+/// <summary>
+/// Constant enumeration values used for the LongOpt <c>hasArg</c>
+/// constructor argument.
+/// </summary>
+public enum Argument
 {
     /// <summary>
-    /// Constant enumeration values used for the LongOpt <c>hasArg</c>
-    /// constructor argument.
+    /// This value indicates that the option takes no argument.
     /// </summary>
-    public enum Argument
-    {
-        /// <summary>
-        /// This value indicates that the option takes no argument.
-        /// </summary>
-        No = 0,
-        /// <summary>
-        /// This value indicates that the option takes an argument that is
-        /// required.
-        /// </summary>
-        Required = 1,
-        /// <summary>
-        /// This value indicates that the option takes an argument that is
-        /// optional.
-        /// </summary>
-        Optional = 2
-    }
+    No = 0,
+    /// <summary>
+    /// This value indicates that the option takes an argument that is
+    /// required.
+    /// </summary>
+    Required = 1,
+    /// <summary>
+    /// This value indicates that the option takes an argument that is
+    /// optional.
+    /// </summary>
+    Optional = 2
 }
