@@ -11,16 +11,16 @@ public class GetoptTest
     [Fact]
     public void GetoptParamsTest()
     {
-        string[] args = new string[]
-        {
+        string[] args =
+        [
             "-l", "fr-FR",
             "-d", "./bin/Debug",
             "-r", "Examples.Hello.Messages",
             "-L", "./../../Bin",
             "./po/fr.po",
             "./po/ru.po"
-        };
-        Options options = new Options();
+        ];
+        Options options = new();
         Assert.True(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message));
         CheckOptions(options);
         Assert.Equal(Mode.SateliteAssembly, options.Mode);
@@ -29,8 +29,8 @@ public class GetoptTest
     [Fact]
     public void GetoptLongParamsTest()
     {
-        string[] args = new string[]
-        {
+        string[] args =
+        [
             "--locale=fr-FR",
             "-d./bin/Debug",
             "--resource=Examples.Hello.Messages",
@@ -38,15 +38,15 @@ public class GetoptTest
             "--check-format",
             "./po/fr.po",
             "./po/ru.po"
-        };
-        Options options = new Options();
+        ];
+        Options options = new();
         Assert.True(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message));
         Assert.Equal(0, message.Length);
         CheckOptions(options);
         Assert.Equal(Mode.SateliteAssembly, options.Mode);
     }
 
-    private void CheckOptions(Options options)
+    private static void CheckOptions(Options options)
     {
         Assert.Equal(2, options.InputFiles.Count);
         Assert.Equal("./po/fr.po", options.InputFiles[0]);
@@ -59,8 +59,8 @@ public class GetoptTest
     [Fact]
     public void MsgfmtResourceModeParamsTest()
     {
-        string[] args = new string[]
-        {
+        string[] args =
+        [
             "--csharp-resources",
             "-l", "fr-FR",
             "-d", "./bin/Debug",
@@ -68,8 +68,8 @@ public class GetoptTest
             "-L", "./../../Bin",
             "./po/fr.po",
             "./po/ru.po"
-        };
-        Options options = new Options();
+        ];
+        Options options = new();
         Assert.True(Msgfmt.Program.GetOptions(args, Msgfmt.Program.SOpts, Msgfmt.Program.LOpts, options, out StringBuilder message));
         CheckOptions(options);
         Assert.Equal(Mode.Resources, options.Mode);

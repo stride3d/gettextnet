@@ -10,12 +10,12 @@ public class FormatValidateResult
 
     public FormatValidateResult()
     {
-        this.ErrorType = FormatErrorType.None;
+        ErrorType = FormatErrorType.None;
     }
 
     public FormatValidateResult(FormatErrorType errorType)
     {
-        this.ErrorType = errorType;
+        ErrorType = errorType;
     }
 }
 
@@ -35,7 +35,7 @@ public class FormatValidator
 
     public FormatValidator(string inputString)
     {
-        this.InputString = inputString ?? string.Empty;
+        InputString = inputString ?? string.Empty;
     }
 
     public bool ContainsFormat
@@ -58,13 +58,13 @@ public class FormatValidator
         get
         {
             List<string> result = [];
-            Regex r = new Regex(@"(?:[^\{]|^)\{\d+[^\{\}]*\}", RegexOptions.Multiline);
+            Regex r = new(@"(?:[^\{]|^)\{\d+[^\{\}]*\}", RegexOptions.Multiline);
             MatchCollection matches = r.Matches(InputString);
             foreach (Match match in matches)
             {
                 result.Add(match.Value);
             }
-            return result.ToArray();
+            return [.. result];
         }
     }
 

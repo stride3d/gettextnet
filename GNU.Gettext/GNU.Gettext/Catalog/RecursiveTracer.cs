@@ -9,13 +9,13 @@ public class RecursiveTracer
 
     public RecursiveTracer()
     {
-        this.Text = new StringBuilder();
-        this.Level = 0;
+        Text = new StringBuilder();
+        Level = 0;
     }
 
     public void SaveToFile(string fileName)
     {
-        using (StreamWriter outfile = new StreamWriter(fileName))
+        using (StreamWriter outfile = new(fileName))
         {
             outfile.Write(Text.ToString());
         }

@@ -159,7 +159,7 @@ public class CatalogEntry
     // Returns array of all occurences of this string in source code.
     public string[] References
     {
-        get { return references.ToArray(); }
+        get { return [.. references]; }
     }
 
     // Returns comment added by the translator to this entry
@@ -179,7 +179,7 @@ public class CatalogEntry
     // Returns array of all auto comments.
     public string[] AutoComments
     {
-        get { return autocomments.ToArray(); }
+        get { return [.. autocomments]; }
     }
 
     // Convenience function: does this entry has a comment?
@@ -204,7 +204,7 @@ public class CatalogEntry
     public bool RemoveReferenceTo(string fileNamePrefix)
     {
         bool result = false;
-        for (int i = 0; i < this.references.Count; i++)
+        for (int i = 0; i < references.Count; i++)
         {
             if (references[i].StartsWith(fileNamePrefix))
             {
@@ -233,7 +233,7 @@ public class CatalogEntry
     public void SetPluralString(string plural)
     {
         this.plural = plural;
-        this.hasPlural = !string.IsNullOrEmpty(plural);
+        hasPlural = !string.IsNullOrEmpty(plural);
     }
 
     // Sets the translation. Changes "translated" status to true if \a t is not empty.

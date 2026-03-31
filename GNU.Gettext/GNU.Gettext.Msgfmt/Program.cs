@@ -14,8 +14,8 @@ public static class Program
     {
         get
         {
-            LongOpt[] lopts = new LongOpt[]
-            {
+            LongOpt[] lopts =
+            [
                 new LongOpt("help", Argument.No, null, 'h'),
                 new LongOpt("resource", Argument.Required, null, 'r'),
                 new LongOpt("output-file", Argument.Required, null, 'o'),
@@ -24,7 +24,7 @@ public static class Program
                 new LongOpt("debug", Argument.No, null, 4),
                 new LongOpt("check-format", Argument.No, null, 2),
                 new LongOpt("csharp-resources", Argument.No, null, 3)
-            };
+            ];
             return lopts;
         }
     }
@@ -34,7 +34,7 @@ public static class Program
         Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
         StringBuilder message;
-        Options options = new Options();
+        Options options = new();
         if (args.Length == 0)
         {
             PrintUsage();
@@ -81,7 +81,7 @@ public static class Program
     public static bool GetOptions(string[] args, string sopts, LongOpt[] lopts, Options options, out StringBuilder message)
     {
         message = new StringBuilder();
-        Getopt.Getopt getopt = new Getopt.Getopt(
+        Getopt.Getopt getopt = new(
             Assembly.GetExecutingAssembly().GetName().Name,
             args, sopts, lopts)
         {

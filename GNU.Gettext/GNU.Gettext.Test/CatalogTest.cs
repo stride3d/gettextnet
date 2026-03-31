@@ -7,7 +7,7 @@ public class CatalogTest
     [Fact]
     public void ParsingTest()
     {
-        Catalog cat = new Catalog();
+        Catalog cat = new();
         cat.Load("./Data/Test01.po");
 
         Assert.Equal(6, cat.Count);

@@ -152,7 +152,7 @@ public class DumpResource
         {
             // Use hexadecimal escapes, using the underscore as escape character.
             String hexdigit = "0123456789abcdef";
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             b.Append("__UESCAPED__");
             for (int i = 0; i < resourceName.Length; i++)
             {
@@ -209,7 +209,7 @@ public class DumpResource
           GetSatelliteAssembly(baseDirectory, resourceName, cultureName);
         GettextResourceSet catalog =
           InstantiateResourceSet(satelliteAssembly, resourceName, cultureName);
-        BufferedStream stream = new BufferedStream(Console.OpenStandardOutput());
+        BufferedStream stream = new(Console.OpenStandardOutput());
         Out = new StreamWriter(stream, new UTF8Encoding());
         Dump(catalog);
         Out.Close();
@@ -220,17 +220,17 @@ public class DumpResource
 
     public DumpResource(String filename)
     {
-        BufferedStream stream = new BufferedStream(Console.OpenStandardOutput());
+        BufferedStream stream = new(Console.OpenStandardOutput());
         Out = new StreamWriter(stream, new UTF8Encoding());
         ResourceReader rr;
         if (filename.Equals("-"))
         {
-            BufferedStream input = new BufferedStream(Console.OpenStandardInput());
+            BufferedStream input = new(Console.OpenStandardInput());
             // A temporary output stream is needed because ResourceReader expects
             // to be able to seek in the Stream.
             byte[] contents;
             {
-                MemoryStream tmpstream = new MemoryStream();
+                MemoryStream tmpstream = new();
                 byte[] buf = new byte[1024];
                 for (; ; )
                 {
@@ -242,7 +242,7 @@ public class DumpResource
                 contents = tmpstream.ToArray();
                 tmpstream.Close();
             }
-            MemoryStream tmpinput = new MemoryStream(contents);
+            MemoryStream tmpinput = new(contents);
             rr = new ResourceReader(tmpinput);
         }
         else

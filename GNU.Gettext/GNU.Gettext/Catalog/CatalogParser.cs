@@ -34,7 +34,7 @@ namespace GNU.Gettext;
 //FIXME: StreamReader has been implemeneted but not a real parser
 public abstract class CatalogParser
 {
-    internal static readonly string[] LineSplitStrings = { "\r\n", "\r", "\n" };
+    internal static readonly string[] LineSplitStrings = ["\r\n", "\r", "\n"];
 
     readonly string newLine;
     readonly string fileName;
@@ -115,24 +115,24 @@ public abstract class CatalogParser
         if (pattern.Trim().Equals("#:"))
             input = input.Replace('\\', '/');
 
-        output = StringEscaping.FromGettextFormat(input.Substring(pattern.Length).TrimEnd(' ', '\t'));
+        output = StringEscaping.FromGettextFormat(input[pattern.Length..].TrimEnd(' ', '\t'));
         return true;
     }
 
     // returns value in dummy plus any trailing lines in sr enclosed in quotes
     // next line is ready for parsing by function end
-    string ParseMessage(ref string line, ref string dummy, StreamReader sr)
+    static string ParseMessage(ref string line, ref string dummy, StreamReader sr)
     {
-        StringBuilder result = new StringBuilder(dummy.Substring(0, dummy.Length - 1));
+        StringBuilder result = new(dummy[..^1]);
 
         while (!string.IsNullOrEmpty(line = sr.ReadLine()))
         {
             if (line[0] == '\t')
-                line = line.Substring(1);
+                line = line[1..];
 
             if (line[0] == '"' && line[line.Length - 1] == '"')
             {
-                result.Append(StringEscaping.FromGettextFormat(line.Substring(1, line.Length - 2)));
+                result.Append(StringEscaping.FromGettextFormat(line[1..^1]));
             }
             else
                 break;
@@ -156,7 +156,7 @@ public abstract class CatalogParser
         List<string> mtranslations = [];
         bool hasPlural = false;
 
-        using (StreamReader sr = new StreamReader(fileName, encoding))
+        using (StreamReader sr = new(fileName, encoding))
         {
             line = sr.ReadLine();
 
@@ -208,14 +208,14 @@ public abstract class CatalogParser
                         }
 
                         //store paths as Unix-type paths, but internally use native style
-                        string refpath = dummy.Substring(0, i);
+                        string refpath = dummy[..i];
                         if (Path.DirectorySeparatorChar == '\\')
                         {
                             refpath = refpath.Replace('/', Path.DirectorySeparatorChar);
                         }
 
                         mrefs.Add(refpath);
-                        dummy = dummy.Substring(i).Trim();
+                        dummy = dummy[i..].Trim();
                     }
 
                     line = sr.ReadLine();
@@ -257,9 +257,9 @@ public abstract class CatalogParser
                     string str = ParseMessage(ref line, ref dummy, sr);
                     mtranslations.Add(str);
 
-                    if (!OnEntry(mstr, string.Empty, false, mtranslations.ToArray(),
-                                   mflags, mrefs.ToArray(), mcomment,
-                                   mautocomments.ToArray(),
+                    if (!OnEntry(mstr, string.Empty, false, [.. mtranslations],
+                                   mflags, [.. mrefs], mcomment,
+                                   [.. mautocomments],
                                    msgctxt))
                     {
                         return false;
@@ -288,15 +288,15 @@ public abstract class CatalogParser
 
                     while (ReadParam(line, label + " \"", out dummy) || CatalogParser.ReadParam(line, label + "\t\"", out dummy))
                     {
-                        StringBuilder str = new StringBuilder(dummy.Substring(0, dummy.Length - 1));
+                        StringBuilder str = new(dummy[..^1]);
 
                         while (!string.IsNullOrEmpty(line = sr.ReadLine()))
                         {
                             if (line[0] == '\t')
-                                line = line.Substring(1);
+                                line = line[1..];
                             if (line[0] == '"' && line[line.Length - 1] == '"')
                             {
-                                str.Append(line.Substring(1, line.Length - 2));
+                                str.Append(line[1..^1]);
                             }
                             else
                             {
@@ -312,9 +312,9 @@ public abstract class CatalogParser
                         mtranslations.Add(StringEscaping.FromGettextFormat(str.ToString()));
                     }
 
-                    if (!OnEntry(mstr, msgidPlural, true, mtranslations.ToArray(),
-                                   mflags, mrefs.ToArray(), mcomment,
-                                   mautocomments.ToArray(),
+                    if (!OnEntry(mstr, msgidPlural, true, [.. mtranslations],
+                                   mflags, [.. mrefs], mcomment,
+                                   [.. mautocomments],
                                    msgctxt))
                     {
                         return false;
@@ -339,7 +339,7 @@ public abstract class CatalogParser
 
                         deletedLines.Add(line);
                     }
-                    if (!OnDeletedEntry(deletedLines.ToArray(), mflags, null, mcomment, mautocomments.ToArray()))
+                    if (!OnDeletedEntry([.. deletedLines], mflags, null, mcomment, [.. mautocomments]))
                         return false;
 
                     mcomment = mstr = msgidPlural = mflags = msgctxt = string.Empty;

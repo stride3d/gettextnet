@@ -4,11 +4,6 @@ namespace GNU.Gettext.Msgfmt;
 
 public class Options
 {
-    public Options()
-    {
-        InputFiles = [];
-    }
-
     public string OutFile { get; set; }
     public string OutDir { get; set; }
     public string LibDir { get; set; }
@@ -23,5 +18,5 @@ public class Options
     {
         get { return !string.IsNullOrEmpty(BaseName); }
     }
-    public List<string> InputFiles { get; private set; }
+    public List<string> InputFiles { get; private set; } = [];
 }

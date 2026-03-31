@@ -37,7 +37,7 @@ public class AssemblyGen
         catalog.Load(Options.InputFiles[0]);
         for (int i = 1; i < Options.InputFiles.Count; i++)
         {
-            Catalog temp = new Catalog();
+            Catalog temp = new();
             temp.Load(Options.InputFiles[i]);
             catalog.Append(temp);
         }
@@ -62,9 +62,9 @@ public class AssemblyGen
         }
     }
 
-    private void ValidateFormatString(string s)
+    private static void ValidateFormatString(string s)
     {
-        FormatValidator v = new FormatValidator(s);
+        FormatValidator v = new(s);
         FormatValidateResult result = v.Validate();
         if (!result.Result)
         {
@@ -158,7 +158,7 @@ public class AssemblyGen
 
     private void SaveToFile()
     {
-        using StreamWriter writer = new StreamWriter(CsharpSourceFileName, false, Encoding.UTF8);
+        using StreamWriter writer = new(CsharpSourceFileName, false, Encoding.UTF8);
         writer.WriteLine(sw.ToString());
 
         AssemblyOutDir = Path.Combine(Path.GetFullPath(Options.OutDir), Options.Locale.Name);
@@ -238,7 +238,7 @@ public class AssemblyGen
     /// </param>
     static string ToMsgstr(CatalogEntry entry)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         if (entry.HasPlural)
         {
             sb.Append("new System.String[] { ");

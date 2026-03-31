@@ -18,7 +18,7 @@ ShowMessages();
 static void ShowMessages()
 {
     Console.WriteLine("===[ Current culture {0} ]===", Thread.CurrentThread.CurrentUICulture);
-    GettextResourceManager catalog = new GettextResourceManager();
+    GettextResourceManager catalog = new();
     Console.WriteLine(catalog.GetString("Hello, world!"));
     // GetStringFmt is an Gettext.NET extension
     Console.WriteLine(catalog.GetStringFmt("This program is running as process number \"{0}\".",

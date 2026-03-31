@@ -192,7 +192,7 @@ public class GettextResourceManager : ResourceManager
         {
             // Use hexadecimal escapes, using the underscore as escape character.
             string hexdigit = "0123456789abcdef";
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             b.Append("__UESCAPED__");
             for (int i = 0; i < resourceName.Length; i++)
             {
@@ -242,7 +242,7 @@ public class GettextResourceManager : ResourceManager
         if (pos == baseName.Length - 1)
             throw new Exception("Invalid base name");
         if (pos != -1)
-            return baseName.Substring(pos + 1);
+            return baseName[(pos + 1)..];
         return baseName;
     }
 
@@ -252,7 +252,7 @@ public class GettextResourceManager : ResourceManager
             return string.Empty;
         int pos = baseName.LastIndexOf('.');
         if (pos > 0)
-            return baseName.Substring(0, pos);
+            return baseName[..pos];
         return string.Empty;
     }
 
@@ -291,7 +291,7 @@ public class GettextResourceManager : ResourceManager
     private static readonly GettextResourceSet[] EmptyResourceSetArray = [];
 
     // Cache for already loaded GettextResourceSet cascades.
-    private readonly Hashtable /* CultureInfo -> GettextResourceSet[] */ Loaded = new Hashtable();
+    private readonly Hashtable /* CultureInfo -> GettextResourceSet[] */ Loaded = new();
 
     /// <summary>
     /// Returns the array of <c>GettextResourceSet</c>s for a given culture,

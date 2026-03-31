@@ -62,8 +62,8 @@ internal static class IsoCodes
     static IsoCodes()
     {
         // TODO: localize???		
-        IsoCode[] isoLanguagesTable = new IsoCode[]
-        {
+        IsoCode[] isoLanguagesTable =
+        [
             new IsoCode ("aa", "Afar"),
             new IsoCode ("ab", "Abkhazian"),
             new IsoCode ("ae", "Avestan"),
@@ -254,7 +254,7 @@ internal static class IsoCodes
             new IsoCode ("za", "Zhuang"),
             new IsoCode ("zh", "Chinese"),
             new IsoCode ("zu", "Zulu")
-        };
+        ];
 
         isoLanguagesByCode = new Dictionary<string, IsoCode>();
         isoLanguagesByLang = new Dictionary<string, IsoCode>();
@@ -265,8 +265,8 @@ internal static class IsoCodes
             isoLanguagesByLang.Add(lang.Name, lang);
         }
 
-        IsoCode[] isoCountriesTable = new IsoCode[]
-        {
+        IsoCode[] isoCountriesTable =
+        [
             new IsoCode ("AF", "AFGHANISTAN"),
             new IsoCode ("AL", "ALBANIA"),
             new IsoCode ("DZ", "ALGERIA"),
@@ -506,7 +506,7 @@ internal static class IsoCodes
             new IsoCode ("YU", "YUGOSLAVIA"),
             new IsoCode ("ZM", "ZAMBIA"),
             new IsoCode ("ZW", "ZIMBABWE")
-        };
+        ];
 
         isoCountriesByCode = new Dictionary<string, IsoCode>();
         isoCountriesByCountry = new Dictionary<string, IsoCode>();

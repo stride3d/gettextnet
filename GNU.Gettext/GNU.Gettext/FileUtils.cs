@@ -7,8 +7,8 @@ public static class FileUtils
         if ((!uriString.EndsWith("\\") || !uriString.EndsWith("/")) &&
             (relativeUriString.EndsWith("\\") || relativeUriString.EndsWith("/")))
             relativeUriString += "dummy";
-        Uri fileUri = new Uri(uriString);
-        Uri dirUri = new Uri(relativeUriString);
+        Uri fileUri = new(uriString);
+        Uri dirUri = new(relativeUriString);
         Uri relativeUri = dirUri.MakeRelativeUri(fileUri);
         return relativeUri.ToString();
     }
@@ -23,7 +23,7 @@ public static class FileUtils
         List<string> strings = [];
         if (mergeWith is not null)
             strings = mergeWith;
-        using StreamReader r = new StreamReader(fileName);
+        using StreamReader r = new(fileName);
         string line;
         while ((line = r.ReadLine()) is not null && line.Trim().Length > 0)
         {

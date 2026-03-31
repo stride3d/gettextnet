@@ -8,20 +8,20 @@ public class ResourcesGen
 
     public ResourcesGen(Options options)
     {
-        this.Options = options;
+        Options = options;
     }
 
     public void Run()
     {
-        Catalog catalog = new Catalog();
+        Catalog catalog = new();
         foreach (string fileName in Options.InputFiles)
         {
-            Catalog temp = new Catalog();
+            Catalog temp = new();
             temp.Load(fileName);
             catalog.Append(temp);
         }
 
-        using ResourceWriter writer = new ResourceWriter(Options.OutFile);
+        using ResourceWriter writer = new(Options.OutFile);
         foreach (CatalogEntry entry in catalog)
         {
             try

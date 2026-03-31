@@ -299,12 +299,12 @@ internal class PluralFormsNode
 
     public PluralFormsNode[] Nodes
     {
-        get { return this.nodes; }
+        get { return nodes; }
     }
 
     public int NodesCount
     {
-        get { return this.nodes.Length; }
+        get { return nodes.Length; }
     }
 
     public void SetNode(int i, PluralFormsNode n)
@@ -320,7 +320,7 @@ internal class PluralFormsNode
         return node;
     }
 
-    RecursiveTracer tracer = new RecursiveTracer();
+    RecursiveTracer tracer = new();
     internal RecursiveTracer Tracer
     {
         get { return tracer; }
@@ -481,7 +481,7 @@ public class PluralFormsCalculator
             return 0;
         }
 #if DEBUG
-        RecursiveTracer tracer = new RecursiveTracer();
+        RecursiveTracer tracer = new();
         tracer.Text.AppendFormat("Expression: {0}", expression);
         tracer.Text.AppendLine();
         tracer.Text.AppendFormat("Evaluate: {0}", n);
@@ -531,15 +531,15 @@ public class PluralFormsCalculator
         if (string.IsNullOrEmpty(str))
             return null;
         if (str.EndsWith("\n"))
-            str = str.Remove(str.Length - 1, 1);
+            str = str[..^1];
         if (str.EndsWith("\\n"))
-            str = str.Remove(str.Length - 2, 2);
+            str = str[..^2];
         if (!str.EndsWith(";"))
             str += ";";
 
-        PluralFormsCalculator calculator = new PluralFormsCalculator(str);
-        PluralFormsScanner scanner = new PluralFormsScanner(str);
-        PluralFormsParser p = new PluralFormsParser(scanner);
+        PluralFormsCalculator calculator = new(str);
+        PluralFormsScanner scanner = new(str);
+        PluralFormsParser p = new(scanner);
         if (!p.Parse(calculator))
         {
             return null;
@@ -551,7 +551,7 @@ public class PluralFormsCalculator
     {
         if (plural != null)
         {
-            RecursiveTracer tracer = new RecursiveTracer();
+            RecursiveTracer tracer = new();
             tracer.Text.Append(expression);
             tracer.Text.AppendLine();
 
@@ -663,7 +663,7 @@ internal class PluralFormsParser
         PluralFormsNode n = p;
         if (Token.TokenType == PluralFormsToken.Type.Question)
         {
-            PluralFormsNode qn = new PluralFormsNode(new PluralFormsToken(Token));
+            PluralFormsNode qn = new(new PluralFormsToken(Token));
             if (!NextToken())
             {
                 return null;
@@ -702,7 +702,7 @@ internal class PluralFormsParser
         PluralFormsNode ln = p;
         if (Token.TokenType == PluralFormsToken.Type.LogicalOr)
         {
-            PluralFormsNode un = new PluralFormsNode(new PluralFormsToken(Token));
+            PluralFormsNode un = new(new PluralFormsToken(Token));
             if (!NextToken())
             {
                 return null;
@@ -737,7 +737,7 @@ internal class PluralFormsParser
         PluralFormsNode ln = p; // left
         if (Token.TokenType == PluralFormsToken.Type.LogicalAnd)
         {
-            PluralFormsNode un = new PluralFormsNode(new PluralFormsToken(Token)); // up
+            PluralFormsNode un = new(new PluralFormsToken(Token)); // up
             if (!NextToken())
             {
                 return null;
@@ -775,7 +775,7 @@ internal class PluralFormsParser
         PluralFormsNode n = p;
         if (Token.TokenType == PluralFormsToken.Type.Equal || Token.TokenType == PluralFormsToken.Type.NotEqual)
         {
-            PluralFormsNode qn = new PluralFormsNode(new PluralFormsToken(Token));
+            PluralFormsNode qn = new(new PluralFormsToken(Token));
             if (!NextToken())
             {
                 return null;
@@ -802,7 +802,7 @@ internal class PluralFormsParser
         PluralFormsNode n = p;
         if (Token.TokenType == PluralFormsToken.Type.Reminder)
         {
-            PluralFormsNode qn = new PluralFormsNode(new PluralFormsToken(Token));
+            PluralFormsNode qn = new(new PluralFormsToken(Token));
             if (!NextToken())
             {
                 return null;
@@ -830,7 +830,7 @@ internal class PluralFormsParser
             || Token.TokenType == PluralFormsToken.Type.GreaterOrEqual
             || Token.TokenType == PluralFormsToken.Type.LessOrEqual)
         {
-            PluralFormsNode qn = new PluralFormsNode(new PluralFormsToken(Token));
+            PluralFormsNode qn = new(new PluralFormsToken(Token));
             if (!NextToken())
             {
                 return null;

@@ -13,8 +13,8 @@ internal static class Program
     {
         get
         {
-            LongOpt[] lopts = new LongOpt[]
-            {
+            LongOpt[] lopts =
+            [
                 new LongOpt("help", Argument.No, null, 'h'),
                 new LongOpt("join-existing", Argument.No, null, 'j'),
                 new LongOpt("recursive", Argument.No, null, 2),
@@ -25,7 +25,7 @@ internal static class Program
                 new LongOpt("files-from", Argument.Required, null, 'f'),
                 new LongOpt("detect-code", Argument.No, null, 5),
                 new LongOpt("verbose", Argument.No, null, 'v')
-            };
+            ];
             return lopts;
         }
     }
@@ -36,7 +36,7 @@ internal static class Program
 
         StringBuilder message;
 
-        Options options = new Options();
+        Options options = new();
         if (args.Length == 0)
         {
             PrintUsage();
@@ -60,7 +60,7 @@ internal static class Program
 
         try
         {
-            ExtractorCsharp extractor = new ExtractorCsharp(options);
+            ExtractorCsharp extractor = new(options);
             extractor.GetMessages();
             extractor.Save();
         }
@@ -78,7 +78,7 @@ internal static class Program
     public static bool GetOptions(string[] args, String sopts, LongOpt[] lopts, Options options, out StringBuilder message)
     {
         message = new StringBuilder();
-        Getopt.Getopt getopt = new Getopt.Getopt(
+        Getopt.Getopt getopt = new(
             Assembly.GetExecutingAssembly().GetName().Name,
             args, sopts, lopts)
         {

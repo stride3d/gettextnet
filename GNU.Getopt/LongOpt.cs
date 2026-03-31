@@ -70,7 +70,7 @@ public class LongOpt
     /// The localized strings are kept in the resources, which can be
     /// accessed by the <see cref="ResourceManager"/> class.
     /// </summary>
-    private readonly ResourceManager resManager = new ResourceManager(
+    private readonly ResourceManager resManager = new(
         "Gnu.Getopt.MessagesBundle", Assembly.GetExecutingAssembly());
 
     /// <summary>
@@ -136,7 +136,7 @@ public class LongOpt
         if ((hasArg != Argument.No) && (hasArg != Argument.Required) &&
             (hasArg != Argument.Optional))
         {
-            object[] msgArgs = new object[] { hasArg };
+            object[] msgArgs = [hasArg];
             throw new ArgumentException(string.Format(
                 resManager.GetString("getopt.invalidValue",
                 cultureInfo), msgArgs));

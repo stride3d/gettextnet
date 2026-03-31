@@ -59,7 +59,7 @@ internal class CharsetInfoFinder : CatalogParser
         if (string.IsNullOrEmpty(msgid))
         {
             // gettext header:
-            Catalog headers = new Catalog();
+            Catalog headers = new();
             headers.ParseHeaderString(translations[0]);
             charset = headers.Charset;
             if (charset == "CHARSET")

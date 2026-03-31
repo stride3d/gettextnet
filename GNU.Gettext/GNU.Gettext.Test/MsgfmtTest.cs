@@ -11,28 +11,32 @@ public class MsgfmtTest
     [Fact]
     public void AssemblyGenerationTest()
     {
-        Options options = new Options();
-        options.Mode = Mode.SateliteAssembly;
-        options.InputFiles.Add("../../../../Examples.Hello/po/fr.po");
-        options.BaseName = "Examples.Hello.Messages";
-        options.OutDir = "../../../Examples.Hello/bin/Debug";
-        options.LibDir = "./";
-        options.Locale = new CultureInfo("fr-FR");
-        options.DebugMode = true;
+        Options options = new()
+        {
+            Mode = Mode.SateliteAssembly,
+            InputFiles = { "../../../../Examples.Hello/po/fr.po" },
+            BaseName = "Examples.Hello.Messages",
+            OutDir = "../../../Examples.Hello/bin/Debug",
+            LibDir = "./",
+            Locale = new CultureInfo("fr-FR"),
+            DebugMode = true
+        };
 
-        AssemblyGen gen = new AssemblyGen(options);
+        AssemblyGen gen = new(options);
         gen.Run();
     }
 
     [Fact]
     public void ResourcesGenerationTest()
     {
-        Options options = new Options();
-        options.Mode = Mode.Resources;
+        Options options = new()
+        {
+            Mode = Mode.Resources
+        };
         options.InputFiles.Add("./Data/Test01.po");
         options.OutFile = "./Messages.fr-FR.resources";
 
-        ResourcesGen gen = new ResourcesGen(options);
+        ResourcesGen gen = new(options);
         gen.Run();
     }
 }

@@ -90,8 +90,8 @@ public partial class ExtractorCsharp
 
     public ExtractorCsharp(Options options)
     {
-        this.Options = options;
-        this.Catalog = new Catalog();
+        Options = options;
+        Catalog = new Catalog();
         if (!Options.Overwrite && File.Exists(Options.OutFile))
         {
             Catalog.Load(Options.OutFile);
@@ -103,7 +103,7 @@ public partial class ExtractorCsharp
             Catalog.Project = "PACKAGE VERSION";
         }
 
-        this.Options.OutFile = Path.GetFullPath(this.Options.OutFile);
+        Options.OutFile = Path.GetFullPath(Options.OutFile);
     }
 
     public void GetMessages()
@@ -136,7 +136,7 @@ public partial class ExtractorCsharp
     private void GetMessagesFromFile(string inputFile)
     {
         inputFile = Path.GetFullPath(inputFile);
-        using StreamReader input = new StreamReader(inputFile, Options.InputEncoding, Options.DetectEncoding);
+        using StreamReader input = new(inputFile, Options.InputEncoding, Options.DetectEncoding);
         string text = input.ReadToEnd();
         GetMessages(text, inputFile);
     }
@@ -230,7 +230,7 @@ public partial class ExtractorCsharp
                     break;
                 case ExtractMode.MsgidConcat:
                     MatchCollection matches2 = CsharpStringRegex().Matches(groups[0].Value);
-                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb = new();
                     foreach (Match match2 in matches2)
                     {
                         sb.Append(Unescape(match2.Value));
@@ -365,7 +365,7 @@ public partial class ExtractorCsharp
         return msgid;
     }
 
-    private int CalcLineNumber(string text, int pos)
+    private static int CalcLineNumber(string text, int pos)
     {
         if (pos >= text.Length)
             pos = text.Length - 1;
@@ -397,7 +397,7 @@ public partial class ExtractorCsharp
         List<string> translations = [];
         for (int i = 0; i < Catalog.PluralFormsCount; i++)
             translations.Add("");
-        entry.SetTranslations(translations.ToArray());
+        entry.SetTranslations([.. translations]);
     }
 
     private static string Unescape(string msgid)
@@ -405,6 +405,6 @@ public partial class ExtractorCsharp
         StringEscaping.EscapeMode mode = StringEscaping.EscapeMode.CSharp;
         if (msgid.StartsWith("@"))
             mode = StringEscaping.EscapeMode.CSharpVerbatim;
-        return StringEscaping.UnEscape(mode, msgid.Trim(new char[] { '@', '"' }));
+        return StringEscaping.UnEscape(mode, msgid.Trim(['@', '"']));
     }
 }

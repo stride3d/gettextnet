@@ -38,7 +38,7 @@ public static class StringEscaping
     //with modififications, as Gettext dosn't follow all C escaping
     public static string ToGettextFormat(string text)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         for (int i = 0; i < text.Length; i++)
         {
             char c = text[i];
@@ -88,7 +88,7 @@ public static class StringEscaping
 
     public static string FromGettextFormat(string text)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         for (int i = 0; i < text.Length; i++)
         {
             char c = text[i];
@@ -176,7 +176,7 @@ public static class StringEscaping
     // http://msdn.microsoft.com/en-us/library/aa691090%28v=vs.71%29.aspx
     static string FromCSharpVerbatimFormat(string text)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         for (int i = 0; i < text.Length; i++)
         {
             char c1 = text[i];
@@ -194,7 +194,7 @@ public static class StringEscaping
 
     static string FromXml(string text)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         for (int i = 0; i < text.Length; i++)
         {
             char c1 = text[i];
@@ -235,7 +235,7 @@ public static class StringEscaping
     //based on the C# 2.0 spec
     static string FromCSharpFormat(string text)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         for (int i = 0; i < text.Length; i++)
         {
             char c1 = text[i];

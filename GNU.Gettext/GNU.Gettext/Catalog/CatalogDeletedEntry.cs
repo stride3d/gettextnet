@@ -60,13 +60,13 @@ public class CatalogDeletedEntry
     // Returns the deleted lines.
     public string[] DeletedLines
     {
-        get { return deletedLines.ToArray(); }
+        get { return [.. deletedLines]; }
     }
 
     // Returns array of all occurences of this string in source code.
     public string[] References
     {
-        get { return references.ToArray(); }
+        get { return [.. references]; }
     }
 
     // Returns comment added by the translator to this entry
@@ -78,7 +78,7 @@ public class CatalogDeletedEntry
     // Returns array of all auto comments.
     public string[] AutoComments
     {
-        get { return autocomments.ToArray(); }
+        get { return [.. autocomments]; }
     }
 
     // Convenience function: does this entry has a comment?

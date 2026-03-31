@@ -478,7 +478,7 @@ public class Getopt
     /// </summary>
     public static string Digest(LongOpt[] longOpts)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         foreach (LongOpt o in longOpts)
         {
             sb.Append((char)o.Val);
@@ -669,7 +669,7 @@ public class Getopt
 
         // This function is essentially _getopt_initialize from GNU getopt
         this.progname = progname;
-        this.Argv = argv;
+        Argv = argv;
         this.optstring = optstring;
         this.longOptions = longOptions;
         this.longOnly = longOnly;
@@ -698,13 +698,13 @@ public class Getopt
         {
             ordering = Order.ReturnInOrder;
             if (optstring.Length > 1)
-                this.optstring = optstring.Substring(1);
+                this.optstring = optstring[1..];
         }
         else if (optstring[0] == '+')
         {
             ordering = Order.RequireOrder;
             if (optstring.Length > 1)
-                this.optstring = optstring.Substring(1);
+                this.optstring = optstring[1..];
         }
         else if (posixlyCorrect)
         {
@@ -823,7 +823,7 @@ public class Getopt
     /// </summary>
     public int Longind
     {
-        get { return this.longind; }
+        get { return longind; }
     }
 
     /// <summary>
@@ -912,22 +912,22 @@ public class Getopt
         for (int i = 0; i < longOptions.Length; i++)
         {
             if (longOptions[i].Name.StartsWith(
-                nextchar.Substring(0, nameend)))
+                nextchar[..nameend]))
             {
-                if (this.longOptions[i].Name.Equals(
-                    this.nextchar.Substring(0, nameend)))
+                if (longOptions[i].Name.Equals(
+                    nextchar[..nameend]))
                 {
                     // Exact match found
-                    pfound = this.longOptions[i];
-                    this.longind = i;
+                    pfound = longOptions[i];
+                    longind = i;
                     exact = true;
                     break;
                 }
                 else if (pfound == null)
                 {
                     // First nonexact match found
-                    pfound = this.longOptions[i];
-                    this.longind = i;
+                    pfound = longOptions[i];
+                    longind = i;
                 }
                 else
                 {
@@ -940,13 +940,13 @@ public class Getopt
         // Print out an error if the option specified was ambiguous
         if (ambig && !exact)
         {
-            if (this.Opterr)
+            if (Opterr)
             {
-                object[] msgArgs = new object[]{
-                    this.progname, this.Argv[Optind] };
+                object[] msgArgs = [
+                    progname, Argv[Optind] ];
                 System.Console.Error.WriteLine(
-                    this.resManager.GetString("getoptAmbigious",
-                    this.cultureInfo), msgArgs);
+                    resManager.GetString("getoptAmbigious",
+                    cultureInfo), msgArgs);
             }
 
             nextchar = "";
@@ -960,75 +960,75 @@ public class Getopt
         {
             ++Optind;
 
-            if (nameend != this.nextchar.Length)
+            if (nameend != nextchar.Length)
             {
                 if (pfound.HasArg != Argument.No)
                 {
-                    if (this.nextchar.Substring(nameend).Length > 1)
-                        this.optarg = this.nextchar.Substring(nameend + 1);
+                    if (nextchar[nameend..].Length > 1)
+                        optarg = nextchar[(nameend + 1)..];
                     else
-                        this.optarg = "";
+                        optarg = "";
                 }
                 else
                 {
-                    if (this.Opterr)
+                    if (Opterr)
                     {
                         // -- option
-                        if (Argv[this.Optind - 1].StartsWith("--"))
+                        if (Argv[Optind - 1].StartsWith("--"))
                         {
-                            object[] msgArgs = new object[]{
-                                this.progname, pfound.Name };
+                            object[] msgArgs = [
+                                progname, pfound.Name ];
                             System.Console.Error.WriteLine(
-                                this.resManager.GetString(
-                                "getoptArguments1", this.cultureInfo),
+                                resManager.GetString(
+                                "getoptArguments1", cultureInfo),
                                 msgArgs);
                         }
                         // +option or -option
                         else
                         {
-                            object[] msgArgs = new object[]{ this.progname,
-                                this.Argv[Optind - 1][0], pfound.Name};
+                            object[] msgArgs = [ progname,
+                                Argv[Optind - 1][0], pfound.Name];
                             System.Console.Error.WriteLine(
-                                this.resManager.GetString(
-                                "getoptArguments2", this.cultureInfo),
+                                resManager.GetString(
+                                "getoptArguments2", cultureInfo),
                                 msgArgs);
                         }
                     }
 
-                    this.nextchar = "";
-                    this.optopt = pfound.Val;
+                    nextchar = "";
+                    optopt = pfound.Val;
 
                     return '?';
                 }
             } // if (nameend)
             else if (pfound.HasArg == Argument.Required)
             {
-                if (this.Optind < this.Argv.Length)
+                if (Optind < Argv.Length)
                 {
-                    this.optarg = this.Argv[this.Optind];
-                    ++this.Optind;
+                    optarg = Argv[Optind];
+                    ++Optind;
                 }
                 else
                 {
-                    if (this.Opterr)
+                    if (Opterr)
                     {
-                        object[] msgArgs = new object[]{
-                            this.progname, this.Argv[this.Optind - 1]};
+                        object[] msgArgs = [
+                            progname, Argv[Optind - 1]];
                         System.Console.Error.WriteLine(
-                            this.resManager.GetString("getoptRequires",
-                            this.cultureInfo), msgArgs);
+                            resManager.GetString("getoptRequires",
+                            cultureInfo), msgArgs);
                     }
 
-                    this.nextchar = "";
-                    this.optopt = pfound.Val;
-                    if (this.optstring[0] == ':')
+                    nextchar = "";
+                    optopt = pfound.Val;
+                    if (optstring[0] == ':')
                         return ':';
                     else
                         return '?';
                 }
             } // else if (pfound)
 
-            this.nextchar = "";
+            nextchar = "";
 
             if (pfound.Flag != null)
             {
@@ -1070,65 +1070,65 @@ public class Getopt
         if (endparse)
             return -1;
 
-        if ((this.nextchar == null) || (this.nextchar.Length == 0))
+        if ((nextchar == null) || (nextchar.Length == 0))
         {
             // If we have just processed some options following some
             // non-options, exchange them so that the options come first.
-            if (this.lastNonopt > this.Optind)
-                this.lastNonopt = this.Optind;
-            if (this.firstNonopt > this.Optind)
-                this.firstNonopt = this.Optind;
+            if (lastNonopt > Optind)
+                lastNonopt = Optind;
+            if (firstNonopt > Optind)
+                firstNonopt = Optind;
 
-            if (this.ordering == Order.Permute)
+            if (ordering == Order.Permute)
             {
                 // If we have just processed some options following some
                 // non-options, exchange them so that the options come
                 // first.
-                if ((this.firstNonopt != this.lastNonopt) &&
-                    (this.lastNonopt != this.Optind))
-                    this.Exchange(this.Argv);
-                else if (this.lastNonopt != this.Optind)
-                    this.firstNonopt = this.Optind;
+                if ((firstNonopt != lastNonopt) &&
+                    (lastNonopt != Optind))
+                    Exchange(Argv);
+                else if (lastNonopt != Optind)
+                    firstNonopt = Optind;
 
                 // Skip any additional non-options
                 // and extend the range of non-options previously skipped.
-                while ((this.Optind < this.Argv.Length) &&
-                    ((this.Argv[Optind].Length == 0) ||
-                    (this.Argv[this.Optind][0] != '-') ||
-                    this.Argv[Optind].Equals("-")))
-                    this.Optind++;
+                while ((Optind < Argv.Length) &&
+                    ((Argv[Optind].Length == 0) ||
+                    (Argv[Optind][0] != '-') ||
+                    Argv[Optind].Equals("-")))
+                    Optind++;
 
-                this.lastNonopt = this.Optind;
+                lastNonopt = Optind;
             }
 
             // The special ARGV-element "--" means premature end of
             // options. Skip it like a null option, then exchange with
             // previous non-options as if it were an option, then skip
             // everything else like a non-option.
-            if ((this.Optind != this.Argv.Length) &&
-                this.Argv[this.Optind].Equals("--"))
+            if ((Optind != Argv.Length) &&
+                Argv[Optind].Equals("--"))
             {
-                this.Optind++;
+                Optind++;
 
-                if ((this.firstNonopt != this.lastNonopt) &&
-                    (this.lastNonopt != this.Optind))
-                    this.Exchange(this.Argv);
-                else if (this.firstNonopt == this.lastNonopt)
-                    this.firstNonopt = this.Optind;
+                if ((firstNonopt != lastNonopt) &&
+                    (lastNonopt != Optind))
+                    Exchange(Argv);
+                else if (firstNonopt == lastNonopt)
+                    firstNonopt = Optind;
 
-                this.lastNonopt = this.Argv.Length;
+                lastNonopt = Argv.Length;
 
-                this.Optind = this.Argv.Length;
+                Optind = Argv.Length;
             }
 
             // If we have done all the ARGV-elements, stop the scan
             // and back over any non-options that we skipped and permuted.
-            if (this.Optind == this.Argv.Length)
+            if (Optind == Argv.Length)
             {
                 // Set the next-arg-index to point at the non-options that
                 // we previously skipped, so the caller will digest them.
-                if (this.firstNonopt != this.lastNonopt)
-                    this.Optind = this.firstNonopt;
+                if (firstNonopt != lastNonopt)
+                    Optind = firstNonopt;
 
                 return -1;
             }
@@ -1136,23 +1136,23 @@ public class Getopt
             // If we have come to a non-option and did not permute it,
             // either stop the scan or describe it to the caller and pass
             // it by.
-            if ((this.Argv[this.Optind].Length == 0) ||
-                (this.Argv[this.Optind][0] != '-') ||
-                this.Argv[this.Optind].Equals("-"))
+            if ((Argv[Optind].Length == 0) ||
+                (Argv[Optind][0] != '-') ||
+                Argv[Optind].Equals("-"))
             {
-                if (this.ordering == Order.RequireOrder)
+                if (ordering == Order.RequireOrder)
                     return -1;
 
-                this.optarg = this.Argv[Optind++];
+                optarg = Argv[Optind++];
                 return 1;
             }
 
             // We have found another option-ARGV-element.
             // Skip the initial punctuation.
-            if (this.Argv[Optind].StartsWith("--"))
-                this.nextchar = this.Argv[this.Optind].Substring(2);
+            if (Argv[Optind].StartsWith("--"))
+                nextchar = Argv[Optind][2..];
             else
-                this.nextchar = this.Argv[this.Optind].Substring(1);
+                nextchar = Argv[Optind][1..];
         }
 
         // Decode the current option-ARGV-element.
@@ -1170,90 +1170,90 @@ public class Getopt
 				
 				This distinction seems to be the most useful approach.
 			*/
-        if ((this.longOptions != null) &&
-            (this.Argv[this.Optind].StartsWith("--") || (this.longOnly &&
-            ((this.Argv[this.Optind].Length > 2) ||
-            (this.optstring.IndexOf(this.Argv[this.Optind][1]) == -1)))))
+        if ((longOptions != null) &&
+            (Argv[Optind].StartsWith("--") || (longOnly &&
+            ((Argv[Optind].Length > 2) ||
+            (optstring.IndexOf(Argv[Optind][1]) == -1)))))
         {
-            int c = this.CheckLongOption();
+            int c = CheckLongOption();
 
-            if (this.longoptHandled)
+            if (longoptHandled)
                 return c;
 
             // Can't find it as a long option. If this is not
             // getopt_long_only, or the option starts with "--" or is not a
             // valid short option, then it's an error. Otherwise interpret
             // it as a short option.
-            if (!this.longOnly || this.Argv[this.Optind].StartsWith("--")
-                || (this.optstring.IndexOf(this.nextchar[0]) == -1))
+            if (!longOnly || Argv[Optind].StartsWith("--")
+                || (optstring.IndexOf(nextchar[0]) == -1))
             {
-                if (this.Opterr)
+                if (Opterr)
                 {
                     if (Argv[Optind].StartsWith("--"))
                     {
-                        object[] msgArgs = new object[]{
-                            this.progname, this.nextchar };
+                        object[] msgArgs = [
+                            progname, nextchar ];
                         System.Console.Error.WriteLine(
-                            this.resManager.GetString("getoptUnrecognized",
-                            this.cultureInfo), msgArgs);
+                            resManager.GetString("getoptUnrecognized",
+                            cultureInfo), msgArgs);
                     }
                     else
                     {
-                        object[] msgArgs = new object[]{ this.progname,
-                            this.Argv[Optind][0], this.nextchar};
+                        object[] msgArgs = [ progname,
+                            Argv[Optind][0], nextchar];
                         System.Console.Error.WriteLine(
-                            this.resManager.GetString("getoptUnrecognized2",
-                            this.cultureInfo), msgArgs);
+                            resManager.GetString("getoptUnrecognized2",
+                            cultureInfo), msgArgs);
                     }
                 }
 
-                this.nextchar = "";
-                ++this.Optind;
-                this.optopt = 0;
+                nextchar = "";
+                ++Optind;
+                optopt = 0;
 
                 return '?';
             }
         } // if (longopts)
 
         // Look at and handle the next short option-character */
-        int c2 = this.nextchar[0]; //**** Do we need to check for empty str?
-        if (this.nextchar.Length > 1)
-            this.nextchar = this.nextchar.Substring(1);
+        int c2 = nextchar[0]; //**** Do we need to check for empty str?
+        if (nextchar.Length > 1)
+            nextchar = nextchar[1..];
         else
-            this.nextchar = "";
+            nextchar = "";
 
         string temp = null;
         if (optstring.IndexOf((char)c2) != -1)
-            temp = optstring.Substring(
-                optstring.IndexOf((char)c2));
+            temp = optstring[
+                optstring.IndexOf((char)c2)..];
 
         if (nextchar.Length == 0)
             ++Optind;
 
         if ((temp == null) || (c2 == ':'))
         {
-            if (this.Opterr)
+            if (Opterr)
             {
-                if (this.posixlyCorrect)
+                if (posixlyCorrect)
                 {
                     // 1003.2 specifies the format of this message
-                    object[] msgArgs = new object[]{
-                        this.progname, (char) c2 };
+                    object[] msgArgs = [
+                        progname, (char) c2 ];
                     System.Console.Error.WriteLine(
-                        this.resManager.GetString("getoptIllegal",
-                        this.cultureInfo), msgArgs);
+                        resManager.GetString("getoptIllegal",
+                        cultureInfo), msgArgs);
                 }
                 else
                 {
-                    object[] msgArgs = new object[]{
-                        this.progname, (char) c2 };
+                    object[] msgArgs = [
+                        progname, (char) c2 ];
                     System.Console.Error.WriteLine(
-                        this.resManager.GetString("getoptInvalid",
-                        this.cultureInfo), msgArgs);
+                        resManager.GetString("getoptInvalid",
+                        cultureInfo), msgArgs);
                 }
             }
 
-            this.optopt = c2;
+            optopt = c2;
 
             return '?';
         }
@@ -1269,18 +1269,18 @@ public class Getopt
             // elements
             else if (Optind == Argv.Length)
             {
-                if (this.Opterr)
+                if (Opterr)
                 {
                     // 1003.2 specifies the format of this message. 
-                    object[] msgArgs = new object[]{
-                        this.progname, (char) c2 };
+                    object[] msgArgs = [
+                        progname, (char) c2 ];
                     System.Console.Error.WriteLine(
-                        this.resManager.GetString("getoptRequires2",
-                        this.cultureInfo), msgArgs);
+                        resManager.GetString("getoptRequires2",
+                        cultureInfo), msgArgs);
                 }
 
-                this.optopt = c2;
-                if (this.optstring[0] == ':')
+                optopt = c2;
+                if (optstring[0] == ':')
                     return ':';
                 else
                     return '?';
@@ -1289,19 +1289,19 @@ public class Getopt
             {
                 // We already incremented `optind' once; increment it again
                 // when taking next ARGV-elt as argument. 
-                this.nextchar = this.Argv[this.Optind];
-                this.optarg = this.Argv[this.Optind];
+                nextchar = Argv[Optind];
+                optarg = Argv[Optind];
             }
 
-            c2 = this.CheckLongOption();
+            c2 = CheckLongOption();
 
-            if (this.longoptHandled)
+            if (longoptHandled)
                 return c2;
             // Let the application handle it
             else
             {
-                this.nextchar = null;
-                ++this.Optind;
+                nextchar = null;
+                ++Optind;
                 return 'W';
             }
         }
@@ -1313,71 +1313,71 @@ public class Getopt
             {
                 if (nextchar.Length != 0)
                 {
-                    optarg = this.nextchar;
+                    optarg = nextchar;
                     ++Optind;
                 }
                 else
                 {
-                    this.optarg = null;
+                    optarg = null;
                 }
 
-                this.nextchar = null;
+                nextchar = null;
             }
             else
             {
-                if (this.nextchar.Length != 0)
+                if (nextchar.Length != 0)
                 {
-                    this.optarg = this.nextchar;
-                    ++this.Optind;
+                    optarg = nextchar;
+                    ++Optind;
                 }
-                else if (this.Optind == this.Argv.Length)
+                else if (Optind == Argv.Length)
                 {
-                    if (this.Opterr)
+                    if (Opterr)
                     {
                         // 1003.2 specifies the format of this message
-                        object[] msgArgs = new object[]{
-                            this.progname, (char) c2};
+                        object[] msgArgs = [
+                            progname, (char) c2];
                         System.Console.Error.WriteLine(
-                            this.resManager.GetString("getoptRequires2",
-                            this.cultureInfo), msgArgs);
+                            resManager.GetString("getoptRequires2",
+                            cultureInfo), msgArgs);
                     }
 
-                    this.optopt = c2;
+                    optopt = c2;
 
-                    if (this.optstring[0] == ':')
+                    if (optstring[0] == ':')
                         return ':';
                     else
                         return '?';
                 }
                 else
                 {
-                    this.optarg = this.Argv[this.Optind];
-                    ++this.Optind;
+                    optarg = Argv[Optind];
+                    ++Optind;
 
                     // Ok, here's an obscure Posix case.  If we have o:,
                     // and we get -o -- foo, then we're supposed to skip
                     // the --, end parsing of options, and make foo an
                     // operand to -o. Only do this in Posix mode.
-                    if (this.posixlyCorrect && this.optarg.Equals("--"))
+                    if (posixlyCorrect && optarg.Equals("--"))
                     {
                         // If end of argv, error out
-                        if (this.Optind == this.Argv.Length)
+                        if (Optind == Argv.Length)
                         {
-                            if (this.Opterr)
+                            if (Opterr)
                             {
                                 // 1003.2 specifies the format of this
                                 // message
-                                object[] msgArgs = new object[]{
-                                    this.progname, (char) c2};
+                                object[] msgArgs = [
+                                    progname, (char) c2];
                                 System.Console.Error.WriteLine(
-                                    this.resManager.GetString(
-                                    "getoptRequires2", this.cultureInfo),
+                                    resManager.GetString(
+                                    "getoptRequires2", cultureInfo),
                                     msgArgs);
                             }
 
-                            this.optopt = c2;
+                            optopt = c2;
 
-                            if (this.optstring[0] == ':')
+                            if (optstring[0] == ':')
                                 return ':';
                             else
                                 return '?';
@@ -1386,15 +1386,15 @@ public class Getopt
                         // Set new optarg and set to end. Don't permute as
                         // we do on -- up above since we know we aren't in
                         // permute mode because of Posix.
-                        this.optarg = this.Argv[this.Optind];
-                        ++this.Optind;
-                        this.firstNonopt = this.Optind;
-                        this.lastNonopt = this.Argv.Length;
-                        this.endparse = true;
+                        optarg = Argv[Optind];
+                        ++Optind;
+                        firstNonopt = Optind;
+                        lastNonopt = Argv.Length;
+                        endparse = true;
                     }
                 }
 
-                this.nextchar = null;
+                nextchar = null;
             }
         }
 

@@ -9,21 +9,21 @@ public class XgettextTest
     [Fact]
     public void ExtractorCSharpTest()
     {
-        string ressourceId = string.Format("{0}.{1}", this.GetType().Assembly.GetName().Name, "Data.XgettextTest.txt");
+        string ressourceId = string.Format("{0}.{1}", GetType().Assembly.GetName().Name, "Data.XgettextTest.txt");
         string text = "";
-        using (Stream stream = this.GetType().Assembly.GetManifestResourceStream(ressourceId))
+        using (Stream stream = GetType().Assembly.GetManifestResourceStream(ressourceId))
         {
-            using (StreamReader reader = new StreamReader(stream))
+            using (StreamReader reader = new(stream))
             {
                 text = reader.ReadToEnd();
             }
         }
 
-        Options options = new Options();
+        Options options = new();
         options.InputFiles.Add(@"./Test/File/Name.cs");
         options.OutFile = @"./Test.pot";
         options.Overwrite = true;
-        ExtractorCsharp extractor = new ExtractorCsharp(options);
+        ExtractorCsharp extractor = new(options);
         extractor.GetMessages(text, options.InputFiles[0]);
         extractor.Save();
 

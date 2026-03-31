@@ -39,7 +39,7 @@ public class PluralFormsTest
     [Fact]
     public void CatalogParseTest()
     {
-        Catalog cat = new Catalog();
+        Catalog cat = new();
         cat.Load("./Data/Test01.po");
 
         PluralFormsCalculator pfc = PluralFormsCalculator.Make(cat.GetPluralFormsHeader());

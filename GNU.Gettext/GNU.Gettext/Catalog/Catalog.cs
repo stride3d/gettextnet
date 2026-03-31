@@ -190,7 +190,7 @@ public class Catalog : IEnumerable<CatalogEntry>
             if (forceBreak || (currLineLen >= 77 && possibleBreak != -1))
             {
                 sb.Append("\"");
-                sb.Append(escaped.Substring(lastBreakAt, possibleBreak - lastBreakAt));
+                sb.Append(escaped[lastBreakAt..possibleBreak]);
                 sb.Append("\"");
                 sb.Append(newlineChar);
 
@@ -203,7 +203,7 @@ public class Catalog : IEnumerable<CatalogEntry>
             pos++;
             currLineLen++;
         }
-        string remainder = escaped.Substring(lastBreakAt);
+        string remainder = escaped[lastBreakAt..];
         if (remainder.Length > 0)
         {
             sb.Append("\"");
@@ -233,7 +233,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         fileName = poFile;
 
         // Load the .po file:
-        CharsetInfoFinder charsetFinder = new CharsetInfoFinder(poFile);
+        CharsetInfoFinder charsetFinder = new(poFile);
         Charset = charsetFinder.Charset;
         try
         {
@@ -247,7 +247,7 @@ public class Catalog : IEnumerable<CatalogEntry>
             Trace.WriteLine($"Cannot detect charset of file '{poFile}'. Using default charset '{charsetFinder.Charset}'");
         }
 
-        LoadParser parser = new LoadParser(this, poFile, GetEncoding(Charset));
+        LoadParser parser = new(this, poFile, GetEncoding(Charset));
         if (!parser.Parse())
         {
             throw new Exception($"Error during parsing '{poFile}' file, file is probably corrupted.");
@@ -265,7 +265,7 @@ public class Catalog : IEnumerable<CatalogEntry>
 
         int numEndings = 0;
         for (int i = text.Length - 1; i >= 0 && text[i] == '\n'; i--, numEndings++) ;
-        StringBuilder sb = new StringBuilder(text, 0, text.Length - numEndings, text.Length + reference.Length - numEndings);
+        StringBuilder sb = new(text, 0, text.Length - numEndings, text.Length + reference.Length - numEndings);
         for (int i = reference.Length - 1; i >= 0 && reference[i] == '\n'; i--)
         {
             sb.Append('\n');
@@ -276,7 +276,7 @@ public class Catalog : IEnumerable<CatalogEntry>
     // Saves catalog to file.
     public bool Save(string poFile)
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
 
         // Update information about last modification time:
         RevisionDate = Catalog.GetDateTimeRfc822Format();
@@ -299,7 +299,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         sb.AppendFormat("msgstr \"\"{0}", originalNewLine);
 
         string pohdr = GetHeaderString(originalNewLine);
-        pohdr = pohdr.Substring(0, pohdr.Length - 1);
+        pohdr = pohdr[..^1];
         Catalog.SaveMultiLines(sb, pohdr, originalNewLine);
         sb.Append(originalNewLine);
 
@@ -394,7 +394,7 @@ public class Catalog : IEnumerable<CatalogEntry>
     {
         if (text != null)
         {
-            foreach (string line in text.Split(new string[] { "\n\r", "\r\n", "\r", "\n", "\r" }, StringSplitOptions.None))
+            foreach (string line in text.Split(["\n\r", "\r\n", "\r", "\n", "\r"], StringSplitOptions.None))
             {
                 sb.AppendFormat("{0}{1}", line, newLine);
             }
@@ -441,7 +441,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         if (!isOk)
             return false;
 
-        Catalog newCat = new Catalog();
+        Catalog newCat = new();
         newCat.Load(potFile);
 
         if (!newCat.IsOk)
@@ -491,7 +491,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         {
             result = new CatalogEntry(this, original, plural);
             if (!string.IsNullOrEmpty(plural))
-                result.SetTranslations(new string[] { "", "" });
+                result.SetTranslations(["", ""]);
             AddItem(result);
         }
         return result;
@@ -526,7 +526,7 @@ public class Catalog : IEnumerable<CatalogEntry>
             {
                 descriptions.Add("Singular");
                 descriptions.Add("Plural");
-                return descriptions.ToArray();
+                return [.. descriptions];
             }
 
             PluralFormsCalculator calc = PluralFormsCalculator.Make(GetHeader("Plural-Forms"));
@@ -556,7 +556,7 @@ public class Catalog : IEnumerable<CatalogEntry>
                     : $"Form {i + 1} (e.g. \"{example}\")";
                 descriptions.Add(desc);
             }
-            return descriptions.ToArray();
+            return [.. descriptions];
         }
     }
 
@@ -624,7 +624,7 @@ public class Catalog : IEnumerable<CatalogEntry>
                         lang = name;
                 }
                 else if (name.Length == 5 && name[2] == '_'
-                && IsoCodes.IsKnownLanguageCode(name.Substring(0, 2)) &&
+                && IsoCodes.IsKnownLanguageCode(name[..2]) &&
                         IsoCodes.IsKnownCountryCode(name.Substring(3, 2)))
                 {
                     lang = name;
@@ -655,7 +655,7 @@ public class Catalog : IEnumerable<CatalogEntry>
     public void RemoveItem(CatalogEntry data)
     {
         if (FindItem(data) != null)
-            this.entriesDict.Remove(data.Key);
+            entriesDict.Remove(data.Key);
         if (entriesList.Contains(data))
             entriesList.Remove(data);
     }
@@ -701,7 +701,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         refCat.Save(tmp1);
         Save(tmp2);
 
-        System.Diagnostics.Process process = new System.Diagnostics.Process();
+        System.Diagnostics.Process process = new();
         process.StartInfo.FileName = "msgmerge";
         process.StartInfo.Arguments = "--force-po -o \"" + tmp3 + "\" \"" + tmp2 + "\" \"" + tmp1 + "\"";
 
@@ -710,7 +710,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         bool succ = process.ExitCode == 0;
         if (succ)
         {
-            Catalog c = new Catalog();
+            Catalog c = new();
             c.Load(tmp3);
             Clear();
             Append(c);
@@ -742,8 +742,8 @@ public class Catalog : IEnumerable<CatalogEntry>
             if (FindItem(refCat[i]) == null)
                 newEnt.Add(refCat[i].String);
 
-        newEntries = newEnt.ToArray();
-        obsoleteEntries = obsoleteEnt.ToArray();
+        newEntries = [.. newEnt];
+        obsoleteEntries = [.. obsoleteEnt];
     }
 
     protected virtual void OnDirtyChanged(EventArgs e)
@@ -797,8 +797,8 @@ public class Catalog : IEnumerable<CatalogEntry>
                 }
                 else
                 {
-                    string key = token.Substring(0, pos).Trim();
-                    string value = token.Substring(pos + 1).Trim();
+                    string key = token[..pos].Trim();
+                    string value = token[(pos + 1)..].Trim();
                     headerEntries[key] = value;
                 }
             }
@@ -810,7 +810,7 @@ public class Catalog : IEnumerable<CatalogEntry>
     public string GetHeaderString(string lineDelimeter)
     {
         UpdateHeaderDict();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
 
         foreach (string key in headerEntries.Keys)
         {
@@ -905,7 +905,7 @@ public class Catalog : IEnumerable<CatalogEntry>
         int pos = ctype.IndexOf("; charset=");
         if (pos != -1)
         {
-            Charset = ctype.Substring(pos + "; charset=".Length).Trim();
+            Charset = ctype[(pos + "; charset=".Length)..].Trim();
         }
         else
         {
@@ -958,7 +958,7 @@ public class Catalog : IEnumerable<CatalogEntry>
             if (string.IsNullOrEmpty(Comment))
                 return string.Empty;
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             bool first = true;
             foreach (string line in Comment.Split('\n'))
             {
@@ -968,7 +968,7 @@ public class Catalog : IEnumerable<CatalogEntry>
                     first = false;
 
                 if (line.StartsWith("#"))
-                    sb.Append(line.Substring(1).TrimStart(' ', '\t'));
+                    sb.Append(line[1..].TrimStart(' ', '\t'));
                 else
                     sb.Append(line.TrimStart(' ', '\t'));
             }
@@ -982,8 +982,8 @@ public class Catalog : IEnumerable<CatalogEntry>
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
-            foreach (string line in value.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+            StringBuilder sb = new();
+            foreach (string line in value.Split([Environment.NewLine], StringSplitOptions.None))
             {
                 if (sb.Length != 0)
                     sb.AppendLine();

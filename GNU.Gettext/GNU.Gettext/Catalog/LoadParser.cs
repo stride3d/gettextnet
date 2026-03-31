@@ -59,7 +59,7 @@ internal class LoadParser : CatalogParser
         }
         else
         {
-            CatalogEntry d = new CatalogEntry(catalog, string.Empty, string.Empty);
+            CatalogEntry d = new(catalog, string.Empty, string.Empty);
             if (!string.IsNullOrEmpty(flags))
                 d.Flags = flags;
             d.SetString(msgid);
@@ -85,7 +85,7 @@ internal class LoadParser : CatalogParser
                                            string[] references, string comment,
                                            string[] autocomments)
     {
-        CatalogDeletedEntry d = new CatalogDeletedEntry(new string[0]);
+        CatalogDeletedEntry d = new([]);
         if (!string.IsNullOrEmpty(flags))
             d.Flags = flags;
         d.SetDeletedLines(deletedLines);
