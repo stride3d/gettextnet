@@ -1,9 +1,9 @@
+using System.Globalization;
+
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+
 using GNU.Gettext;
-using System;
-using System.Globalization;
-using System.Threading;
 
 namespace Examples.HelloAvalonia;
 

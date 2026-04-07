@@ -29,73 +29,72 @@
 
 using System.Text;
 
-namespace GNU.Gettext
+namespace GNU.Gettext;
+
+/// <summary>
+/// Load parser.
+/// </summary>
+internal class LoadParser : CatalogParser
 {
-    /// <summary>
-    /// Load parser.
-    /// </summary>
-    internal class LoadParser : CatalogParser
+    readonly Catalog catalog;
+    bool headerParsed = false;
+
+    public LoadParser(Catalog catalog, string poFile, Encoding encoding) : base(poFile, encoding)
     {
-        readonly Catalog catalog;
-        bool headerParsed = false;
+        this.catalog = catalog;
+    }
 
-        public LoadParser(Catalog catalog, string poFile, Encoding encoding) : base(poFile, encoding)
+    protected override bool OnEntry(string msgid, string msgidPlural, bool hasPlural,
+                                     string[] translations, string flags,
+                                     string[] references, string comment,
+                                     string[] autocomments,
+                                     string msgctxt)
+    {
+        if (string.IsNullOrEmpty(msgid) && !headerParsed)
         {
-            this.catalog = catalog;
+            // gettext header:
+            catalog.ParseHeaderString(translations[0]);
+            catalog.Comment = comment;
+            headerParsed = true;
         }
-
-        protected override bool OnEntry(string msgid, string msgidPlural, bool hasPlural,
-                                         string[] translations, string flags,
-                                         string[] references, string comment,
-                                         string[] autocomments,
-                                         string msgctxt)
+        else
         {
-            if (string.IsNullOrEmpty(msgid) && !headerParsed)
-            {
-                // gettext header:
-                catalog.ParseHeaderString(translations[0]);
-                catalog.Comment = comment;
-                headerParsed = true;
-            }
-            else
-            {
-                CatalogEntry d = new CatalogEntry(catalog, string.Empty, string.Empty);
-                if (!string.IsNullOrEmpty(flags))
-                    d.Flags = flags;
-                d.SetString(msgid);
-                if (hasPlural)
-                    d.SetPluralString(msgidPlural);
-                d.SetTranslations(translations);
-                d.Comment = comment;
-                for (uint i = 0; i < references.Length; i++)
-                {
-                    d.AddReference(references[i]);
-                }
-                for (uint i = 0; i < autocomments.Length; i++)
-                {
-                    d.AddAutoComment(autocomments[i]);
-                }
-                d.Context = msgctxt;
-                catalog.AddItem(d);
-            }
-            return true;
-        }
-
-        protected override bool OnDeletedEntry(string[] deletedLines, string flags,
-                                               string[] references, string comment,
-                                               string[] autocomments)
-        {
-            CatalogDeletedEntry d = new CatalogDeletedEntry(new string[0]);
+            CatalogEntry d = new(catalog, string.Empty, string.Empty);
             if (!string.IsNullOrEmpty(flags))
                 d.Flags = flags;
-            d.SetDeletedLines(deletedLines);
-            d.SetComment(comment);
+            d.SetString(msgid);
+            if (hasPlural)
+                d.SetPluralString(msgidPlural);
+            d.SetTranslations(translations);
+            d.Comment = comment;
+            for (uint i = 0; i < references.Length; i++)
+            {
+                d.AddReference(references[i]);
+            }
             for (uint i = 0; i < autocomments.Length; i++)
             {
-                d.AddAutoComments(autocomments[i]);
+                d.AddAutoComment(autocomments[i]);
             }
-            catalog.AddDeletedItem(d);
-            return true;
+            d.Context = msgctxt;
+            catalog.AddItem(d);
         }
+        return true;
+    }
+
+    protected override bool OnDeletedEntry(string[] deletedLines, string flags,
+                                           string[] references, string comment,
+                                           string[] autocomments)
+    {
+        CatalogDeletedEntry d = new([]);
+        if (!string.IsNullOrEmpty(flags))
+            d.Flags = flags;
+        d.SetDeletedLines(deletedLines);
+        d.SetComment(comment);
+        for (uint i = 0; i < autocomments.Length; i++)
+        {
+            d.AddAutoComments(autocomments[i]);
+        }
+        catalog.AddDeletedItem(d);
+        return true;
     }
 }
